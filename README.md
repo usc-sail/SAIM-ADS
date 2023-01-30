@@ -11,3 +11,22 @@ Please find links of associated repositories listed here:
 ### Repository for listing previous experiments (topic understanding, data parsing):
 
 * [mica ads experiments](https://github.com/usc-sail/mica-ads-experiments)
+
+## Environment creation:
+
+* Create a conda environment using the following command:
+
+```bash
+conda create -n ads-env python=3.8
+```
+* Install pytorch using the following command:
+
+```bash
+conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=10.2 -c pytorch
+```
+* Install additional requirements using the following:
+
+```
+pip install -r requirements.txt
+```
+
