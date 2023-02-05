@@ -7,3 +7,5 @@ scipy
 Pillow
 ipython 
 jupyter
+bertopic
+importlib-resources
