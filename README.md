@@ -30,3 +30,18 @@ conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit
 pip install -r requirements.txt
 ```
 
+## Extracting transcripts using whisper-X 
+
+* Follow the instructions listed in [Whisper-X](https://github.com/m-bain/whisperX) for installation:
+
+   ```
+   pip install git+https://github.com/m-bain/whisperx.git
+   ```
+
+
+
+
+
+
+
+
