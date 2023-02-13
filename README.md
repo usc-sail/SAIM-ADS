@@ -19,6 +19,13 @@ Please find links of associated repositories listed here:
 ```bash
 conda create -n ads-env python=3.8
 ```
+
+* For creating conda enviroment with specific path:
+
+```bash
+conda create --prefix <path> python=3.8
+```
+
 * Install pytorch using the following command:
 
 ```bash
