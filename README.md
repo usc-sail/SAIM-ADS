@@ -45,6 +45,13 @@ pip install -r requirements.txt
    pip install git+https://github.com/m-bain/whisperx.git
    ```
 
+## TODOS
+
+* Check CLIP features statistics for the video frames 
+* LSTM on the CLIP features (variable length) and MHA baselines
+* MLP baselines on the CLIP features 
+
+
 
 
 
