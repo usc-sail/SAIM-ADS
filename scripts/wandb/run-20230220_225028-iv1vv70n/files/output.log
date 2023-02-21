@@ -1,0 +1,12 @@
+
+Number of parameters: 4203522
+/data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/log_dir/LSTM_multi_layer_tone_transition_model/20230220-225039_LSTM_multi_layer_tone_transition_model/20230220-225039_LSTM_multi_layer_tone_transition_model.yaml
+Early stop criteria:5
+INFO Starting training
+INFO {'data': {'csv_file': '/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/SAIM_ads_data_message_tone_train_test_val_clip_features.csv'}, 'parameters': {'batch_size': 16, 'train_shuffle': True, 'val_shuffle': False, 'epochs': 50, 'early_stop': 5, 'max_length': 333, 'fps': 4, 'base_fps': 24, 'num_workers': 4}, 'device': {'is_cuda': True}, 'loss': {'loss_option': 'bce_cross_entropy_loss'}, 'optimizer': {'choice': 'Adam', 'lr': '1e-3', 'gamma': 0.5, 'step_size': 15, 'scheduler': 'step_lr', 'mode': 'max', 'decay': 0.001, 'patience': 5, 'factor': 0.5, 'verbose': True}, 'model': {'option': 'LSTM_multi_layer_tone_transition_model', 'model_type': 'LSTM', 'embedding_dim': 512, 'n_hidden': 512, 'n_layers': 2, 'n_classes': 2, 'batch_first': True}, 'output': {'model_dir': '/data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/model_dir', 'log_dir': '/data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/log_dir'}}
+Traceback (most recent call last):
+  File "train_LSTM_model_tone_transition.py", line 277, in <module>
+    main(config_data)
+  File "train_LSTM_model_tone_transition.py", line 188, in main
+    print('Number of epochs:%d' %(max_epochs))
+NameError: name 'max_epochs' is not defined

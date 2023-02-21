@@ -1,0 +1,34 @@
+
+Number of parameters: 4203522
+/data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/log_dir/LSTM_multi_layer_tone_transition_model/20230220-225134_LSTM_multi_layer_tone_transition_model/20230220-225134_LSTM_multi_layer_tone_transition_model.yaml
+Early stop criteria:5
+Number of epochs:50
+INFO Starting training
+INFO {'data': {'csv_file': '/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/SAIM_ads_data_message_tone_train_test_val_clip_features.csv'}, 'parameters': {'batch_size': 16, 'train_shuffle': True, 'val_shuffle': False, 'epochs': 50, 'early_stop': 5, 'max_length': 333, 'fps': 4, 'base_fps': 24, 'num_workers': 4}, 'device': {'is_cuda': True}, 'loss': {'loss_option': 'bce_cross_entropy_loss'}, 'optimizer': {'choice': 'Adam', 'lr': '1e-3', 'gamma': 0.5, 'step_size': 15, 'scheduler': 'step_lr', 'mode': 'max', 'decay': 0.001, 'patience': 5, 'factor': 0.5, 'verbose': True}, 'model': {'option': 'LSTM_multi_layer_tone_transition_model', 'model_type': 'LSTM', 'embedding_dim': 512, 'n_hidden': 512, 'n_layers': 2, 'n_classes': 2, 'batch_first': True}, 'output': {'model_dir': '/data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/model_dir', 'log_dir': '/data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/log_dir'}}
+  0%|                                                                                                                                                                                          | 0/370 [00:02<?, ?it/s]
+Traceback (most recent call last):
+  File "train_LSTM_model_tone_transition.py", line 277, in <module>
+    main(config_data)
+  File "train_LSTM_model_tone_transition.py", line 214, in main
+    logits = model(vid_feat,lens.cpu().numpy())
+  File "/data/digbose92/envs/miniconda3/envs/ads-env/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/data/digbose92/envs/miniconda3/envs/ads-env/lib/python3.8/site-packages/torch/nn/parallel/data_parallel.py", line 168, in forward
+    outputs = self.parallel_apply(replicas, inputs, kwargs)
+  File "/data/digbose92/envs/miniconda3/envs/ads-env/lib/python3.8/site-packages/torch/nn/parallel/data_parallel.py", line 178, in parallel_apply
+    return parallel_apply(replicas, inputs, kwargs, self.device_ids[:len(replicas)])
+  File "/data/digbose92/envs/miniconda3/envs/ads-env/lib/python3.8/site-packages/torch/nn/parallel/parallel_apply.py", line 86, in parallel_apply
+    output.reraise()
+  File "/data/digbose92/envs/miniconda3/envs/ads-env/lib/python3.8/site-packages/torch/_utils.py", line 461, in reraise
+    raise exception
+RuntimeError: Caught RuntimeError in replica 0 on device 0.
+Original Traceback (most recent call last):
+  File "/data/digbose92/envs/miniconda3/envs/ads-env/lib/python3.8/site-packages/torch/nn/parallel/parallel_apply.py", line 61, in _worker
+    output = module(*input, **kwargs)
+  File "/data/digbose92/envs/miniconda3/envs/ads-env/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/../models/LSTM_models.py", line 20, in forward
+    embs = pack_padded_sequence(embs, lengths, batch_first=self.batch_first) # unpad
+  File "/data/digbose92/envs/miniconda3/envs/ads-env/lib/python3.8/site-packages/torch/nn/utils/rnn.py", line 260, in pack_padded_sequence
+    _VF._pack_padded_sequence(input, lengths, batch_first)
+RuntimeError: Expected `len(lengths)` to be equal to batch_size, but got 16 (batch_size=8)

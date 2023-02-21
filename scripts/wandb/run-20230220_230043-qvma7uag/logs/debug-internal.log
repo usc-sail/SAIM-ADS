@@ -1,0 +1,536 @@
+2023-02-20 23:00:44,015 INFO    StreamThr :5797 [internal.py:wandb_internal():87] W&B internal server running at pid: 5797, started at: 2023-02-20 23:00:44.014452
+2023-02-20 23:00:44,021 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status
+2023-02-20 23:00:44,023 INFO    WriterThread:5797 [datastore.py:open_for_write():85] open: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/run-qvma7uag.wandb
+2023-02-20 23:00:44,027 DEBUG   SenderThread:5797 [sender.py:send():336] send: header
+2023-02-20 23:00:44,040 DEBUG   SenderThread:5797 [sender.py:send():336] send: run
+2023-02-20 23:00:44,323 INFO    SenderThread:5797 [dir_watcher.py:__init__():216] watching files in: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files
+2023-02-20 23:00:44,323 INFO    SenderThread:5797 [sender.py:_start_run_threads():1067] run started: qvma7uag with start time 1676962844.012474
+2023-02-20 23:00:44,323 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:00:44,323 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:00:44,327 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: check_version
+2023-02-20 23:00:44,327 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: check_version
+2023-02-20 23:00:44,378 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: run_start
+2023-02-20 23:00:44,385 DEBUG   HandlerThread:5797 [system_info.py:__init__():31] System info init
+2023-02-20 23:00:44,385 DEBUG   HandlerThread:5797 [system_info.py:__init__():46] System info init done
+2023-02-20 23:00:44,385 INFO    HandlerThread:5797 [system_monitor.py:start():151] Starting system monitor
+2023-02-20 23:00:44,386 INFO    SystemMonitor:5797 [system_monitor.py:_start():116] Starting system asset monitoring threads
+2023-02-20 23:00:44,386 INFO    HandlerThread:5797 [system_monitor.py:probe():172] Collecting system info
+2023-02-20 23:00:44,386 INFO    SystemMonitor:5797 [interfaces.py:start():168] Started cpu
+2023-02-20 23:00:44,388 INFO    SystemMonitor:5797 [interfaces.py:start():168] Started disk
+2023-02-20 23:00:44,388 INFO    SystemMonitor:5797 [interfaces.py:start():168] Started gpu
+2023-02-20 23:00:44,389 INFO    SystemMonitor:5797 [interfaces.py:start():168] Started memory
+2023-02-20 23:00:44,390 INFO    SystemMonitor:5797 [interfaces.py:start():168] Started network
+2023-02-20 23:00:44,441 DEBUG   HandlerThread:5797 [system_info.py:probe():195] Probing system
+2023-02-20 23:00:44,450 DEBUG   HandlerThread:5797 [system_info.py:_probe_git():180] Probing git
+2023-02-20 23:00:44,467 DEBUG   HandlerThread:5797 [system_info.py:_probe_git():188] Probing git done
+2023-02-20 23:00:44,468 DEBUG   HandlerThread:5797 [system_info.py:probe():241] Probing system done
+2023-02-20 23:00:44,468 DEBUG   HandlerThread:5797 [system_monitor.py:probe():181] {'os': 'Linux-4.15.0-117-generic-x86_64-with-glibc2.17', 'python': '3.8.16', 'heartbeatAt': '2023-02-21T07:00:44.442039', 'startedAt': '2023-02-21T07:00:43.998984', 'docker': None, 'cuda': '11.0.228', 'args': ('--config_file', '../configs/config_LSTM_tone_transition.yaml'), 'state': 'running', 'program': 'train_LSTM_model_tone_transition.py', 'codePath': 'scripts/train_LSTM_model_tone_transition.py', 'git': {'remote': 'https://github.com/usc-sail/SAIM-ADS.git', 'commit': 'b0b18d3e5438a4a6874bff169c8509393b055e12'}, 'email': 'digbose92@gmail.com', 'root': '/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS', 'host': 'lomond', 'username': 'digbose92', 'executable': '/data/digbose92/envs/miniconda3/envs/ads-env/bin/python', 'cpu_count': 32, 'cpu_count_logical': 64, 'cpu_freq': {'current': 1697.5006249999997, 'min': 1000.0, 'max': 3700.0}, 'cpu_freq_per_core': [{'current': 1944.532, 'min': 1000.0, 'max': 3700.0}, {'current': 2430.919, 'min': 1000.0, 'max': 3700.0}, {'current': 2431.756, 'min': 1000.0, 'max': 3700.0}, {'current': 2697.709, 'min': 1000.0, 'max': 3700.0}, {'current': 2435.722, 'min': 1000.0, 'max': 3700.0}, {'current': 2439.847, 'min': 1000.0, 'max': 3700.0}, {'current': 2440.741, 'min': 1000.0, 'max': 3700.0}, {'current': 2540.126, 'min': 1000.0, 'max': 3700.0}, {'current': 2799.084, 'min': 1000.0, 'max': 3700.0}, {'current': 2797.791, 'min': 1000.0, 'max': 3700.0}, {'current': 1972.833, 'min': 1000.0, 'max': 3700.0}, {'current': 1000.123, 'min': 1000.0, 'max': 3700.0}, {'current': 2437.798, 'min': 1000.0, 'max': 3700.0}, {'current': 2459.736, 'min': 1000.0, 'max': 3700.0}, {'current': 2460.331, 'min': 1000.0, 'max': 3700.0}, {'current': 2465.269, 'min': 1000.0, 'max': 3700.0}, {'current': 2943.503, 'min': 1000.0, 'max': 3700.0}, {'current': 1001.114, 'min': 1000.0, 'max': 3700.0}, {'current': 1000.168, 'min': 1000.0, 'max': 3700.0}, {'current': 2309.923, 'min': 1000.0, 'max': 3700.0}, {'current': 2713.433, 'min': 1000.0, 'max': 3700.0}, {'current': 1000.68, 'min': 1000.0, 'max': 3700.0}, {'current': 1000.014, 'min': 1000.0, 'max': 3700.0}, {'current': 2815.739, 'min': 1000.0, 'max': 3700.0}, {'current': 1001.069, 'min': 1000.0, 'max': 3700.0}, {'current': 2355.487, 'min': 1000.0, 'max': 3700.0}, {'current': 2428.658, 'min': 1000.0, 'max': 3700.0}, {'current': 1000.86, 'min': 1000.0, 'max': 3700.0}, {'current': 1000.399, 'min': 1000.0, 'max': 3700.0}, {'current': 1001.278, 'min': 1000.0, 'max': 3700.0}, {'current': 1000.185, 'min': 1000.0, 'max': 3700.0}, {'current': 1000.648, 'min': 1000.0, 'max': 3700.0}, {'current': 2509.621, 'min': 1000.0, 'max': 3700.0}, {'current': 2588.052, 'min': 1000.0, 'max': 3700.0}, {'current': 2592.725, 'min': 1000.0, 'max': 3700.0}, {'current': 2552.575, 'min': 1000.0, 'max': 3700.0}, {'current': 2617.017, 'min': 1000.0, 'max': 3700.0}, {'current': 2632.177, 'min': 1000.0, 'max': 3700.0}, {'current': 2637.303, 'min': 1000.0, 'max': 3700.0}, {'current': 2545.347, 'min': 1000.0, 'max': 3700.0}, {'current': 2068.068, 'min': 1000.0, 'max': 3700.0}, {'current': 2187.775, 'min': 1000.0, 'max': 3700.0}, {'current': 2374.628, 'min': 1000.0, 'max': 3700.0}, {'current': 1000.343, 'min': 1000.0, 'max': 3700.0}, {'current': 1856.873, 'min': 1000.0, 'max': 3700.0}, {'current': 2775.034, 'min': 1000.0, 'max': 3700.0}, {'current': 2782.232, 'min': 1000.0, 'max': 3700.0}, {'current': 2807.44, 'min': 1000.0, 'max': 3700.0}, {'current': 3237.206, 'min': 1000.0, 'max': 3700.0}, {'current': 1000.635, 'min': 1000.0, 'max': 3700.0}, {'current': 1000.357, 'min': 1000.0, 'max': 3700.0}, {'current': 3145.183, 'min': 1000.0, 'max': 3700.0}, {'current': 2581.723, 'min': 1000.0, 'max': 3700.0}, {'current': 1000.897, 'min': 1000.0, 'max': 3700.0}, {'current': 1000.798, 'min': 1000.0, 'max': 3700.0}, {'current': 2651.859, 'min': 1000.0, 'max': 3700.0}, {'current': 1000.64, 'min': 1000.0, 'max': 3700.0}, {'current': 2200.924, 'min': 1000.0, 'max': 3700.0}, {'current': 2587.614, 'min': 1000.0, 'max': 3700.0}, {'current': 1000.152, 'min': 1000.0, 'max': 3700.0}, {'current': 1001.067, 'min': 1000.0, 'max': 3700.0}, {'current': 1000.946, 'min': 1000.0, 'max': 3700.0}, {'current': 1001.014, 'min': 1000.0, 'max': 3700.0}, {'current': 1000.61, 'min': 1000.0, 'max': 3700.0}], 'disk': {'total': 219.93764114379883, 'used': 199.8411521911621}, 'gpu': 'NVIDIA GeForce RTX 2080 Ti', 'gpu_count': 4, 'gpu_devices': [{'name': 'NVIDIA GeForce RTX 2080 Ti', 'memory_total': 11554717696}, {'name': 'NVIDIA GeForce RTX 2080 Ti', 'memory_total': 11554717696}, {'name': 'NVIDIA GeForce RTX 2080 Ti', 'memory_total': 11554717696}, {'name': 'NVIDIA GeForce RTX 2080 Ti', 'memory_total': 11554717696}], 'memory': {'total': 502.54532623291016}}
+2023-02-20 23:00:44,468 INFO    HandlerThread:5797 [system_monitor.py:probe():182] Finished collecting system info
+2023-02-20 23:00:44,468 INFO    HandlerThread:5797 [system_monitor.py:probe():185] Publishing system info
+2023-02-20 23:00:44,468 DEBUG   HandlerThread:5797 [system_info.py:_save_pip():51] Saving list of pip packages installed into the current environment
+2023-02-20 23:00:44,469 DEBUG   HandlerThread:5797 [system_info.py:_save_pip():67] Saving pip packages done
+2023-02-20 23:00:44,469 DEBUG   HandlerThread:5797 [system_info.py:_save_conda():74] Saving list of conda packages installed into the current environment
+2023-02-20 23:00:45,328 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_created():275] file/dir created: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/requirements.txt
+2023-02-20 23:00:45,329 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_created():275] file/dir created: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:00:45,329 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_created():275] file/dir created: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/conda-environment.yaml
+2023-02-20 23:00:50,794 DEBUG   HandlerThread:5797 [system_info.py:_save_conda():86] Saving conda packages done
+2023-02-20 23:00:50,796 INFO    HandlerThread:5797 [system_monitor.py:probe():187] Finished publishing system info
+2023-02-20 23:00:50,807 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:00:50,808 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:00:50,809 DEBUG   SenderThread:5797 [sender.py:send():336] send: files
+2023-02-20 23:00:50,809 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-metadata.json with policy now
+2023-02-20 23:00:50,821 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: stop_status
+2023-02-20 23:00:50,822 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: stop_status
+2023-02-20 23:00:50,920 DEBUG   SenderThread:5797 [sender.py:send():336] send: telemetry
+2023-02-20 23:00:51,195 INFO    wandb-upload_0:5797 [upload_job.py:push():138] Uploaded file /tmp/tmp8gtrxjp8wandb/k8wvc6xc-wandb-metadata.json
+2023-02-20 23:00:51,331 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/conda-environment.yaml
+2023-02-20 23:00:51,332 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_created():275] file/dir created: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-metadata.json
+2023-02-20 23:00:51,332 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_created():275] file/dir created: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:00:53,219 DEBUG   SenderThread:5797 [sender.py:send():336] send: telemetry
+2023-02-20 23:00:53,332 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:00:54,441 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:00:55,333 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:00:57,334 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:00:59,334 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:00:59,448 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:01:00,511 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:01:00,512 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:01:00,512 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:01:00,575 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:01:01,335 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:01:01,335 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:03,336 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:04,578 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:01:05,337 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:05,819 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:01:05,819 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:01:07,338 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:07,779 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:01:07,780 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:01:07,780 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:01:07,840 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:01:08,338 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:01:09,339 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:09,708 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:01:10,820 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:01:11,340 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:12,672 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:01:12,674 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:01:12,674 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:01:12,723 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:01:13,340 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:01:13,341 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:14,789 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:01:15,341 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/config.yaml
+2023-02-20 23:01:15,342 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:15,847 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:01:17,342 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:19,343 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:20,025 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:01:20,131 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:01:20,132 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:01:20,133 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:01:20,180 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:01:20,344 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:01:20,852 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:01:21,344 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:23,345 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:25,128 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:01:25,345 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:25,856 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:01:26,970 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:01:26,971 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:01:26,971 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:01:27,026 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:01:27,346 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:01:27,347 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:29,348 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:30,140 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:01:30,858 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:01:31,349 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:31,726 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:01:31,727 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:01:31,728 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:01:31,809 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:01:32,350 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:01:33,355 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:35,194 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:01:35,357 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:35,885 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:01:38,358 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:39,086 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:01:39,088 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:01:39,088 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:01:39,141 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:01:39,359 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:01:40,270 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:01:40,360 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:40,886 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:01:42,360 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:43,958 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:01:43,960 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:01:43,981 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:01:43,982 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:01:43,982 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:01:43,984 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:01:43,984 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:01:43,985 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:01:43,986 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:01:43,987 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:01:44,361 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:44,390 DEBUG   SystemMonitor:5797 [system_monitor.py:_start():130] Starting system metrics aggregation loop
+2023-02-20 23:01:44,393 DEBUG   SenderThread:5797 [sender.py:send():336] send: stats
+2023-02-20 23:01:45,408 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:01:45,887 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:01:45,937 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:01:45,988 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:01:45,989 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:01:45,991 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:01:46,363 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:01:46,363 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:48,364 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:50,364 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:50,437 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:01:50,872 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:01:50,875 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:01:50,876 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:01:50,922 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:01:50,925 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:01:51,365 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:01:51,365 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:52,366 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:54,366 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:55,493 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:01:55,924 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:01:56,367 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:01:57,995 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:01:57,996 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:01:57,996 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:01:57,998 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:01:58,368 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:01:58,368 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:00,369 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:00,526 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:02:00,928 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:02:02,370 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:04,371 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:04,812 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:02:04,815 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:02:04,815 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:02:04,871 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:02:05,372 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:02:05,645 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:02:05,929 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:02:06,372 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:08,375 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:09,375 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:09,571 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:02:09,693 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:02:09,693 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:02:09,695 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:02:10,376 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:02:10,376 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:10,693 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:02:10,930 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:02:12,377 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:14,378 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:14,395 DEBUG   SenderThread:5797 [sender.py:send():336] send: stats
+2023-02-20 23:02:15,704 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:02:15,932 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:02:16,379 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:16,845 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:02:16,847 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:02:16,848 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:02:16,895 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:02:17,379 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:02:18,380 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:20,381 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:20,736 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:02:20,933 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:02:22,382 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:23,810 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:02:23,812 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:02:23,812 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:02:23,840 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:02:24,383 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:02:24,383 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:25,823 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:02:25,935 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:02:26,383 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:28,385 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:28,659 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:02:28,662 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:02:28,662 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:02:28,664 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:02:29,385 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:02:29,386 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:30,386 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:30,936 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:02:30,949 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:02:32,386 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:34,387 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:35,833 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:02:35,833 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:02:35,853 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:02:35,853 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:02:35,854 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:02:35,855 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:02:35,855 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:02:35,856 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:02:35,857 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:02:35,858 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:02:35,862 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:02:35,937 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:02:35,991 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:02:35,993 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:02:35,993 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:02:35,995 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:02:36,388 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:02:36,389 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:38,389 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:40,390 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:40,939 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:02:41,082 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:02:42,391 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:42,676 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:02:42,678 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:02:42,678 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:02:42,727 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:02:43,391 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:02:44,392 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:44,397 DEBUG   SenderThread:5797 [sender.py:send():336] send: stats
+2023-02-20 23:02:45,940 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:02:46,260 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:02:46,392 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:47,393 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:47,513 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:02:47,515 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:02:47,515 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:02:47,545 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:02:48,393 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:02:48,394 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:50,395 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:50,941 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:02:51,304 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:02:52,396 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:54,396 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:54,666 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:02:54,668 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:02:54,668 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:02:54,742 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:02:55,397 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:02:55,944 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:02:56,395 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:02:56,398 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:02:58,399 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:00,400 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:00,945 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:03:01,511 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:03:01,608 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:03:01,610 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:03:01,610 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:03:01,662 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:03:02,401 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:03:02,401 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:04,402 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:05,946 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:03:06,403 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:06,584 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:03:06,598 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:03:06,695 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:03:06,695 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:03:06,697 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:03:07,403 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:03:07,404 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:08,404 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:10,408 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:10,954 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:03:11,585 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:03:12,409 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:13,815 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:03:13,817 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:03:13,817 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:03:13,866 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:03:14,398 DEBUG   SenderThread:5797 [sender.py:send():336] send: stats
+2023-02-20 23:03:14,410 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:03:14,411 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:15,964 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:03:16,411 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:16,747 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:03:18,413 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:20,413 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:20,739 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:03:20,741 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:03:20,741 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:03:20,834 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:03:20,965 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:03:21,414 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:03:21,898 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:03:22,414 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:24,415 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:25,415 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:25,657 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:03:25,661 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:03:25,662 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:03:25,713 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:03:25,970 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:03:26,416 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:03:26,416 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:26,938 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:03:27,794 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:03:27,795 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:03:27,819 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:03:27,819 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:03:27,820 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:03:27,821 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:03:27,821 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:03:27,822 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:03:27,823 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:03:27,824 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:03:28,417 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:30,418 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:30,971 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:03:31,995 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:03:32,419 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:32,777 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:03:32,895 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:03:32,896 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:03:32,898 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:03:33,420 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:03:34,421 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:35,972 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:03:36,421 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:37,049 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:03:38,422 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:39,547 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:03:39,549 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:03:39,550 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:03:39,604 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:03:40,424 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:03:40,424 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:40,976 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:03:42,055 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:03:42,425 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:44,333 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:03:44,335 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:03:44,335 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:03:44,393 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:03:44,401 DEBUG   SenderThread:5797 [sender.py:send():336] send: stats
+2023-02-20 23:03:44,425 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:03:44,426 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:45,426 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:45,978 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:03:46,426 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:47,108 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:03:48,427 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:50,428 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:50,982 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:03:51,479 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:03:51,481 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:03:51,481 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:03:51,532 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:03:52,182 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:03:52,429 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:03:52,429 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:54,431 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:55,987 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:03:56,432 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:57,245 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:03:58,433 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:03:58,557 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:03:58,559 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:03:58,560 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:03:58,611 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:03:59,433 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:04:00,434 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:04:00,992 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:04:02,246 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:04:02,434 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:04:03,259 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: partial_history
+2023-02-20 23:04:03,262 DEBUG   SenderThread:5797 [sender.py:send():336] send: history
+2023-02-20 23:04:03,263 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: summary_record
+2023-02-20 23:04:03,310 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:04:03,435 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:04:03,435 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:04:04,435 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:04:05,994 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: keepalive
+2023-02-20 23:04:06,436 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:04:07,347 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:04:08,032 DEBUG   SenderThread:5797 [sender.py:send():336] send: exit
+2023-02-20 23:04:08,032 INFO    SenderThread:5797 [sender.py:send_exit():559] handling exit code: 255
+2023-02-20 23:04:08,033 INFO    SenderThread:5797 [sender.py:send_exit():561] handling runtime: 203
+2023-02-20 23:04:08,094 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:04:08,094 INFO    SenderThread:5797 [sender.py:send_exit():567] send defer
+2023-02-20 23:04:08,095 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: defer
+2023-02-20 23:04:08,095 INFO    HandlerThread:5797 [handler.py:handle_request_defer():170] handle defer: 0
+2023-02-20 23:04:08,096 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: defer
+2023-02-20 23:04:08,096 INFO    SenderThread:5797 [sender.py:send_request_defer():583] handle sender defer: 0
+2023-02-20 23:04:08,096 INFO    SenderThread:5797 [sender.py:transition_state():587] send defer: 1
+2023-02-20 23:04:08,096 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: defer
+2023-02-20 23:04:08,096 INFO    HandlerThread:5797 [handler.py:handle_request_defer():170] handle defer: 1
+2023-02-20 23:04:08,097 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: defer
+2023-02-20 23:04:08,097 INFO    SenderThread:5797 [sender.py:send_request_defer():583] handle sender defer: 1
+2023-02-20 23:04:08,097 INFO    SenderThread:5797 [sender.py:transition_state():587] send defer: 2
+2023-02-20 23:04:08,097 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: defer
+2023-02-20 23:04:08,097 INFO    HandlerThread:5797 [handler.py:handle_request_defer():170] handle defer: 2
+2023-02-20 23:04:08,097 INFO    HandlerThread:5797 [system_monitor.py:finish():161] Stopping system monitor
+2023-02-20 23:04:08,099 DEBUG   SystemMonitor:5797 [system_monitor.py:_start():137] Finished system metrics aggregation loop
+2023-02-20 23:04:08,099 DEBUG   SystemMonitor:5797 [system_monitor.py:_start():141] Publishing last batch of metrics
+2023-02-20 23:04:08,103 INFO    HandlerThread:5797 [interfaces.py:finish():175] Joined cpu
+2023-02-20 23:04:08,103 INFO    HandlerThread:5797 [interfaces.py:finish():175] Joined disk
+2023-02-20 23:04:08,437 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:04:08,438 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:04:08,484 INFO    HandlerThread:5797 [interfaces.py:finish():175] Joined gpu
+2023-02-20 23:04:08,485 INFO    HandlerThread:5797 [interfaces.py:finish():175] Joined memory
+2023-02-20 23:04:08,485 INFO    HandlerThread:5797 [interfaces.py:finish():175] Joined network
+2023-02-20 23:04:08,486 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: defer
+2023-02-20 23:04:08,486 INFO    SenderThread:5797 [sender.py:send_request_defer():583] handle sender defer: 2
+2023-02-20 23:04:08,486 INFO    SenderThread:5797 [sender.py:transition_state():587] send defer: 3
+2023-02-20 23:04:08,487 DEBUG   SenderThread:5797 [sender.py:send():336] send: stats
+2023-02-20 23:04:08,487 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: defer
+2023-02-20 23:04:08,489 INFO    HandlerThread:5797 [handler.py:handle_request_defer():170] handle defer: 3
+2023-02-20 23:04:08,489 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: defer
+2023-02-20 23:04:08,489 INFO    SenderThread:5797 [sender.py:send_request_defer():583] handle sender defer: 3
+2023-02-20 23:04:08,490 INFO    SenderThread:5797 [sender.py:transition_state():587] send defer: 4
+2023-02-20 23:04:08,490 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: defer
+2023-02-20 23:04:08,490 INFO    HandlerThread:5797 [handler.py:handle_request_defer():170] handle defer: 4
+2023-02-20 23:04:08,491 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: defer
+2023-02-20 23:04:08,491 INFO    SenderThread:5797 [sender.py:send_request_defer():583] handle sender defer: 4
+2023-02-20 23:04:08,491 INFO    SenderThread:5797 [sender.py:transition_state():587] send defer: 5
+2023-02-20 23:04:08,491 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: defer
+2023-02-20 23:04:08,491 INFO    HandlerThread:5797 [handler.py:handle_request_defer():170] handle defer: 5
+2023-02-20 23:04:08,583 DEBUG   SenderThread:5797 [sender.py:send():336] send: summary
+2023-02-20 23:04:08,587 INFO    SenderThread:5797 [sender.py:_save_file():1321] saving file wandb-summary.json with policy end
+2023-02-20 23:04:08,588 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: defer
+2023-02-20 23:04:08,588 INFO    SenderThread:5797 [sender.py:send_request_defer():583] handle sender defer: 5
+2023-02-20 23:04:08,588 INFO    SenderThread:5797 [sender.py:transition_state():587] send defer: 6
+2023-02-20 23:04:08,588 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: defer
+2023-02-20 23:04:08,589 INFO    HandlerThread:5797 [handler.py:handle_request_defer():170] handle defer: 6
+2023-02-20 23:04:08,589 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: defer
+2023-02-20 23:04:08,589 INFO    SenderThread:5797 [sender.py:send_request_defer():583] handle sender defer: 6
+2023-02-20 23:04:08,589 INFO    SenderThread:5797 [sender.py:transition_state():587] send defer: 7
+2023-02-20 23:04:08,590 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: status_report
+2023-02-20 23:04:08,590 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: defer
+2023-02-20 23:04:08,590 INFO    HandlerThread:5797 [handler.py:handle_request_defer():170] handle defer: 7
+2023-02-20 23:04:08,591 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: defer
+2023-02-20 23:04:08,591 INFO    SenderThread:5797 [sender.py:send_request_defer():583] handle sender defer: 7
+2023-02-20 23:04:09,032 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: poll_exit
+2023-02-20 23:04:09,438 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:04:09,754 INFO    SenderThread:5797 [sender.py:transition_state():587] send defer: 8
+2023-02-20 23:04:09,755 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: poll_exit
+2023-02-20 23:04:09,755 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: defer
+2023-02-20 23:04:09,756 INFO    HandlerThread:5797 [handler.py:handle_request_defer():170] handle defer: 8
+2023-02-20 23:04:09,757 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: defer
+2023-02-20 23:04:09,757 INFO    SenderThread:5797 [sender.py:send_request_defer():583] handle sender defer: 8
+2023-02-20 23:04:09,784 INFO    SenderThread:5797 [sender.py:transition_state():587] send defer: 9
+2023-02-20 23:04:09,785 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: defer
+2023-02-20 23:04:09,785 DEBUG   SenderThread:5797 [sender.py:send():336] send: artifact
+2023-02-20 23:04:09,786 INFO    HandlerThread:5797 [handler.py:handle_request_defer():170] handle defer: 9
+2023-02-20 23:04:10,033 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: poll_exit
+2023-02-20 23:04:10,439 INFO    Thread-13 :5797 [dir_watcher.py:_on_file_modified():292] file/dir modified: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:04:10,987 INFO    wandb-upload_0:5797 [upload_job.py:push():93] Skipped uploading /home/digbose92/.local/share/wandb/artifacts/staging/tmp5gh8jr9g
+2023-02-20 23:04:11,226 INFO    wandb-upload_1:5797 [upload_job.py:push():96] Uploaded file /home/digbose92/.local/share/wandb/artifacts/staging/tmpa7nbf6op
+2023-02-20 23:04:12,194 INFO    SenderThread:5797 [sender.py:send_artifact():1417] sent artifact job-https___github.com_usc-sail_SAIM-ADS.git_scripts_train_LSTM_model_tone_transition.py - {'id': 'QXJ0aWZhY3Q6Mzc3Mjk1OTY4', 'digest': 'e05f75f4af38e749e8f2bc4037e84257', 'state': 'PENDING', 'aliases': [], 'artifactSequence': {'id': 'QXJ0aWZhY3RDb2xsZWN0aW9uOjU0MDI1OTcw', 'latestArtifact': {'id': 'QXJ0aWZhY3Q6Mzc3MjkxNzM0', 'versionIndex': 2}}, 'version': 'latest'}
+2023-02-20 23:04:12,194 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: defer
+2023-02-20 23:04:12,194 INFO    SenderThread:5797 [sender.py:send_request_defer():583] handle sender defer: 9
+2023-02-20 23:04:12,194 INFO    SenderThread:5797 [dir_watcher.py:finish():362] shutting down directory watcher
+2023-02-20 23:04:12,440 INFO    SenderThread:5797 [dir_watcher.py:finish():392] scan: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files
+2023-02-20 23:04:12,441 INFO    SenderThread:5797 [dir_watcher.py:finish():406] scan save: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log output.log
+2023-02-20 23:04:12,441 INFO    SenderThread:5797 [dir_watcher.py:finish():406] scan save: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-metadata.json wandb-metadata.json
+2023-02-20 23:04:12,441 INFO    SenderThread:5797 [dir_watcher.py:finish():406] scan save: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json wandb-summary.json
+2023-02-20 23:04:12,442 INFO    SenderThread:5797 [dir_watcher.py:finish():406] scan save: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/requirements.txt requirements.txt
+2023-02-20 23:04:12,451 INFO    SenderThread:5797 [dir_watcher.py:finish():406] scan save: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/conda-environment.yaml conda-environment.yaml
+2023-02-20 23:04:12,453 INFO    SenderThread:5797 [dir_watcher.py:finish():406] scan save: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/config.yaml config.yaml
+2023-02-20 23:04:12,453 INFO    SenderThread:5797 [sender.py:transition_state():587] send defer: 10
+2023-02-20 23:04:12,467 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: poll_exit
+2023-02-20 23:04:12,468 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: defer
+2023-02-20 23:04:12,468 INFO    HandlerThread:5797 [handler.py:handle_request_defer():170] handle defer: 10
+2023-02-20 23:04:12,477 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: defer
+2023-02-20 23:04:12,478 INFO    SenderThread:5797 [sender.py:send_request_defer():583] handle sender defer: 10
+2023-02-20 23:04:12,478 INFO    SenderThread:5797 [file_pusher.py:finish():162] shutting down file pusher
+2023-02-20 23:04:12,814 INFO    wandb-upload_1:5797 [upload_job.py:push():138] Uploaded file /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/wandb-summary.json
+2023-02-20 23:04:12,870 INFO    wandb-upload_4:5797 [upload_job.py:push():138] Uploaded file /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/config.yaml
+2023-02-20 23:04:12,872 INFO    wandb-upload_0:5797 [upload_job.py:push():138] Uploaded file /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/output.log
+2023-02-20 23:04:12,872 INFO    wandb-upload_3:5797 [upload_job.py:push():138] Uploaded file /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/conda-environment.yaml
+2023-02-20 23:04:12,895 INFO    wandb-upload_2:5797 [upload_job.py:push():138] Uploaded file /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/files/requirements.txt
+2023-02-20 23:04:13,096 INFO    Thread-12 :5797 [sender.py:transition_state():587] send defer: 11
+2023-02-20 23:04:13,096 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: defer
+2023-02-20 23:04:13,096 INFO    HandlerThread:5797 [handler.py:handle_request_defer():170] handle defer: 11
+2023-02-20 23:04:13,097 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: defer
+2023-02-20 23:04:13,097 INFO    SenderThread:5797 [sender.py:send_request_defer():583] handle sender defer: 11
+2023-02-20 23:04:13,097 INFO    SenderThread:5797 [file_pusher.py:join():167] waiting for file pusher
+2023-02-20 23:04:13,097 INFO    SenderThread:5797 [sender.py:transition_state():587] send defer: 12
+2023-02-20 23:04:13,098 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: defer
+2023-02-20 23:04:13,098 INFO    HandlerThread:5797 [handler.py:handle_request_defer():170] handle defer: 12
+2023-02-20 23:04:13,098 DEBUG   SenderThread:5797 [sender.py:send_request():363] send_request: defer
+2023-02-20 23:04:13,098 INFO    SenderThread:5797 [sender.py:send_request_defer():583] handle sender defer: 12
+2023-02-20 23:04:13,244 WARNING StreamThr :5797 [internal.py:is_dead():415] Internal process exiting, parent pid 5704 disappeared
+2023-02-20 23:04:13,244 ERROR   StreamThr :5797 [internal.py:wandb_internal():153] Internal process shutdown.
+2023-02-20 23:04:13,987 INFO    SenderThread:5797 [sender.py:transition_state():587] send defer: 13
+2023-02-20 23:04:13,988 INFO    SenderThread:5797 [sender.py:finish():1493] shutting down sender
+2023-02-20 23:04:13,988 DEBUG   HandlerThread:5797 [handler.py:handle_request():144] handle_request: defer
+2023-02-20 23:04:14,042 INFO    SenderThread:5797 [file_pusher.py:finish():162] shutting down file pusher
+2023-02-20 23:04:14,043 INFO    HandlerThread:5797 [handler.py:handle_request_defer():170] handle defer: 13
+2023-02-20 23:04:14,043 INFO    SenderThread:5797 [file_pusher.py:join():167] waiting for file pusher
+2023-02-20 23:04:14,043 INFO    HandlerThread:5797 [handler.py:finish():841] shutting down handler
+2023-02-20 23:04:14,044 INFO    WriterThread:5797 [datastore.py:close():299] close: /data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/scripts/wandb/run-20230220_230043-qvma7uag/run-qvma7uag.wandb
