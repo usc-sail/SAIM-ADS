@@ -33,7 +33,7 @@ from evaluate_model import *
 import argparse
 from log_file_generate import *
 from scipy.stats.stats import pearsonr
-import wandb
+#import wandb
 
 #fix seed for reproducibility
 seed_value=123457
@@ -62,7 +62,7 @@ def main(config_data):
     #define parameters
     csv_file=config_data['data']['csv_file']
     csv_data=pd.read_csv(csv_file)
-    label_map={'No transition':0,'Transition':1} #label map
+    label_map={'No':0,'Yes':1} #label map
     num_classes=config_data['model']['n_classes']
     max_length=config_data['parameters']['max_length']
     fps=config_data['parameters']['fps']
@@ -75,15 +75,13 @@ def main(config_data):
     train_data=csv_data[csv_data['Split']=='train']
     val_data=csv_data[csv_data['Split']=='val']
 
-    
-
-    train_ds=SAIM_ads_tone_clip_features_dataset(train_data,
+    train_ds=SAIM_social_message_clip_features_dataset(train_data,
                     label_map,
                     num_classes,
                     max_length,
                     fps,base_fps)
 
-    val_ds=SAIM_ads_tone_clip_features_dataset(val_data,
+    val_ds=SAIM_social_message_clip_features_dataset(val_data,
                     label_map,
                     num_classes,
                     max_length,
@@ -119,11 +117,6 @@ def main(config_data):
     params = sum([np.prod(p.size()) for p in model_parameters])
     print('Number of parameters: %d' %(params))
 
-
-    # n_gpus=torch.cuda.device_count()
-    # if(n_gpus>1):
-    #     model=nn.DataParallel(model)
-    #model=nn.DataParallel(model)
     model=model.to(device)
     
     ############################# loss function + optimizers definition here ################################
@@ -244,7 +237,7 @@ def main(config_data):
 
         logger.info('Evaluating the dataset')
         #write the validation code here 
-        val_loss,val_acc,val_f1=gen_validate_score_LSTM_tone_transition_model(model,val_dl,device,criterion)
+        val_loss,val_acc,val_f1=gen_validate_score_LSTM_social_message_model(model,val_dl,device,criterion)
         logger.info('Epoch:{:d},Overall Validation loss:{:.3f},Overall validation Acc:{:.3f}, Overall F1:{:.3f}'.format(epoch,val_loss,val_acc,val_f1))
 
         #wandb logging
