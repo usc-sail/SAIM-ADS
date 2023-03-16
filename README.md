@@ -37,6 +37,14 @@ conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit
 pip install -r requirements.txt
 ```
 
+## Shot Extraction
+
+* Install PySceneDetect using the following command:
+
+```bash
+pip install scenedetect[opencv] --upgrade
+```
+
 ## Install CLIP 
 
 ```bash
@@ -54,9 +62,7 @@ pip install git+https://github.com/openai/CLIP.git
 
 ## TODOS
 
-* Check CLIP features statistics for the video frames 
 * LSTM on the CLIP features (variable length) and MHA baselines
-* MLP baselines on the CLIP features 
 
 
 

@@ -10,3 +10,5 @@ jupyter
 bertopic
 importlib-resources
 transformers
+scenedetect==0.6.1
+
