@@ -22,13 +22,13 @@ fbank = ta_kaldi.fbank(
 
 n_frames = fbank.shape[0]
 difference = max_length - n_frames
+print(n_frames,fbank.shape)
+# # pad or truncate, depending on difference
+# if difference > 0:
+#     pad_module = torch.nn.ZeroPad2d((0, 0, 0, difference))
+#     fbank = pad_module(fbank)
+# elif difference < 0:
+#     fbank = fbank[0:max_length, :]
+#     fbank = fbank.numpy()
 
-# pad or truncate, depending on difference
-if difference > 0:
-    pad_module = torch.nn.ZeroPad2d((0, 0, 0, difference))
-    fbank = pad_module(fbank)
-elif difference < 0:
-    fbank = fbank[0:max_length, :]
-    fbank = fbank.numpy()
-
-print(fbank.shape)
+# print(fbank.shape)
