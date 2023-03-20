@@ -120,3 +120,12 @@ if(video_type=='shot'):
             pickle.dump(shot_dict,f)
 
             
+#pairwise cosine similarity for a numpy matrix 
+
+def pairwise_cosine_similarity(x):
+    """
+    x: numpy array of shape (N, D)
+    """
+    x = x / np.linalg.norm(x, axis=1, keepdims=True)
+    return x @ x.T
+
