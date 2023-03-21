@@ -68,12 +68,14 @@ parser.add_argument('--video_folder', type=str, help='path to the destination fe
 parser.add_argument('--model_name', type=str, help='path to the model name')
 parser.add_argument('--video_type',type=str,default='shot',help='path to the video type')
 parser.add_argument('--shot_subfolder', type=str, help='path to the shot subfolder')
+parser.add_argument('--shot_file_list',type=str,help='path to the shot file list')
 args=parser.parse_args()
 
 model_name=args.model_name
 shot_subfolder=args.shot_subfolder
 video_type=args.video_type
 video_folder=args.video_folder
+shot_file_list=args.shot_file_list
 
 #declare vit models from timm specification
 print('Loading model')
@@ -93,6 +95,15 @@ print('Loaded model')
 # h1 = model.pre_logits.register_forward_hook(getActivation('pre_logits'))
 
 if(video_type=='shot'):
+
+
+    #read the list of shot files already processed 
+
+    with open(shot_file_list,'r') as f:
+        shot_filenames=f.readlines()
+
+    shot_filenames=[x.split("\n")[0].split("/")[-1] for x in shot_filenames]
+
     #shot subfolder
     #shot_subfolder=os.path.join(args.feature_folder,args.shot_subfolder)
     shot_folder_name=os.path.join(video_folder,shot_subfolder)
@@ -102,30 +113,30 @@ if(video_type=='shot'):
     for video_file in tqdm(video_file_list):
 
         video_subfolder=os.path.join(shot_folder_name,video_file)
-        destination_file=os.path.join(args.feature_folder,video_file+'.pkl')
+        pkl_filename=video_file+'.pkl'
 
-        shot_list=os.listdir(video_subfolder) #list of shots
-        shot_dict=dict()
+        if(pkl_filename in shot_filenames):
+            print('Already processed',pkl_filename)
+        else:
+            destination_file=os.path.join(args.feature_folder,pkl_filename)
 
-        for shot_file in tqdm(shot_list):
-            
-            shot_filename=os.path.join(video_subfolder,shot_file)
-            feat_list,_=run_frame_wise_feature_inference(model,processor,shot_filename,device)
+            if(os.path.exists(destination_file) is False):
 
-            shot_dict[shot_file]=feat_list
+                shot_list=os.listdir(video_subfolder) #list of shots
+                shot_dict=dict()
+                for shot_file in tqdm(shot_list):
+                    
+                    shot_filename=os.path.join(video_subfolder,shot_file)
+                    feat_list,_=run_frame_wise_feature_inference(model,processor,shot_filename,device)
 
-        #save the shot_dict
+                    shot_dict[shot_file]=feat_list
 
-        with open(destination_file,'wb') as f:
-            pickle.dump(shot_dict,f)
+                #save the shot_dict
 
-            
-#pairwise cosine similarity for a numpy matrix 
+                with open(destination_file,'wb') as f:
+                    pickle.dump(shot_dict,f)
 
-def pairwise_cosine_similarity(x):
-    """
-    x: numpy array of shape (N, D)
-    """
-    x = x / np.linalg.norm(x, axis=1, keepdims=True)
-    return x @ x.T
+            else:
+                print('Already exists',pkl_filename)
+
 

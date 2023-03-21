@@ -1,0 +1,22 @@
+{
+    "Car": 811,
+    "Household": 228,
+    "Industrial and agriculture": 114,
+    "Food and drink": 1935,
+    "Electronics": 834,
+    "Clothing": 453,
+    "Awareness": 1313,
+    "Publications media": 75,
+    "Sports": 128,
+    "Cosmetics": 204,
+    "Health": 359,
+    "Banking": 249,
+    "Games": 259,
+    "Retail": 109,
+    "Leisure": 415,
+    "Travel and transport": 400,
+    "Services": 367,
+    "Misc": 69,
+    "Business equipment": 47,
+    "Politics": 31
+}
