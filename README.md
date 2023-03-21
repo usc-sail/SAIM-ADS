@@ -83,6 +83,26 @@ pip install git+https://github.com/openai/CLIP.git
     model_name google/vit-base-patch16-224 --video_type shot --shot_subfolder <type of shot here>
    ```
 
+* The previous command has been modified to extract features for files that have not been processed in the list of files provided in the file_list.txt file.
+
+   ```
+   CUDA_VISIBLE_DEVICES=3 python extract_vit_features.py --feature_folder <destination vit features>  --video_folder <base folder containing the shots> --model_name google/vit-base-patch16-224 --video_type shot --shot_subfolder <type of shot here> --shot_file_list <path to file list>
+   ```
+
+## Visual caption extraction 
+
+* Create a new conda environment using the following:
+
+   ```bash 
+   conda create -n lavis python=3.8
+   conda activate lavis
+   ```
+* Install lavis using the following: 
+
+   ```
+   pip install salesforce-lavis
+   ```
+
 ## TODOS
 
 * LSTM on the CLIP features (variable length) and MHA baselines
