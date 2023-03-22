@@ -1,0 +1,6 @@
+==========================================
+SLURM_JOB_ID = 14093389
+SLURM_JOB_NODELIST = a04-01
+TMPDIR = /tmp/SLURM_14093389
+==========================================
+python: can't open file 'train_ViLT_prompt_model_MMIMDB.py': [Errno 2] No such file or directory

@@ -11,7 +11,6 @@ import pandas as pd
 
 #consider a sample video folder with shots 
 caption_folder="/bigdata/digbose92/ads_data/ads_complete_repo/ads_captions"
-
 #for each shot first check how the captioning outputs change over the entire duration
 shot_folder="/bigdata/digbose92/ads_data/ads_complete_repo/ads_videos/shot_folder/PySceneDetect"
 destination_folder="/bigdata/digbose92/ads_data/ads_complete_repo/ads_captions"
