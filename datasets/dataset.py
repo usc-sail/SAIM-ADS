@@ -192,12 +192,6 @@ class SAIM_single_task_dataset(Dataset):  # tobe integrated later
         #subsample the features
         clip_feature_array_subsampled=self.subsample_feature(clip_feature_array)
 
-        # #return the length of the features
-        # if(clip_feature_array_subsampled.shape[0]>=self.max_length):
-        #     feat_len=self.max_length
-        # else:
-        #     feat_len=clip_feature_array_subsampled.shape[0]
-
         #pad the features
         clip_feature_array_padded,attention_mask=self.pad_data(clip_feature_array_subsampled)
 
@@ -213,29 +207,29 @@ class SAIM_single_task_dataset(Dataset):  # tobe integrated later
 
 
 
-#test the dataset
-csv_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/SAIM_data/SAIM_multi_task_tone_soc_message_data.csv"
-csv_data=pd.read_csv(csv_file)
-label_map={'No transition':0,'Transition':1}
+# #test the dataset
+# csv_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/SAIM_data/SAIM_multi_task_tone_soc_message_data.csv"
 # csv_data=pd.read_csv(csv_file)
 # label_map={'No transition':0,'Transition':1}
-num_class=2
-max_length=333
-fps=4
-base_fps=24
-task_name="Transition_val"
+# # csv_data=pd.read_csv(csv_file)
+# # label_map={'No transition':0,'Transition':1}
+# num_class=2
+# max_length=333
+# fps=4
+# base_fps=24
+# task_name="Transition_val"
 
-#single task dataset and dataloader
-saim_single_task_dataset=SAIM_single_task_dataset(csv_data=csv_data,
-                                                label_map=label_map,
-                                                num_classes=num_class,
-                                                max_length=max_length,
-                                                fps=fps,
-                                                base_fps=base_fps,
-                                                task_name=task_name)
+# #single task dataset and dataloader
+# saim_single_task_dataset=SAIM_single_task_dataset(csv_data=csv_data,
+#                                                 label_map=label_map,
+#                                                 num_classes=num_class,
+#                                                 max_length=max_length,
+#                                                 fps=fps,
+#                                                 base_fps=base_fps,
+#                                                 task_name=task_name)
 
-saim_single_task_dataloader=DataLoader(saim_single_task_dataset,batch_size=8,shuffle=True)
-clip_feat,ret_label,attention_mask = next(iter(saim_single_task_dataloader))
+# saim_single_task_dataloader=DataLoader(saim_single_task_dataset,batch_size=8,shuffle=True)
+# clip_feat,ret_label,attention_mask = next(iter(saim_single_task_dataloader))
 
 # print(clip_feat.shape)
 # print(ret_label.shape)

@@ -12,6 +12,7 @@ def scaled_dot_product(q, k, v, mask=None): #scaled dot product attention
     d_k = q.size()[-1]
     attn_logits = torch.matmul(q, k.transpose(-2, -1))
     attn_logits = attn_logits / math.sqrt(d_k)
+    
     if mask is not None:
         attn_logits = attn_logits.masked_fill(mask == 0, -9e15)
     attention = F.softmax(attn_logits, dim=-1)
@@ -202,12 +203,26 @@ class MHA_model_single_task_classifier(nn.Module):
 
     def forward(self, x, mask=None, add_positional_encoding=True):
 
-        x = self.input_net(x)
+        x = self.input_map_net(x)
         if add_positional_encoding:
             x = self.positional_encoding(x)
 
         x = self.transformer(x, mask=mask)
-        x = self.output_net(x)
+
+        #average the representations across the sequence dimension for non-masked tokens
+
+        #remove the unsqueezed dimension from mask
+        mask = mask.squeeze(1).squeeze(1)
+        masked_sum = torch.sum(x * mask.unsqueeze(-1), dim=1)
+
+        # Compute the number of non-zero elements in the mask
+        count = torch.sum(mask, dim=1, keepdim=True)
+
+        #Average the masked_sum across the sequence dimension
+        masked_avg = masked_sum / count
+
+        x = self.output_net(masked_avg)
+
         return x
     
 
