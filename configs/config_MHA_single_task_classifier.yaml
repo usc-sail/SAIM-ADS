@@ -33,6 +33,7 @@ optimizer:
 
 model:
   option: 'MHA_attn_single_task_classifier_social_message'
+  model_type: 'MHA_attn_single_task_classifier_social_message'
   input_dim: 512
   model_dim: 128
   num_heads: 4

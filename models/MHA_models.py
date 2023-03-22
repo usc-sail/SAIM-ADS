@@ -220,6 +220,7 @@ class MHA_model_single_task_classifier(nn.Module):
 
         #Average the masked_sum across the sequence dimension
         masked_avg = masked_sum / count
+        masked_avg=masked_avg.float()
 
         x = self.output_net(masked_avg)
 

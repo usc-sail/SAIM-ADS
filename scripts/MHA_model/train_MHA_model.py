@@ -59,7 +59,7 @@ def main(config_data):
     task_name=config_data['parameters']['task_name']
 
     if(task_name=='Transition_val'):
-        label_map={'Transition':0,'Non-Transition':1}
+        label_map={'No transition':0,'Transition':1}
 
     elif(task_name=='social_message'):
         label_map={'No':0,'Yes':1}
@@ -79,6 +79,7 @@ def main(config_data):
     input_dropout=config_data['model']['input_dropout']
     output_dropout=config_data['model']['output_dropout']
     model_dropout=config_data['model']['model_dropout']
+    model_type=config_data['model']['model_type']
 
     #define the datasets 
     train_data=csv_data[csv_data['Split']=='train']
@@ -126,14 +127,14 @@ def main(config_data):
                                          num_layers, 
                                          input_dropout, output_dropout, model_dropout)
     
-    print(model)
+    #print(model)
 
 
     model_parameters = filter(lambda p: p.requires_grad, model.parameters())
     params = sum([np.prod(p.size()) for p in model_parameters])
     print('Number of parameters: %d' %(params))
     model=model.to(device)
-    model.float()
+    #model.float()
     
     ############################# loss function + optimizers definition here ################################
     if(config_data['loss']['loss_option']=='bce_cross_entropy_loss'):
@@ -191,6 +192,8 @@ def main(config_data):
     early_stop_cnt=0
     train_loss_stats=[]
     val_loss_stats=[]
+    Sig = nn.Sigmoid()
+    best_f1_score=0
 
     # #try with single batch 
     # clip_feature_array,ret_label,attention_mask=next(iter(train_dl))
@@ -215,8 +218,9 @@ def main(config_data):
 
         for id,(feat,label,mask) in enumerate(tqdm(train_dl)):
 
-            feat=feat.float()
+           
             feat=feat.to(device)
+            feat=feat.float()
             label=label.to(device)
             mask=mask.unsqueeze(1).unsqueeze(1)
             mask=mask.to(device)
@@ -256,7 +260,7 @@ def main(config_data):
 
         logger.info('Evaluating the dataset')
         #write the validation code here 
-        val_loss,val_acc,val_f1=gen_validate_score_LSTM_social_message_model(model,val_dl,device,criterion)
+        val_loss,val_acc,val_f1=gen_validate_score_MHA_model_single_task(model,val_dl,device,criterion)
         logger.info('Epoch:{:d},Overall Validation loss:{:.3f},Overall validation Acc:{:.3f}, Overall F1:{:.3f}'.format(epoch,val_loss,val_acc,val_f1))
 
         #wandb logging
@@ -268,8 +272,6 @@ def main(config_data):
             'Valid_corr':val_f1,
             'Epoch':epoch}   #add epoch here to later switch the x-axis with epoch rather than actual wandb log
         
-        #wandb.log(metrics_dict)
-
         model.train(True)
         lr_scheduler.step()
 
