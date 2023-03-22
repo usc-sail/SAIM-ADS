@@ -80,6 +80,7 @@ def main(config_data):
     output_dropout=config_data['model']['output_dropout']
     model_dropout=config_data['model']['model_dropout']
     model_type=config_data['model']['model_type']
+    option=config_data['model']['model_type']+"_"+config_data['parameters']['task_name']
 
     #define the datasets 
     train_data=csv_data[csv_data['Split']=='train']
@@ -155,23 +156,23 @@ def main(config_data):
         
     #create a folder with each individual model + create a log file for each date time instant
     timestr = time.strftime("%Y%m%d-%H%M%S")
-    filename=timestr+'_'+config_data['model']['option']+'_log.logs'
-    yaml_filename=timestr+'_'+config_data['model']['option']+'.yaml'
+    filename=timestr+'_'+option+'_log.logs'
+    yaml_filename=timestr+'_'+option+'.yaml'
 
-    log_model_subfolder=os.path.join(config_data['output']['log_dir'],config_data['model']['option'])
+    log_model_subfolder=os.path.join(config_data['output']['log_dir'],option)
     if(os.path.exists(log_model_subfolder) is False):
         os.mkdir(log_model_subfolder)
     #create log folder associated with current model
-    sub_folder_log=os.path.join(log_model_subfolder,timestr+'_'+config_data['model']['option'])
+    sub_folder_log=os.path.join(log_model_subfolder,timestr+'_'+option)
     if(os.path.exists(sub_folder_log) is False):
         os.mkdir(sub_folder_log)
 
     #create model folder associated with current model
-    model_loc_subfolder=os.path.join(config_data['output']['model_dir'],config_data['model']['option'])
+    model_loc_subfolder=os.path.join(config_data['output']['model_dir'],option)
     if(os.path.exists(model_loc_subfolder) is False):
         os.mkdir(model_loc_subfolder)
     
-    sub_folder_model=os.path.join(model_loc_subfolder,timestr+'_'+config_data['model']['option'])
+    sub_folder_model=os.path.join(model_loc_subfolder,timestr+'_'+option)
     if(os.path.exists(sub_folder_model) is False):
         os.mkdir(sub_folder_model)
 
@@ -278,7 +279,7 @@ def main(config_data):
         if(val_f1>best_f1_score):
             best_f1_score=val_f1
             logger.info('Saving the best model')
-            torch.save(model, os.path.join(sub_folder_model,timestr+'_'+config_data['model']['model_type']+'_best_model.pt'))
+            torch.save(model, os.path.join(sub_folder_model,timestr+'_'+option+'_best_model.pt'))
             early_stop_cnt=0
         else:
             early_stop_cnt=early_stop_cnt+1
