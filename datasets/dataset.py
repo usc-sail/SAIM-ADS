@@ -202,6 +202,9 @@ class SAIM_single_task_dataset(Dataset):  # tobe integrated later
             ret_label=np.zeros((self.num_classes))
             ret_label[label_c]=1
 
+        elif(self.task_name=='Topic'):
+            ret_label=self.label_map[self.csv_data[self.task_name].iloc[idx]]
+
 
         return(clip_feature_array_padded,ret_label,attention_mask)
 

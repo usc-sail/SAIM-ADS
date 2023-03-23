@@ -109,7 +109,7 @@ def gen_validate_score_LSTM_social_message_model(model,loader,device,criterion):
 
     return(mean(val_loss_list),val_acc,val_f1,cm)
 
-def gen_validate_score_MHA_model_single_task(model,loader,device,criterion):
+def gen_validate_score_MHA_model_single_task_soc_message_tone(model,loader,device,criterion):
 
     print("starting validation")
     Sig = nn.Sigmoid()
@@ -151,6 +151,45 @@ def gen_validate_score_MHA_model_single_task(model,loader,device,criterion):
 
 
     return(mean(val_loss_list),val_acc,val_f1)
+
+
+def gen_validate_score_MHA_model_single_task_topic(model,loader,device,criterion):
+
+    print("starting validation")
+    log_softmax=nn.LogSoftmax(dim=-1)
+    model.eval()
+    target_labels=[]
+    pred_labels=[]
+    step=0
+    val_loss_list=[]
+
+    with torch.no_grad():
+        for i, (feat,label,mask) in enumerate(tqdm(loader)):
+
+            feat=feat.float()
+            feat=feat.to(device)
+            label=label.to(device)
+
+            mask=mask.unsqueeze(1).unsqueeze(1).to(device)
+            logits=model(feat,mask=mask)
+            logits=log_softmax(logits)
+            y_pred=torch.max(logits, 1)[1]
+
+            loss=criterion(logits,label)
+            val_loss_list.append(loss.item())
+            target_labels.append(label.cpu())
+            pred_labels.append(y_pred.cpu())
+            step=step+1
+
+    target_label_val=torch.cat(target_labels).detach().numpy()
+    pred_label_val=torch.cat(pred_labels).detach().numpy()
+
+    #accuracy and f1 score for topic
+    val_acc=accuracy_score(target_label_val,pred_label_val)
+    val_f1=f1_score(target_label_val,pred_label_val,average='macro')
+
+    return(mean(val_loss_list),val_acc,val_f1)
+
 
 
 

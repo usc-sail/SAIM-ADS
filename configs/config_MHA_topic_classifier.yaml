@@ -1,5 +1,6 @@
 data:
   csv_file: '/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/SAIM_data/SAIM_multi_task_tone_soc_message_topic_data.csv'
+  topic_file: '/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/topic_list_18.json'
 
 parameters:
   batch_size: 16
@@ -11,7 +12,7 @@ parameters:
   fps: 4
   base_fps: 24
   num_workers: 4
-  task_name: 'Transition_val'
+  task_name: 'Topic'
 
 device:
   is_cuda: True

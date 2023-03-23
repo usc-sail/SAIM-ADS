@@ -1,0 +1,20 @@
+{
+    "Games": 0,
+    "Household": 1,
+    "Services": 2,
+    "Misc": 3,
+    "Sports": 4,
+    "Banking": 5,
+    "Clothing": 6,
+    "Industrial and agriculture": 7,
+    "Leisure": 8,
+    "Publications media": 9,
+    "Health": 10,
+    "Car": 11,
+    "Electronics": 12,
+    "Cosmetics": 13,
+    "Food and drink": 14,
+    "Awareness": 15,
+    "Travel and transport": 16,
+    "Retail": 17
+}

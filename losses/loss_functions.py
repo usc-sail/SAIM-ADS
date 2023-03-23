@@ -10,3 +10,10 @@ import math
 def binary_cross_entropy_loss(device,pos_weights=None,reduction='mean'):
   loss=nn.BCEWithLogitsLoss(reduction='mean',pos_weight=pos_weights).to(device)
   return(loss)
+
+#multi class cross entropy loss
+def multi_class_cross_entropy_loss(device,pos_weights=None,reduction='mean'):
+  loss=nn.CrossEntropyLoss(reduction='mean',weight=pos_weights).to(device)
+  return(loss)
+
+
