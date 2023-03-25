@@ -87,7 +87,7 @@ def main(config_data):
     val_data=csv_data[csv_data['Split']=='val']
 
     #train dataset and val dataset (single task)
-    print(task_name)
+    #print(task_name)
     train_ds=SAIM_single_task_dataset(csv_data=train_data,
                                     label_map=label_map,
                                     num_classes=num_classes,

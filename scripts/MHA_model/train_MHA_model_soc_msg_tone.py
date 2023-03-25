@@ -264,7 +264,7 @@ def main(config_data):
 
         logger.info('Evaluating the dataset')
         #write the validation code here 
-        val_loss,val_acc,val_f1=gen_validate_score_MHA_model_single_task(model,val_dl,device,criterion)
+        val_loss,val_acc,val_f1=gen_validate_score_MHA_model_single_task_soc_message_tone(model,val_dl,device,criterion)
         logger.info('Epoch:{:d},Overall Validation loss:{:.3f},Overall validation Acc:{:.3f}, Overall F1:{:.3f}'.format(epoch,val_loss,val_acc,val_f1))
 
         #wandb logging

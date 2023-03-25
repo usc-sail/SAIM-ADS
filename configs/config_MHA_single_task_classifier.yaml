@@ -11,13 +11,13 @@ parameters:
   fps: 4
   base_fps: 24
   num_workers: 4
-  task_name: 'Transition_val'
+  task_name: 'social_message'
 
 device:
   is_cuda: True
 
 loss:
-  loss_option: 'cross_entropy_loss'
+  loss_option: 'bce_cross_entropy_loss'
 
 optimizer:
   choice: 'Adam'
@@ -40,7 +40,7 @@ model:
   input_dropout: 0.2
   output_dropout: 0.2
   model_dropout: 0.2
-  n_classes: 18
+  n_classes: 2
   batch_first: True
 
 output:
