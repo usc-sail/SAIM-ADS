@@ -1,0 +1,402 @@
+{
+    "toyota_esperas": {
+        "label": "es",
+        "score": 0.9990455508232117
+    },
+    "renault_real_life_doubles_lunch_with_the_inlaws": {
+        "label": "pt",
+        "score": 0.9028757810592651
+    },
+    "brawny_once_a_mother_always_a_giant": {
+        "label": "en",
+        "score": 0.6974890232086182
+    },
+    "renault_wake_up_your_passion": {
+        "label": "en",
+        "score": 0.9832662343978882
+    },
+    "west_elm_get_house_proud": {
+        "label": "en",
+        "score": 0.9946587681770325
+    },
+    "volkswagen_barbecue": {
+        "label": "en",
+        "score": 0.9840010404586792
+    },
+    "suzuki_dodgems": {
+        "label": "en",
+        "score": 0.37930649518966675
+    },
+    "otokoc_otomotiv_23rd_april": {
+        "label": "en",
+        "score": 0.4441194534301758
+    },
+    "renault_playful_chassis": {
+        "label": "fr",
+        "score": 0.6116946339607239
+    },
+    "ford_be_a_good_neighbor": {
+        "label": "en",
+        "score": 0.6795223355293274
+    },
+    "volvo_a_new_beginning": {
+        "label": "en",
+        "score": 0.7072590589523315
+    },
+    "kia_brent": {
+        "label": "en",
+        "score": 0.9684621691703796
+    },
+    "mobil1_porsche_bull": {
+        "label": "en",
+        "score": 0.68320232629776
+    },
+    "nissan_stories_by_the_million_fog": {
+        "label": "en",
+        "score": 0.8598198294639587
+    },
+    "dacia_the_lawn_mower": {
+        "label": "en",
+        "score": 0.9808045029640198
+    },
+    "eon_lets_renew_sweden": {
+        "label": "nn",
+        "score": 0.4374096989631653
+    },
+    "midas_project_spark_hands": {
+        "label": "en",
+        "score": 0.9956828355789185
+    },
+    "whiskas_iris_and_thula": {
+        "label": "en",
+        "score": 0.6130852103233337
+    },
+    "midas_project_spark_anthem": {
+        "label": "en",
+        "score": 0.9959297776222229
+    },
+    "coldwell_banker_somebody_to_love": {
+        "label": "en",
+        "score": 0.7207412123680115
+    },
+    "renault_theme_park": {
+        "label": "nn",
+        "score": 0.3973761796951294
+    },
+    "con_edison_your_power": {
+        "label": "en",
+        "score": 0.9865220189094543
+    },
+    "fiat_heated_seats": {
+        "label": "en",
+        "score": 0.449753075838089
+    },
+    "toyota_drive_your_obsession": {
+        "label": "en",
+        "score": 0.6514014005661011
+    },
+    "bonami_the_dog": {
+        "label": "cs",
+        "score": 0.9917502999305725
+    },
+    "erectastep_8th_wonder_of_the_world": {
+        "label": "en",
+        "score": 0.9899604320526123
+    },
+    "ram_trucks_school_talk": {
+        "label": "en",
+        "score": 0.9851927757263184
+    },
+    "kia_the_suv_out_of_nowhere": {
+        "label": "en",
+        "score": 0.9219032526016235
+    },
+    "gasco_lord_cochrane_1666": {
+        "label": "es",
+        "score": 0.7906752824783325
+    },
+    "renault_drive_the_future": {
+        "label": "en",
+        "score": 0.6146907210350037
+    },
+    "abarth_wasteland": {
+        "label": "en",
+        "score": 0.6170411109924316
+    },
+    "renault_design": {
+        "label": "fr",
+        "score": 0.6024876832962036
+    },
+    "mitsubishi_daughter": {
+        "label": "en",
+        "score": 0.9974529147148132
+    },
+    "volkswagen_transporter_vs_telekinesis": {
+        "label": "ta",
+        "score": 0.2657937705516815
+    },
+    "promart_long_way": {
+        "label": "en",
+        "score": 0.42761966586112976
+    },
+    "ferrari_ferrari_488_pista": {
+        "label": "en",
+        "score": 0.6350043416023254
+    },
+    "mercedes_4fathers": {
+        "label": "pl",
+        "score": 0.9891263246536255
+    },
+    "volkswagen_red_flashy_thingy": {
+        "label": "en",
+        "score": 0.9932692646980286
+    },
+    "ford_performance_speed_therapy": {
+        "label": "en",
+        "score": 0.9987233281135559
+    },
+    "energy_upgrade_california_its_easy_to_stay_golden": {
+        "label": "en",
+        "score": 0.9958686828613281
+    },
+    "volkswagen_transporter_vs_bodybuilders": {
+        "label": "en",
+        "score": 0.2305624932050705
+    },
+    "polestar_the_break_up": {
+        "label": "en",
+        "score": 0.9751306176185608
+    },
+    "kingfisher_plc_start_something_new": {
+        "label": "en",
+        "score": 0.6336311101913452
+    },
+    "volkswagen_crashed_cases": {
+        "label": "en",
+        "score": 0.6457451581954956
+    },
+    "loctite_conference": {
+        "label": "en",
+        "score": 0.9946773052215576
+    },
+    "italian_trade_commission_made_in_italy": {
+        "label": "en",
+        "score": 0.9561605453491211
+    },
+    "dreamies_all_it_takes_is_a_shake_cat_borrowers_anna": {
+        "label": "en",
+        "score": 0.9974168539047241
+    },
+    "buster_punch_switch_up": {
+        "label": "en",
+        "score": 0.968625545501709
+    },
+    "nissan_simply_amazing": {
+        "label": "en",
+        "score": 0.9649821519851685
+    },
+    "ikea_gul_45": {
+        "label": "zh",
+        "score": 0.41092827916145325
+    },
+    "dreamies_all_it_takes_is_a_shake_cat_borrowers_grandma": {
+        "label": "en",
+        "score": 0.9883407354354858
+    },
+    "volkswagen_born_confident": {
+        "label": "en",
+        "score": 0.7188243269920349
+    },
+    "herman_miller_achairworthfightingfor": {
+        "label": "en",
+        "score": 0.9089564085006714
+    },
+    "hyundai_make_quality_time_celebration": {
+        "label": "en",
+        "score": 0.9198591113090515
+    },
+    "adalskodun_the_heist": {
+        "label": "en",
+        "score": 0.2870255410671234
+    },
+    "geocell_dont_cut_down_decorate": {
+        "label": "en",
+        "score": 0.6658790707588196
+    },
+    "audi_you_dare_or_you_dont": {
+        "label": "en",
+        "score": 0.6892985105514526
+    },
+    "skoda_km_converter": {
+        "label": "fr",
+        "score": 0.969067394733429
+    },
+    "ford_vampire_kid": {
+        "label": "es",
+        "score": 0.7486962080001831
+    },
+    "socal_honda_dealers_sleigh_wash": {
+        "label": "en",
+        "score": 0.9957133531570435
+    },
+    "volkswagen_simple_joys": {
+        "label": "en",
+        "score": 0.32160699367523193
+    },
+    "renault_koleos_tv": {
+        "label": "en",
+        "score": 0.7775616645812988
+    },
+    "jechangefr_sacrifices": {
+        "label": "fr",
+        "score": 0.4388076663017273
+    },
+    "ikea_survivor": {
+        "label": "en",
+        "score": 0.7424670457839966
+    },
+    "shell_tsg_euroshell_clients_forest": {
+        "label": "en",
+        "score": 0.43725454807281494
+    },
+    "loctite_circle": {
+        "label": "en",
+        "score": 0.9930964112281799
+    },
+    "ikea_every_other_week": {
+        "label": "en",
+        "score": 0.3296438753604889
+    },
+    "schmackos_the_german_shepherd": {
+        "label": "en",
+        "score": 0.9995691180229187
+    },
+    "mitsubishi_more_everything": {
+        "label": "en",
+        "score": 0.6212788224220276
+    },
+    "kia_work_blind_spot": {
+        "label": "en",
+        "score": 0.9970985651016235
+    },
+    "sniff_the_clasico_dogs": {
+        "label": "en",
+        "score": 0.7503479719161987
+    },
+    "kohler_jealous": {
+        "label": "en",
+        "score": 0.9964889287948608
+    },
+    "renault_polar_limited_edition": {
+        "label": "en",
+        "score": 0.5989444851875305
+    },
+    "chevrolet_names": {
+        "label": "en",
+        "score": 0.9910338521003723
+    },
+    "land_rover_martians_detected": {
+        "label": "en",
+        "score": 0.9961459636688232
+    },
+    "leroy_merlin_lifes_adventure": {
+        "label": "en",
+        "score": 0.7863572239875793
+    },
+    "my_dog_beach": {
+        "label": "en",
+        "score": 0.9792869091033936
+    },
+    "petsafe_catspiracy": {
+        "label": "en",
+        "score": 0.959540605545044
+    },
+    "mercedes_38_seconds_part_4": {
+        "label": "en",
+        "score": 0.7996044754981995
+    },
+    "toyota_pasta": {
+        "label": "en",
+        "score": 0.9679770469665527
+    },
+    "avis_massage": {
+        "label": "en",
+        "score": 0.9938471913337708
+    },
+    "valvoline_bike": {
+        "label": "en",
+        "score": 0.9978151321411133
+    },
+    "pfister_the_science_of_xtract": {
+        "label": "en",
+        "score": 0.9660429358482361
+    },
+    "seventh_generation_trees_bees": {
+        "label": "en",
+        "score": 0.9944618344306946
+    },
+    "bmw_bmw_x5_0": {
+        "label": "en",
+        "score": 0.9862433075904846
+    },
+    "litterrobot_the_cat_sheet": {
+        "label": "en",
+        "score": 0.9875667095184326
+    },
+    "volvo_made_by_sweden": {
+        "label": "nn",
+        "score": 0.29068008065223694
+    },
+    "audi_projection_of_greatness": {
+        "label": "en",
+        "score": 0.7249398827552795
+    },
+    "yellawood_sketch_pad": {
+        "label": "en",
+        "score": 0.997646152973175
+    },
+    "porsche_black_ink": {
+        "label": "en",
+        "score": 0.6022900342941284
+    },
+    "citroen_wooden2cv": {
+        "label": "fr",
+        "score": 0.9463926553726196
+    },
+    "volkswagen_chance_encounter": {
+        "label": "en",
+        "score": 0.3654937446117401
+    },
+    "bunga_montessory_space_the_lighthouse_the_sea": {
+        "label": "es",
+        "score": 0.9646965861320496
+    },
+    "toyota_two_bold_wishes": {
+        "label": "en",
+        "score": 0.9204625487327576
+    },
+    "hefty_checkout": {
+        "label": "en",
+        "score": 0.995339035987854
+    },
+    "hills_relentless": {
+        "label": "en",
+        "score": 0.9992094039916992
+    },
+    "volkswagen_hello_light": {
+        "label": "en",
+        "score": 0.8499823212623596
+    },
+    "glad_thank_you": {
+        "label": "en",
+        "score": 0.9905290007591248
+    },
+    "yellawood_break_free": {
+        "label": "en",
+        "score": 0.9739392399787903
+    },
+    "oncor_keep_away_from_power_lines": {
+        "label": "en",
+        "score": 0.9206611514091492
+    }
+}
