@@ -145,10 +145,8 @@ def gen_validate_score_MHA_model_single_task_soc_message_tone(model,loader,devic
     pred_labels_array=np.argmax(pred_labels_discrete,axis=1)
     target_labels_array=np.argmax(target_label_val,axis=1)
 
-            
     val_acc=accuracy_score(target_labels_array,pred_labels_array)
     val_f1=f1_score(target_labels_array,pred_labels_array,average='macro')
-
 
     return(mean(val_loss_list),val_acc,val_f1)
 

@@ -153,6 +153,7 @@ class SAIM_single_task_dataset(Dataset):  # tobe integrated later
         self.clip_feature_list=self.csv_data['clip_feature_path'].tolist()
         self.label_map=label_map
         self.task_name=task_name
+        
 
     def __len__(self):
         return(len(self.clip_feature_list))
@@ -207,6 +208,88 @@ class SAIM_single_task_dataset(Dataset):  # tobe integrated later
 
 
         return(clip_feature_array_padded,ret_label,attention_mask)
+
+### dataset for shot level modeling single task ###
+
+class SAIM_single_task_dataset_shot_level(Dataset):
+
+    def __init__(self,csv_data,base_folder,label_map,num_classes,max_length,task_name):  
+
+        #arguments here 
+        self.csv_data=csv_data
+        self.num_classes=num_classes
+        self.max_length=max_length
+        self.base_folder=base_folder
+        self.clip_feature_list=self.csv_data['clip_feature_path'].tolist()
+
+        #shot feature list
+        self.shot_feature_list=[os.path.join(self.base_folder,file.split("/")[-1]) for file in self.clip_feature_list]
+
+        #label map and task names
+        self.label_map=label_map
+        self.task_name=task_name
+
+    def __len__(self):
+        return(len(self.shot_feature_list))
+    
+    def pad_data(self,feat_data):
+
+        padded=np.zeros((self.max_length,feat_data.shape[1]))
+        
+        if(feat_data.shape[0]>self.max_length):
+            padded=feat_data[:self.max_length,:]
+            attn_mask=np.ones((self.max_length))
+        else:
+            attn_mask=np.zeros((self.max_length))
+            padded[:feat_data.shape[0],:]=feat_data
+            attn_mask[:feat_data.shape[0]]=1
+
+        return(padded,attn_mask)
+    
+    def __getitem__(self,idx):
+
+        filename=self.shot_feature_list[idx]
+        #print(filename)
+
+        #load the feature file
+
+        with open(filename, 'rb') as f:
+            shot_features = pickle.load(f)
+
+        #get the keys 
+        keys=sorted(list(shot_features.keys()))
+
+        #get the features
+        shot_feature_avg=[]
+        for key in keys:
+            shot_feat_temp=shot_features[key]
+            #print(shot_feat_temp.shape)
+            if(len(shot_feat_temp)>0):
+                shot_feat_avg=np.mean(shot_feat_temp,axis=0)
+                shot_feature_avg.append(shot_feat_avg)
+
+        #convert to numpy array
+        shot_feature_avg=np.array(shot_feature_avg)
+        if(len(shot_feature_avg)==0):
+            print(filename)
+
+        #shot features and attention mask
+        shot_feat_padded,attention_mask=self.pad_data(shot_feature_avg)
+
+        #get the label
+        if((self.task_name=='social_message') or (self.task_name=='Transition_val')):
+
+            label_c=self.label_map[self.csv_data[self.task_name].iloc[idx]]
+            ret_label=np.zeros((self.num_classes))
+            ret_label[label_c]=1
+
+        elif(self.task_name=='Topic'):
+            ret_label=self.label_map[self.csv_data[self.task_name].iloc[idx]]
+
+        #return the shot features, return label and attention mask
+        return(shot_feat_padded,ret_label,attention_mask)
+
+
 
 
 

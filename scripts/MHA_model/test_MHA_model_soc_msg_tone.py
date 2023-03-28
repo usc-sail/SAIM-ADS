@@ -75,10 +75,38 @@ val_data=csv_data[csv_data['Split']=='val']
 
 #task_name and topic_file
 task_name=config_data['parameters']['task_name']
-#topic_file=config_data['data']['topic_file']
+print(task_name)
 
-# 
-label_map={'No':0,'Yes':1}
+ 
+if(task_name=='social_message'):
+    label_map={'No':0,'Yes':1}
+    social_list=test_data['social_message'].tolist()
+    social_list=[label_map[i] for i in social_list]
+    counter_social_message=dict(Counter(social_list))
+    majority_class=max(counter_social_message,key=counter_social_message.get)
+    majority_class_accuracy=counter_social_message[majority_class]/len(social_list)
+    print('Majority class: ',majority_class)
+    #compute f1 score with majority labels
+    majority_class_labels=[majority_class]*len(social_list)
+    f1_majority_class=f1_score(social_list,majority_class_labels,average='macro')
+
+    print('Majority class accuracy: ',majority_class_accuracy)
+    print('F1 score with majority class labels: ',f1_majority_class)
+
+else:
+    label_map={'No transition':0,'Transition':1}
+    transition_list=test_data['Transition_val'].tolist()
+    transition_list=[label_map[i] for i in transition_list]
+    counter_transition=dict(Counter(transition_list))
+    majority_class=max(counter_transition,key=counter_transition.get)
+    majority_class_accuracy=counter_transition[majority_class]/len(transition_list)
+    majority_class_labels=[majority_class]*len(transition_list)
+    f1_majority_class=f1_score(transition_list,majority_class_labels,average='macro')
+
+    print('Majority class accuracy: ',majority_class_accuracy)
+    print('F1 score with majority class labels: ',f1_majority_class)
+
+
 
 #parameters
 num_classes=config_data['model']['n_classes']
@@ -87,6 +115,8 @@ fps=config_data['parameters']['fps']
 base_fps=config_data['parameters']['base_fps']
 batch_size=config_data['parameters']['batch_size']
 num_workers=config_data['parameters']['num_workers']
+
+
 
 #test_ds and test_dl
 test_ds=SAIM_single_task_dataset(csv_data=test_data,

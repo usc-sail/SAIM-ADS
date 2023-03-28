@@ -5,44 +5,122 @@ import pickle
 from statistics import mean, median
 from tqdm import tqdm 
 
-file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/SAIM_ads_data_message_tone_train_test_val_clip_features.csv"
-ads_of_world_video_folder="/data/digbose92/ads_complete_repo/ads_videos/ads_of_world_videos"
-jwt_video_folder="/data/digbose92/ads_complete_repo/ads_videos/jwt_videos/videos"
-ads_of_world_video_list=os.listdir(ads_of_world_video_folder)
-ads_of_world_video_keys=[os.path.splitext(x)[0] for x in ads_of_world_video_list]
-jwt_video_list=os.listdir(jwt_video_folder)
-jwt_video_keys=[os.path.splitext(x)[0] for x in jwt_video_list]
-#print(video_keys[0:5])
+def extract_clip_features_stats(clip_feature_path_list):
 
-SAIM_ads_tone_clip_features=pd.read_csv(file)
+    clip_feature_shape_list=[]
+    clip_features_zero_list=[]
+    for clip_feature_file in tqdm(clip_feature_path_list):
 
-clip_feature_path_list=SAIM_ads_tone_clip_features['clip_feature_path'].tolist()
-clip_feature_shape_list=[]
-clip_features_zero_list=[]
+        if(os.path.exists(clip_feature_file)):
 
-for clip_feature_file in tqdm(clip_feature_path_list):
+            with open(clip_feature_file, 'rb') as f:
+                clip_features = pickle.load(f)
+            
+            clip_feature_shape_list.append(clip_features['Features'].shape[0])
+            if(clip_features['Features'].shape[0]==0):
+                
+                clip_features_zero_list.append(clip_feature_file)
+        else:
+            print("File not found",clip_feature_file)
 
-    if(os.path.exists(clip_feature_file)):
+    clip_feature_list=[x/6 for x in clip_feature_shape_list]
+    print("Mean",mean(clip_feature_list))
+    print("Median",median(clip_feature_list))
+    print("Max",max(clip_feature_list))
+    print("Min",min(clip_feature_list))
+    print('75 percentile',np.percentile(clip_feature_list, 75))
+    print('25 percentile',np.percentile(clip_feature_list, 25))
+    print('90 percentile',np.percentile(clip_feature_list, 90))
+    print('50 percentile',np.percentile(clip_feature_list, 50))
 
-        with open(clip_feature_file, 'rb') as f:
-            clip_features = pickle.load(f)
-        #print(clip_feature_file,clip_features.shape)
-        clip_feature_shape_list.append(clip_features['Features'].shape[0])
-        if(clip_features['Features'].shape[0]==0):
-            #print(clip_feature_file,clip_features['Features'].shape[0]
-            clip_features_zero_list.append(clip_feature_file)
-    else:
-        print("File not found",clip_feature_file)
+def extract_shot_features_stats(shot_folder):
 
-clip_feature_list=[x/6 for x in clip_feature_shape_list]
-print("Mean",mean(clip_feature_list))
-print("Median",median(clip_feature_list))
-print("Max",max(clip_feature_list))
-print("Min",min(clip_feature_list))
-print('75 percentile',np.percentile(clip_feature_list, 75))
-print('25 percentile',np.percentile(clip_feature_list, 25))
-print('90 percentile',np.percentile(clip_feature_list, 90))
-print('50 percentile',np.percentile(clip_feature_list, 50))
+    shot_file_list=os.listdir(shot_folder)
+    shot_file_list=[s for s in shot_file_list if s.endswith('.pkl')]
+
+    shot_feature_shape_list=[]
+    shot_zero_shape_list=[]
+
+    for shot_file in tqdm(shot_file_list):
+        #print(shot_file)
+        shot_feature_file=os.path.join(shot_folder,shot_file)
+
+        with open(shot_feature_file, 'rb') as f:
+            shot_features = pickle.load(f)
+
+        key_list=list(shot_features.keys())
+        sorted_key_list=key_list.sort()
+        #print(sorted_key_list)
+        
+        if(len(shot_features)==0):
+            shot_zero_shape_list.append(shot_feature_file)
+        else:
+            shot_avg_features=[]
+            for key in list(shot_features.keys()):
+
+                shot_feat_temp=shot_features[key]
+                if(len(shot_feat_temp)>0):
+                    shot_feat_avg=np.mean(shot_feat_temp,axis=0)
+                    shot_avg_features.append(shot_feat_avg)
+
+            #shot_feature_shape_list.append(shot_feat_avg.shape[0])
+            shot_avg_features=np.array(shot_avg_features)
+
+            if(shot_avg_features.shape[0]==0):
+                shot_zero_shape_list.append(shot_feature_file)
+
+            else:
+                #print(shot_avg_features.shape)
+                shot_feature_shape_list.append(shot_avg_features.shape[0])
+
+    #statistics 
+    # Mean 25.75679829746985
+    # Median 19.0
+    # Max 240
+    # Min 1
+    # 75 percentile 35.0
+    # 25 percentile 10.0
+    # 90 percentile 55.0
+    # 50 percentile 19.0
+
+
+    #shot_feature_shape_list.append(shot_feat_avg.shape[0])
+    print(shot_zero_shape_list)
+    print(len(shot_feature_shape_list))
+    print("Mean",mean(shot_feature_shape_list))
+    print("Median",median(shot_feature_shape_list))
+    print("Max",max(shot_feature_shape_list))
+    print("Min",min(shot_feature_shape_list))
+    print('75 percentile',np.percentile(shot_feature_shape_list, 75))
+    print('25 percentile',np.percentile(shot_feature_shape_list, 25))
+    print('90 percentile',np.percentile(shot_feature_shape_list, 90))
+    print('50 percentile',np.percentile(shot_feature_shape_list, 50))
+
+
+
+
+
+shot_folder="/data/digbose92/ads_complete_repo/ads_features/shot_embeddings/vit_features"
+extract_shot_features_stats(shot_folder)
+
+#clip feature extraction segment
+# file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/SAIM_ads_data_message_tone_train_test_val_clip_features.csv"
+# ads_of_world_video_folder="/data/digbose92/ads_complete_repo/ads_videos/ads_of_world_videos"
+# jwt_video_folder="/data/digbose92/ads_complete_repo/ads_videos/jwt_videos/videos"
+# ads_of_world_video_list=os.listdir(ads_of_world_video_folder)
+# ads_of_world_video_keys=[os.path.splitext(x)[0] for x in ads_of_world_video_list]
+# jwt_video_list=os.listdir(jwt_video_folder)
+# jwt_video_keys=[os.path.splitext(x)[0] for x in jwt_video_list]
+# #print(video_keys[0:5])
+
+# SAIM_ads_tone_clip_features=pd.read_csv(file)
+
+# clip_feature_path_list=SAIM_ads_tone_clip_features['clip_feature_path'].tolist()
+# clip_feature_shape_list=[]
+# clip_features_zero_list=[]
+# extract_clip_features_stats(clip_feature_path_list)
+
+
 
 #print(clip_features_zero_list)
 
