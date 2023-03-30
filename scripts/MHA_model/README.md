@@ -29,3 +29,15 @@
     CUDA_VISIBLE_DEVICES=0 python test_MHA_model_soc_msg_tone.py --config_file /data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/log_dir/MHA_attn_single_task_classifier_social_message/20230323-160409_MHA_attn_single_task_classifier_social_message/20230323-160409_MHA_attn_single_task_classifier_social_message.yaml --model_file /data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/model_dir/MHA_attn_single_task_classifier_social_message/20230323-160409_MHA_attn_single_task_classifier_social_message/20230323-160409_MHA_attn_single_task_classifier_social_message_best_model.pt
     ```
 
+* To Test the model for shot based visual results for tone transition, run the following command:
+
+    ```bash 
+    CUDA_VISIBLE_DEVICES=0,1 python test_MHA_model_soc_msg_tone_shot_level.py --config_file                   /data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/log_dir/MHA_attn_single_task_classifier_shot_level_Transition_val/20230328-005738_MHA_attn_single_task_classifier_shot_level_Transition_val/20230328-005738_MHA_attn_single_task_classifier_shot_level_Transition_val.yaml --model_file /data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/model_dir/MHA_attn_single_task_classifier_shot_level_Transition_val/20230328-005738_MHA_attn_single_task_classifier_shot_level_Transition_val/20230328-005738_MHA_attn_single_task_classifier_shot_level_Transition_val_best_model.pt
+    ```
+
+* To Test the model for shot based visual results for social message, run the following command:
+
+    ```bash
+    CUDA_VISIBLE_DEVICES=0,1 python test_MHA_model_soc_msg_tone_shot_level.py --     
+     config_file /data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/log_dir/MHA_attn_single_task_classifier_shot_level_social_message/20230328-004643_MHA_attn_single_task_classifier_shot_level_social_message/20230328-004643_MHA_attn_single_task_classifier_shot_level_social_message.yaml --model_file /data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/model_dir/MHA_attn_single_task_classifier_shot_level_social_message/20230328-004643_MHA_attn_single_task_classifier_shot_level_social_message/20230328-004643_MHA_attn_single_task_classifier_shot_level_social_message_best_model.pt
+    ```
