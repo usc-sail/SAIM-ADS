@@ -7,12 +7,12 @@ import time
 import pickle
 
 #append path of datasets and models 
-sys.path.append(os.path.join('..', '..','datasets'))
-sys.path.append(os.path.join('..', '..','models'))
-sys.path.append(os.path.join('..', '..','configs'))
-sys.path.append(os.path.join('..', '..','losses'))
-sys.path.append(os.path.join('..', '..','optimizers'))
-sys.path.append(os.path.join('..', '..','utils'))
+sys.path.append(os.path.join('..', '..','..','datasets'))
+sys.path.append(os.path.join('..', '..','..','models'))
+sys.path.append(os.path.join('..', '..','..','configs'))
+sys.path.append(os.path.join('..', '..','..','losses'))
+sys.path.append(os.path.join('..', '..','..','optimizers'))
+sys.path.append(os.path.join('..', '..','..','utils'))
 sys.path.append(os.path.join('..'))
 #import all libraries 
 import random
@@ -35,6 +35,7 @@ import argparse
 from log_file_generate import *
 from scipy.stats.stats import pearsonr
 import wandb
+import json
 
 #fix seed for reproducibility
 seed_value=123457
@@ -54,21 +55,23 @@ def load_config(config_file):
 
 def main(config_data):
 
+    #csv file + csv data + task name
     csv_file=config_data['data']['csv_file']
     csv_data=pd.read_csv(csv_file)
     task_name=config_data['parameters']['task_name']
 
-    if(task_name=='Transition_val'):
-        label_map={'No transition':0,'Transition':1}
+    #task name + topic file 
+    task_name=config_data['parameters']['task_name']
+    topic_file=config_data['data']['topic_file']
 
-    elif(task_name=='social_message'):
-        label_map={'No':0,'Yes':1}
+    #load the topic file
+    with open(topic_file,'r') as f:
+        label_map=json.load(f)
 
     #parameters regarding number of classes, max length of the sequence, fps, base fps, batch size, number of epochs, number of workers 
     num_classes=config_data['model']['n_classes']
+    base_folder=config_data['data']['base_folder']
     max_length=config_data['parameters']['max_length']
-    fps=config_data['parameters']['fps']
-    base_fps=config_data['parameters']['base_fps']
     batch_size=config_data['parameters']['batch_size']
     num_epochs=config_data['parameters']['epochs']
     num_workers=config_data['parameters']['num_workers']
@@ -80,30 +83,30 @@ def main(config_data):
     output_dropout=config_data['model']['output_dropout']
     model_dropout=config_data['model']['model_dropout']
     model_type=config_data['model']['model_type']
-    option=config_data['model']['model_type']+"_"+config_data['parameters']['task_name']
+    option=model_type+"_"+config_data['parameters']['task_name']
 
+    #train + val data 
     #define the datasets 
     train_data=csv_data[csv_data['Split']=='train']
     val_data=csv_data[csv_data['Split']=='val']
 
+
     #train dataset and val dataset (single task)
-    train_ds=SAIM_single_task_dataset(csv_data=train_data,
+    train_ds=SAIM_single_task_dataset_shot_level(csv_data=train_data,
+                                    base_folder=base_folder,
                                     label_map=label_map,
                                     num_classes=num_classes,
                                     max_length=max_length,
-                                    fps=fps,
-                                    base_fps=base_fps,
                                     task_name=task_name)
     
-    val_ds=SAIM_single_task_dataset(csv_data=val_data,
+    val_ds=SAIM_single_task_dataset_shot_level(csv_data=val_data,
+                                    base_folder=base_folder,
                                     label_map=label_map,
                                     num_classes=num_classes,
                                     max_length=max_length,
-                                    fps=fps,
-                                    base_fps=base_fps,
                                     task_name=task_name)
     
-    #define the dataloaders
+    #define the dataloaders and datasets
     train_dl=DataLoader(train_ds,
                         batch_size=batch_size,
                         shuffle=config_data['parameters']['train_shuffle'],
@@ -114,11 +117,9 @@ def main(config_data):
                         shuffle=config_data['parameters']['val_shuffle'],
                         num_workers=num_workers)
     
-    
     #define the device here
     if(config_data['device']['is_cuda']):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 
     #define the model here 
     model = MHA_model_single_task_classifier(input_dim, 
@@ -128,9 +129,6 @@ def main(config_data):
                                          num_layers, 
                                          input_dropout, output_dropout, model_dropout)
     
-    #print(model)
-
-
     model_parameters = filter(lambda p: p.requires_grad, model.parameters())
     params = sum([np.prod(p.size()) for p in model_parameters])
     print('Number of parameters: %d' %(params))
@@ -141,21 +139,25 @@ def main(config_data):
     if(config_data['loss']['loss_option']=='bce_cross_entropy_loss'):
         criterion = binary_cross_entropy_loss(device,pos_weights=None)
 
-    # elif(config_data['loss']['loss_option']=='cross_entropy_loss'):
-    #     criterion=multi_class_cross_entropy_loss(device)
+    elif(config_data['loss']['loss_option']=='cross_entropy_loss'):
+        criterion=multi_class_cross_entropy_loss(device)
 
+    
     if(config_data['optimizer']['choice']=='Adam'):
         optim_example=optimizer_adam(model,float(config_data['optimizer']['lr']))
 
-    ################################ scheduler definition here ################################
-    if(config_data['optimizer']['scheduler']=='step_lr_plateau'):
-        lr_scheduler=reducelr_plateau(optim_example,mode=config_data['optimizer']['mode'],factor=config_data['optimizer']['factor'],patience=config_data['optimizer']['patience'],
-        verbose=config_data['optimizer']['verbose'])
+    elif(config_data['optimizer']['choice']=='AdamW'):
+        optim_example=optimizer_adamW(model,float(config_data['optimizer']['lr']),float(config_data['optimizer']['decay']))
 
-    if(config_data['optimizer']['scheduler']=='step_lr'):
-        lr_scheduler=steplr_scheduler(optim_example,
-                        step_size=config_data['optimizer']['step_size'],
-                        gamma=config_data['optimizer']['gamma'])
+    ################################ scheduler definition here ################################
+    # if(config_data['optimizer']['scheduler']=='step_lr_plateau'):
+    #     lr_scheduler=reducelr_plateau(optim_example,mode=config_data['optimizer']['mode'],factor=config_data['optimizer']['factor'],patience=config_data['optimizer']['patience'],
+    #     verbose=config_data['optimizer']['verbose'])
+
+    # if(config_data['optimizer']['scheduler']=='step_lr'):
+    #     lr_scheduler=steplr_scheduler(optim_example,
+    #                     step_size=config_data['optimizer']['step_size'],
+    #                     gamma=config_data['optimizer']['gamma'])
         
     #create a folder with each individual model + create a log file for each date time instant
     timestr = time.strftime("%Y%m%d-%H%M%S")
@@ -181,7 +183,7 @@ def main(config_data):
 
     #save the current config in the log_dir 
     yaml_file_name=os.path.join(sub_folder_log,yaml_filename)
-    print(yaml_file_name)
+    #print(yaml_file_name)
     with open(yaml_file_name, "w") as f:
         yaml.dump(config_data, f)
 
@@ -196,19 +198,8 @@ def main(config_data):
     early_stop_cnt=0
     train_loss_stats=[]
     val_loss_stats=[]
-    Sig = nn.Sigmoid()
+    log_softmax=nn.LogSoftmax(dim=-1)
     best_f1_score=0
-
-    # #try with single batch 
-    # clip_feature_array,ret_label,attention_mask=next(iter(train_dl))
-    # clip_feature_array=clip_feature_array.float()
-    # clip_feature_array=clip_feature_array.to(device)
-    # ret_label=ret_label.to(device)
-    # attention_mask=attention_mask.unsqueeze(1).unsqueeze(1)
-    # attention_mask=attention_mask.to(device)
-
-    # #check forward pass here 
-    # output=model(clip_feature_array,mask=attention_mask)
 
     for epoch in range(1, num_epochs+1): #main outer loop
 
@@ -231,40 +222,40 @@ def main(config_data):
 
             optim_example.zero_grad()
             logits=model(feat,mask=mask)
-            #print(logits.shape)
 
             #loss calculation here
             loss = criterion(logits, label)
-            logits_sig=Sig(logits)
+            train_logits=log_softmax(logits)
+            y_pred=torch.max(train_logits, 1)[1]
 
             # Back prop.
             loss.backward()
             optim_example.step()
+
+            #train loss list and target + pred labels
             train_loss_list.append(loss.item())
             target_labels.append(label.cpu())
-            pred_labels.append(logits_sig.cpu())
+            pred_labels.append(y_pred.cpu())
 
             step=step+1
             
             if(step%150==0):
                 logger_step_dict={'Running_Train_loss':mean(train_loss_list)}
                 logger.info("Training loss:{:.3f}".format(loss.item()))
-                #wandb.log(logger_step_dict)
 
         target_label_np=torch.cat(target_labels).detach().numpy()
         pred_label_np=torch.cat(pred_labels).detach().numpy()
-        pred_labels_discrete=np.where(pred_label_np>=0.5,1,0)
 
         #compute training accuracy and F1 score
-        train_acc=accuracy_score(target_label_np,pred_labels_discrete)
-        train_f1=f1_score(target_label_np,pred_labels_discrete,average='macro')
+        train_acc=accuracy_score(target_label_np,pred_label_np)
+        train_f1=f1_score(target_label_np,pred_label_np,average='macro')
 
         logger.info('epoch: {:d}, time:{:.2f}'.format(epoch, time.time()-t))
         logger.info('Epoch:{:d},Overall Training loss:{:.3f},Overall training Acc:{:.3f}, Overall F1:{:.3f}'.format(epoch,mean(train_loss_list),train_acc,train_f1))
 
         logger.info('Evaluating the dataset')
         #write the validation code here 
-        val_loss,val_acc,val_f1=gen_validate_score_MHA_model_single_task_soc_message_tone(model,val_dl,device,criterion)
+        val_loss,val_acc,val_f1=gen_validate_score_MHA_model_single_task_topic(model,val_dl,device,criterion)
         logger.info('Epoch:{:d},Overall Validation loss:{:.3f},Overall validation Acc:{:.3f}, Overall F1:{:.3f}'.format(epoch,val_loss,val_acc,val_f1))
 
         #wandb logging
@@ -277,7 +268,7 @@ def main(config_data):
             'Epoch':epoch}   #add epoch here to later switch the x-axis with epoch rather than actual wandb log
         
         model.train(True)
-        lr_scheduler.step()
+        #lr_scheduler.step()
 
         if(val_f1>best_f1_score):
             best_f1_score=val_f1
@@ -291,7 +282,6 @@ def main(config_data):
             print('Validation performance does not improve for %d iterations' %(early_stop_counter))
             break
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--config_file', help='Location of configuration data', type=str, required=True)
@@ -302,5 +292,8 @@ if __name__ == '__main__':
 
 
 
+    
 
     
+    
+

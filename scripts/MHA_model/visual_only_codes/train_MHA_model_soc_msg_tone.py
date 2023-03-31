@@ -7,13 +7,13 @@ import time
 import pickle
 
 #append path of datasets and models 
-sys.path.append(os.path.join('..', '..','datasets'))
-sys.path.append(os.path.join('..', '..','models'))
-sys.path.append(os.path.join('..', '..','configs'))
-sys.path.append(os.path.join('..', '..','losses'))
-sys.path.append(os.path.join('..', '..','optimizers'))
-sys.path.append(os.path.join('..', '..','utils'))
-sys.path.append(os.path.join('..'))
+sys.path.append(os.path.join('..', '..','..','datasets'))
+sys.path.append(os.path.join('..', '..','..','models'))
+sys.path.append(os.path.join('..', '..','..','configs'))
+sys.path.append(os.path.join('..', '..','..','losses'))
+sys.path.append(os.path.join('..', '..','..','optimizers'))
+sys.path.append(os.path.join('..', '..','..','utils'))
+sys.path.append(os.path.join('..','..'))
 #import all libraries 
 import random
 from ast import literal_eval
@@ -35,7 +35,6 @@ import argparse
 from log_file_generate import *
 from scipy.stats.stats import pearsonr
 import wandb
-import json
 
 #fix seed for reproducibility
 seed_value=123457
@@ -58,11 +57,12 @@ def main(config_data):
     csv_file=config_data['data']['csv_file']
     csv_data=pd.read_csv(csv_file)
     task_name=config_data['parameters']['task_name']
-    topic_file=config_data['data']['topic_file']
 
-    #load the topic file
-    with open(topic_file,'r') as f:
-        label_map=json.load(f)
+    if(task_name=='Transition_val'):
+        label_map={'No transition':0,'Transition':1}
+
+    elif(task_name=='social_message'):
+        label_map={'No':0,'Yes':1}
 
     #parameters regarding number of classes, max length of the sequence, fps, base fps, batch size, number of epochs, number of workers 
     num_classes=config_data['model']['n_classes']
@@ -87,7 +87,6 @@ def main(config_data):
     val_data=csv_data[csv_data['Split']=='val']
 
     #train dataset and val dataset (single task)
-    #print(task_name)
     train_ds=SAIM_single_task_dataset(csv_data=train_data,
                                     label_map=label_map,
                                     num_classes=num_classes,
@@ -128,7 +127,10 @@ def main(config_data):
                                          num_heads, 
                                          num_layers, 
                                          input_dropout, output_dropout, model_dropout)
+    
+    #print(model)
 
+    #model parameters 
     model_parameters = filter(lambda p: p.requires_grad, model.parameters())
     params = sum([np.prod(p.size()) for p in model_parameters])
     print('Number of parameters: %d' %(params))
@@ -139,8 +141,8 @@ def main(config_data):
     if(config_data['loss']['loss_option']=='bce_cross_entropy_loss'):
         criterion = binary_cross_entropy_loss(device,pos_weights=None)
 
-    elif(config_data['loss']['loss_option']=='cross_entropy_loss'):
-        criterion=multi_class_cross_entropy_loss(device)
+    # elif(config_data['loss']['loss_option']=='cross_entropy_loss'):
+    #     criterion=multi_class_cross_entropy_loss(device)
 
     if(config_data['optimizer']['choice']=='Adam'):
         optim_example=optimizer_adam(model,float(config_data['optimizer']['lr']))
@@ -194,8 +196,16 @@ def main(config_data):
     early_stop_cnt=0
     train_loss_stats=[]
     val_loss_stats=[]
-    log_softmax=nn.LogSoftmax(dim=-1)
+    Sig = nn.Sigmoid()
     best_f1_score=0
+
+    # #try with single batch 
+    # clip_feature_array,ret_label,attention_mask=next(iter(train_dl))
+    # clip_feature_array=clip_feature_array.float()
+    # clip_feature_array=clip_feature_array.to(device)
+    # ret_label=ret_label.to(device)
+    # attention_mask=attention_mask.unsqueeze(1).unsqueeze(1)
+    # attention_mask=attention_mask.to(device)
 
     # #check forward pass here 
     # output=model(clip_feature_array,mask=attention_mask)
@@ -225,16 +235,14 @@ def main(config_data):
 
             #loss calculation here
             loss = criterion(logits, label)
-            train_logits=log_softmax(logits)
-            y_pred=torch.max(train_logits, 1)[1]
+            logits_sig=Sig(logits)
 
             # Back prop.
             loss.backward()
             optim_example.step()
-
             train_loss_list.append(loss.item())
             target_labels.append(label.cpu())
-            pred_labels.append(y_pred.cpu())
+            pred_labels.append(logits_sig.cpu())
 
             step=step+1
             
@@ -245,17 +253,18 @@ def main(config_data):
 
         target_label_np=torch.cat(target_labels).detach().numpy()
         pred_label_np=torch.cat(pred_labels).detach().numpy()
+        pred_labels_discrete=np.where(pred_label_np>=0.5,1,0)
 
         #compute training accuracy and F1 score
-        train_acc=accuracy_score(target_label_np,pred_label_np)
-        train_f1=f1_score(target_label_np,pred_label_np,average='macro')
+        train_acc=accuracy_score(target_label_np,pred_labels_discrete)
+        train_f1=f1_score(target_label_np,pred_labels_discrete,average='macro')
 
         logger.info('epoch: {:d}, time:{:.2f}'.format(epoch, time.time()-t))
         logger.info('Epoch:{:d},Overall Training loss:{:.3f},Overall training Acc:{:.3f}, Overall F1:{:.3f}'.format(epoch,mean(train_loss_list),train_acc,train_f1))
 
         logger.info('Evaluating the dataset')
         #write the validation code here 
-        val_loss,val_acc,val_f1=gen_validate_score_MHA_model_single_task_topic(model,val_dl,device,criterion)
+        val_loss,val_acc,val_f1=gen_validate_score_MHA_model_single_task_soc_message_tone(model,val_dl,device,criterion)
         logger.info('Epoch:{:d},Overall Validation loss:{:.3f},Overall validation Acc:{:.3f}, Overall F1:{:.3f}'.format(epoch,val_loss,val_acc,val_f1))
 
         #wandb logging
