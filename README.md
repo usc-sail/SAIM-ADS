@@ -103,6 +103,7 @@ pip install git+https://github.com/openai/CLIP.git
    pip install salesforce-lavis
    ```
 
+
 ## TODOS
 
 * LSTM on the CLIP features (variable length) and MHA baselines
