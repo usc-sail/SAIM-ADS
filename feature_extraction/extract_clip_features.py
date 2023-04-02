@@ -10,6 +10,7 @@ from tqdm import tqdm
 import cv2 
 from tqdm import tqdm
 import numpy as np  
+import math
 #extract from the videos directly 
 
 def generate_video_prediction(model,preprocess,device,video_file,batch_size=32):
@@ -121,11 +122,8 @@ def generate_predictions_clip_ads(model,preprocess,frames_location,key,device,ba
 
 
         #encode the features with keys in the dictionary
-        
-
-         
-        # with torch.no_grad():
-        #image_features = model.encode_image(image)
+    # with torch.no_grad():
+    #image_features = model.encode_image(image)
     dict_frame_list={'Features':feature_list,'Keys':key_list}
     assert(dict_frame_list['Features'].shape[0]==len(key_list))
     #print(key_list[0:1000])
@@ -184,21 +182,94 @@ def run_video_inference_updated(video_list,model,device,preprocess,destination_f
         with open(vid_destination_file,"wb") as f:
             pickle.dump(dict_temp,f)
 
-    #print('Number of files processed for the updated set: %d' %(cnt_num_files))
+def run_frame_wise_feature_inference_reduced_fps(model,preprocess,device,shot_filename,dim=512,frameRate=24,desired_frameRate=4):
+
+    #video filename + frame rate
+    vcap=cv2.VideoCapture(shot_filename)
+    frameRate = vcap.get(5)
+    intfactor=math.ceil(frameRate/desired_frameRate)
+    feature_list=np.zeros((0,dim))
+    frame_id=0
+
+    length = int(vcap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+    while True:
+        ret, frame = vcap.read()
+        if(ret==True):
+            if (frame_id % intfactor == 0):
+                
+                frame=cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+                frame=Image.fromarray(frame)
+                frame = preprocess(frame).unsqueeze(0).to(device) #add to device 
+
+                #model encoding images
+                with torch.no_grad():
+                    image_features = model.encode_image(frame)
+
+                #image features to numpy array
+                image_features=image_features.cpu().numpy()
+                feature_list=np.vstack([feature_list,image_features]) #add the features to the numpy array
+                
+                torch.cuda.empty_cache()
+            frame_id=frame_id+1
+        else:
+            break
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    return feature_list, frame_id
+    
+def run_shot_inference(shot_folder,model,device,preprocess,destination_folder):
+
+    #extract at 4 fps features for every shot using CLIP embeddings 
+    #create a single dictionary with keys as shot names and values as features
+
+    shot_list=os.listdir(shot_folder)
+
+    for video_file in tqdm(shot_list):
+        
+            #video subfolder and pkl filename
+            video_subfolder=os.path.join(shot_folder,video_file)
+            pkl_filename=video_file+'.pkl'
+
+            #destination file
+            destination_file=os.path.join(destination_folder,pkl_filename)
+
+            if(os.path.exists(destination_file) is False):
+                
+                shot_list=os.listdir(video_subfolder) #list of shots
+                shot_dict=dict()
+                for shot_file in tqdm(shot_list):
+                        
+                    shot_filename=os.path.join(video_subfolder,shot_file) #shot filename
+                    feat_list,_=run_frame_wise_feature_inference_reduced_fps(model,preprocess,device,shot_filename) #list of features
+                    #print(feat_list.shape)
+                    shot_dict[shot_file]=feat_list # dictionary containing shot filename and features                
+
+                    #save the shot_dict to a pickle file 
+                    with open(destination_file,'wb') as f:
+                        pickle.dump(shot_dict,f)
+
+            # else:
+            #     print('Already exists',pkl_filename)
 
 if __name__=='__main__':
 
-    feature_destination_folder="/data/digbose92/ads_complete_repo/ads_features/clip_embeddings/jwt_ads_of_world"
+    #feature_destination_folder="/data/digbose92/ads_complete_repo/ads_features/clip_embeddings/jwt_ads_of_world"
     # Load the model
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model, preprocess = clip.load('ViT-B/32', device)
+    shot_folder="/data/digbose92/ads_complete_repo/ads_videos/shot_folder/PySceneDetect"
+    destination_folder="/data/digbose92/ads_complete_repo/ads_features/shot_embeddings/clip_features_4fps"
+    run_shot_inference(shot_folder,model,device,preprocess,destination_folder)
 
-    feature_file="/data/digbose92/ads_complete_repo/ads_codes/updated_pkl_files/corrected_files/zero_clip_features_files.pkl"
-    #"/data/digbose92/ads_complete_repo/ads_codes/updated_pkl_files/corrected_files/file_list_clip_features_extraction_remaining.pkl"
-    with open(feature_file, "rb") as f:
-        video_file_list=pickle.load(f)
     
-    run_video_inference_updated(video_file_list,model,device,preprocess,feature_destination_folder)
+    # feature_file="/data/digbose92/ads_complete_repo/ads_codes/updated_pkl_files/corrected_files/zero_clip_features_files.pkl"
+    # #"/data/digbose92/ads_complete_repo/ads_codes/updated_pkl_files/corrected_files/file_list_clip_features_extraction_remaining.pkl"
+    # with open(feature_file, "rb") as f:
+    #     video_file_list=pickle.load(f)
+    
+    # run_video_inference_updated(video_file_list,model,device,preprocess,feature_destination_folder)
 
 
 

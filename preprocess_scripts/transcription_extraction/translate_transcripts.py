@@ -29,7 +29,6 @@ dest_folder=args.dest_folder
 with open(key_file) as f:
     api_key=f.readlines()
 
-
 openai.api_key=api_key[0].strip().split("\n")[0]
 
 #assign the parameters for the translation

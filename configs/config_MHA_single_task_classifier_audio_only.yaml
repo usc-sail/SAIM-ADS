@@ -1,0 +1,47 @@
+data:
+  csv_file: '/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/SAIM_data/SAIM_multi_task_tone_soc_message_topic_data_no_zero_files.csv'
+  embedding_file: '/data/digbose92/ads_complete_repo/ads_features/ast_embeddings/ast_embs_0.5.pkl'
+
+parameters:
+  batch_size: 16
+  train_shuffle: True
+  val_shuffle: False
+  epochs: 50
+  early_stop: 5
+  max_length: 14
+  num_workers: 0
+  task_name: 'social_message'
+
+device:
+  is_cuda: True
+
+loss:
+  loss_option: 'bce_cross_entropy_loss'
+
+optimizer:
+  choice: 'Adam'
+  lr: 1e-4
+  gamma: 0.95
+  step_size: 15
+  #scheduler: 'step_lr'
+  mode: 'max'
+  decay: 0.001
+  patience: 5
+  factor: 0.5
+  verbose: True
+
+model:
+  model_type: 'MHA_attn_single_task_classifier_audio_only'
+  input_dim: 768
+  model_dim: 256
+  num_heads: 2
+  num_layers: 2
+  input_dropout: 0.2
+  output_dropout: 0.2
+  model_dropout: 0.2
+  n_classes: 2
+  batch_first: True
+
+output:
+  model_dir: '/data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/model_dir'
+  log_dir: '/data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/log_dir'

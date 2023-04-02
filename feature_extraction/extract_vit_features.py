@@ -88,8 +88,6 @@ model.eval()
 processor=ViTFeatureExtractor.from_pretrained(model_name)
 #print layer wise names
 #declare the transforms
-
-
 print('Loaded model')
 #load the model along with the logits
 # h1 = model.pre_logits.register_forward_hook(getActivation('pre_logits'))
@@ -98,7 +96,6 @@ if(video_type=='shot'):
 
 
     #read the list of shot files already processed 
-
     with open(shot_file_list,'r') as f:
         shot_filenames=f.readlines()
 

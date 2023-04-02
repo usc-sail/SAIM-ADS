@@ -210,7 +210,6 @@ class SAIM_single_task_dataset(Dataset):  # tobe integrated later
         return(clip_feature_array_padded,ret_label,attention_mask)
 
 ### dataset for shot level modeling single task ###
-
 class SAIM_single_task_dataset_shot_level(Dataset):
 
     def __init__(self,csv_data,base_folder,label_map,num_classes,max_length,task_name):  
@@ -230,7 +229,7 @@ class SAIM_single_task_dataset_shot_level(Dataset):
         self.task_name=task_name
 
     def __len__(self):
-        return(len(self.shot_feature_list))
+        return(len(self.csv_data))
     
     def pad_data(self,feat_data):
 
@@ -289,7 +288,81 @@ class SAIM_single_task_dataset_shot_level(Dataset):
         #return the shot features, return label and attention mask
         return(shot_feat_padded,ret_label,attention_mask)
 
+### dataset for audio only modeling single task ###
+class SAIM_single_task_dataset_audio_only(Dataset): #audio only dataset
 
+    def __init__(self,csv_data,embedding_file,label_map,num_classes,max_length,task_name):
+         
+        #arguments here
+        self.csv_data=csv_data
+        self.num_classes=num_classes
+        self.max_length=max_length
+        self.clip_feature_list=self.csv_data['clip_feature_path'].tolist()
+        self.label_map=label_map
+        self.task_name=task_name
+        self.embedding_file=embedding_file
+        #print(self.task_name)
+
+        #load the embedding file
+        with open(self.embedding_file, 'rb') as f:
+            self.embedding = pickle.load(f)
+
+        #ast embeddings
+        self.ast_embeds=self.embedding['data']['embeddings']
+
+        #get the keys
+        self.clip_keys=[os.path.splitext(file.split("/")[-1])[0] for file in self.clip_feature_list]
+
+    def __len__(self):
+        #csv data
+        return(len(self.csv_data))
+    
+    def pad_data(self,feat_data):
+
+        #padded data and attention mask 
+        padded=np.zeros((self.max_length,feat_data.shape[1]))
+        
+        if(feat_data.shape[0]>self.max_length):
+            padded=feat_data[:self.max_length,:]
+            attn_mask=np.ones((self.max_length))
+        else:
+            attn_mask=np.zeros((self.max_length))
+            padded[:feat_data.shape[0],:]=feat_data
+            attn_mask[:feat_data.shape[0]]=1
+
+        return(padded,attn_mask)
+    
+    def __getitem__(self,idx):
+
+        #get the clip key
+        clip_key=self.clip_keys[idx]
+
+        #get the audio features
+        audio_feat=self.ast_embeds[clip_key].cpu().numpy()
+
+        #pad the data
+        audio_feat_padded,attention_mask=self.pad_data(audio_feat)
+
+         #get the label
+        if((self.task_name=='social_message') or (self.task_name=='Transition_val')):
+
+            label_c=self.label_map[self.csv_data[self.task_name].iloc[idx]]
+            ret_label=np.zeros((self.num_classes))
+            ret_label[label_c]=1
+
+        elif(self.task_name=='Topic'):
+            ret_label=self.label_map[self.csv_data[self.task_name].iloc[idx]]
+
+        #return the shot features, return label and attention mask
+        return(audio_feat_padded,ret_label,attention_mask)
+
+
+
+
+
+
+
+         
 
 
 

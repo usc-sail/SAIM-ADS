@@ -82,8 +82,6 @@ def extract_shot_features_stats(shot_folder):
     # 25 percentile 10.0
     # 90 percentile 55.0
     # 50 percentile 19.0
-
-
     #shot_feature_shape_list.append(shot_feat_avg.shape[0])
     print(shot_zero_shape_list)
     print(len(shot_feature_shape_list))
@@ -97,11 +95,45 @@ def extract_shot_features_stats(shot_folder):
     print('50 percentile',np.percentile(shot_feature_shape_list, 50))
 
 
+def check_ast_features_stats(ast_file):
 
+    with open(ast_file, "rb") as f:
+        ast_features = pickle.load(f)
 
+    #ast features here 
+    #print(ast_features.keys())
+    ast_dataset=ast_features['data']
+    ast_embeds=ast_dataset['embeddings']
 
-shot_folder="/data/digbose92/ads_complete_repo/ads_features/shot_embeddings/vit_features"
-extract_shot_features_stats(shot_folder)
+    ast_shape_list=[]
+
+    for key in tqdm(list(ast_embeds.keys())):
+        ast_emb=ast_embeds[key]
+        ast_shape_list.append(ast_emb.shape[0])
+
+    print("Mean",mean(ast_shape_list))
+    print("Median",median(ast_shape_list))
+    print("Max",max(ast_shape_list))
+    print("Min",min(ast_shape_list))
+    print('75 percentile',np.percentile(ast_shape_list, 75))
+    print('25 percentile',np.percentile(ast_shape_list, 25))
+    print('90 percentile',np.percentile(ast_shape_list, 90))
+    print('50 percentile',np.percentile(ast_shape_list, 50))
+
+    #Mean 10.768095238095238
+    # Median 9.0
+    # Max 86
+    # Min 1
+    # 75 percentile 14.0
+    # 25 percentile 4.0
+    # 90 percentile 22.0
+    # 50 percentile 9.0
+#print(ast_embeds.keys())
+ast_file="/data/digbose92/ads_complete_repo/ads_features/ast_embeddings/ast_embs_0.5.pkl"
+check_ast_features_stats(ast_file)
+
+# shot_folder="/data/digbose92/ads_complete_repo/ads_features/shot_embeddings/vit_features"
+# extract_shot_features_stats(shot_folder)
 
 #clip feature extraction segment
 # file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/SAIM_ads_data_message_tone_train_test_val_clip_features.csv"
