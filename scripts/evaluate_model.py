@@ -188,6 +188,60 @@ def gen_validate_score_MHA_model_single_task_topic(model,loader,device,criterion
 
     return(mean(val_loss_list),val_acc,val_f1)
 
+def gen_validate_score_perceiver_single_task_soc_message_tone(model,loader,device,criterion):
+
+    print("starting validation")
+    Sig = nn.Sigmoid()
+    model.eval()
+    target_labels=[]
+    pred_labels=[]
+    step=0
+    val_loss_list=[]
+
+    with torch.no_grad():
+
+        for i, (audio_feat,video_feat,label,audio_mask,video_mask) in enumerate(tqdm(loader)):
+
+            audio_feat=audio_feat.float()
+            audio_feat=audio_feat.to(device)
+            video_feat=video_feat.float()
+            video_feat=video_feat.to(device)
+            label=label.to(device)
+            audio_mask=audio_mask.bool()
+            video_mask=video_mask.bool()
+            audio_mask=audio_mask.to(device)
+            video_mask=video_mask.to(device)
+
+            logits=model(audio_inputs=audio_feat,
+                visual_inputs=video_feat,
+                audio_mask=audio_mask,
+                visual_mask=video_mask)
+            
+            logits_sig=Sig(logits)
+
+            loss=criterion(logits,label)
+            val_loss_list.append(loss.item())
+            target_labels.append(label.cpu())
+            pred_labels.append(logits_sig.cpu())
+            step=step+1
+
+    target_label_val=torch.cat(target_labels).numpy()
+    pred_label_val=torch.cat(pred_labels).numpy()
+
+    pred_labels_discrete=np.where(pred_label_val>=0.5,1,0)
+    
+    #convert pred_labels_discrete to 0 and 1 using argmax
+    pred_labels_array=np.argmax(pred_labels_discrete,axis=1)
+    target_labels_array=np.argmax(target_label_val,axis=1)
+
+    val_acc=accuracy_score(target_labels_array,pred_labels_array)
+    val_f1=f1_score(target_labels_array,pred_labels_array,average='macro')
+
+    return(mean(val_loss_list),val_acc,val_f1)
+            
+
+
+
 
 
 

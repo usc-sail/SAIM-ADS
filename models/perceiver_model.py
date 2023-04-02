@@ -79,29 +79,28 @@ class Perceiver_AudioVisual_Model(nn.Module):
 
         #basic parameters
         self.dim=dim
-        self.audio_dim=audio_dim
-        self.video_dim=video_dim
-        self.queries_dim=queries_dim
-        self.logits_dim=num_classes 
-        self.depth=depth
-        self.num_latents=num_latents
-        self.cross_heads=cross_heads
-        self.latent_heads=latent_heads
-        self.cross_dim_head=cross_dim_head
-        self.latent_dim_head=latent_dim_head
-        self.latent_dim=latent_dim
-        self.weight_tie_layers=weight_tie_layers
-        self.seq_dropout_prob=seq_dropout_prob
-        self.use_queries=use_queries
+        self.audio_dim=audio_dim #dimension of the audio modality 
+        self.video_dim=video_dim #dimension of the video modality
+        self.queries_dim=queries_dim #dimension of the queries 
+        self.logits_dim=num_classes #number of classes
+        self.depth=depth #depth of the perceiver model
+        self.num_latents=num_latents #number of latent vectors
+        self.cross_heads=cross_heads #number of cross attention heads 
+        self.latent_heads=latent_heads #number of latent attention heads
+        self.cross_dim_head=cross_dim_head #dimension of the cross dimension attention heads
+        self.latent_dim_head=latent_dim_head #dimension of the latent attention heads
+        self.latent_dim=latent_dim #dimension of the latent vectors
+        self.weight_tie_layers=weight_tie_layers #weight tie layers
+        self.seq_dropout_prob=seq_dropout_prob #sequence dropout probability
+        self.use_queries=use_queries #use queries or not
 
         #initialize linear layer 
-        
         if(self.dim!=self.audio_dim):
 
             #map the audio to the same dimension as the video
             self.audio_linear=nn.Linear(self.audio_dim,self.dim)
 
-        elif(self.dim!=self.video_dim):
+        if(self.dim!=self.video_dim):
 
             #map the video to the same dimension as the audio
             self.video_linear=nn.Linear(self.video_dim,self.dim)
@@ -126,13 +125,13 @@ class Perceiver_AudioVisual_Model(nn.Module):
             self.classifier=nn.Linear(self.latent_dim,self.logits_dim) #needed when we do not pass the queries inside
 
 
-    def forward(self, audio_inputs,visual_inputs,audio_mask,visual_mask,queries=None):
+    def forward(self,audio_inputs,visual_inputs,audio_mask,visual_mask,queries=None):
         
         if(self.dim!=self.audio_dim):
             #map the audio to the same dimension as the video
             audio_inputs=self.audio_linear(audio_inputs)
 
-        elif(self.dim!=self.video_dim):
+        if(self.dim!=self.video_dim):
             #map the video to the same dimension as the audio
             visual_inputs=self.video_linear(visual_inputs)
 
@@ -144,9 +143,7 @@ class Perceiver_AudioVisual_Model(nn.Module):
 
         #check if you need the queries
         if self.use_queries is False:
-
             latent_vectors=self.perceiver_model(inputs,mask=mask)
-
             #perform mean pooling in terms of the sequence length
             latent_vectors=latent_vectors.mean(dim=1)
             #get the logits
@@ -155,76 +152,75 @@ class Perceiver_AudioVisual_Model(nn.Module):
             return logits
         
         else:
-
             #get the logits
             logits=self.perceiver_model(inputs,queries)
             #return the logits
             return logits
 
 
-if __name__=="__main__":
+# if __name__=="__main__":
 
-    #define the parameters
-    dim=512
-    queries_dim=512
-    num_classes=10
-    depth=6
-    num_latents=512
-    cross_heads=1
-    latent_heads=8
-    cross_dim_head=64
-    latent_dim_head=64
-    latent_dim=512
-    weight_tie_layers=True
-    seq_dropout_prob=0.1
-    use_queries=False
-    audio_dim=768
-    video_dim=512
+#     #define the parameters
+#     dim=512
+#     queries_dim=512
+#     num_classes=10
+#     depth=6
+#     num_latents=512
+#     cross_heads=1
+#     latent_heads=8
+#     cross_dim_head=64
+#     latent_dim_head=64
+#     latent_dim=512
+#     weight_tie_layers=True
+#     seq_dropout_prob=0.1
+#     use_queries=False
+#     audio_dim=768
+#     video_dim=512
 
-    #create the model
-    model=Perceiver_AudioVisual_Model(audio_dim,video_dim,dim,
-                        queries_dim,
-                        num_classes,depth,num_latents,cross_heads,
-                        latent_heads,cross_dim_head,
-                        latent_dim_head,latent_dim,
-                        weight_tie_layers,seq_dropout_prob,use_queries)
+#     #create the model
+#     model=Perceiver_AudioVisual_Model(audio_dim,video_dim,dim,
+#                         queries_dim,
+#                         num_classes,depth,num_latents,cross_heads,
+#                         latent_heads,cross_dim_head,
+#                         latent_dim_head,latent_dim,
+#                         weight_tie_layers,seq_dropout_prob,use_queries)
 
-    #print the model
-    #print(model)
-
-
-    #compute model parameters 
-    device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model_parameters = filter(lambda p: p.requires_grad, model.parameters())
-    params = sum([np.prod(p.size()) for p in model_parameters])
-    print('Number of parameters: %d' %(params))
-    model=model.to(device)
-
-    #define the inputs
-    audio_inputs=torch.randn(1,50,768)
-    visual_inputs=torch.randn(1,50,512)
-    audio_mask=torch.ones(1,50)
-    visual_mask=torch.ones(1,50)
-    queries=torch.randn(1,1,512)
-
-    audio_inputs=audio_inputs.to(device)
-    visual_inputs=visual_inputs.to(device)
-    audio_mask=audio_mask.to(device)
-    visual_mask=visual_mask.to(device)
-
-    #convert mask to boolean
-    audio_mask=audio_mask.bool()
-    visual_mask=visual_mask.bool()
+#     #print the model
+#     #print(model)
 
 
-    #get the logits
-    logits=model(audio_inputs=audio_inputs,
-                visual_inputs=visual_inputs,
-                audio_mask=audio_mask,
-                visual_mask=visual_mask,
-                queries=queries)
+#     #compute model parameters 
+#     device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+#     model_parameters = filter(lambda p: p.requires_grad, model.parameters())
+#     params = sum([np.prod(p.size()) for p in model_parameters])
+#     print('Number of parameters: %d' %(params))
+#     model=model.to(device)
 
-    #print the logits
-    print(logits.shape)
+#     #define the inputs
+#     audio_inputs=torch.randn(1,50,768)
+#     visual_inputs=torch.randn(1,50,512)
+#     audio_mask=torch.ones(1,50)
+#     visual_mask=torch.ones(1,50)
+#     queries=torch.randn(1,1,512)
+
+#     audio_inputs=audio_inputs.to(device)
+#     visual_inputs=visual_inputs.to(device)
+#     audio_mask=audio_mask.to(device)
+#     visual_mask=visual_mask.to(device)
+
+#     #convert mask to boolean
+#     audio_mask=audio_mask.bool()
+#     visual_mask=visual_mask.bool()
+
+
+#     #get the logits
+#     logits=model(audio_inputs=audio_inputs,
+#                 visual_inputs=visual_inputs,
+#                 audio_mask=audio_mask,
+#                 visual_mask=visual_mask,
+#                 queries=queries)
+
+#     #print the logits
+#     print(logits.shape)
 
     

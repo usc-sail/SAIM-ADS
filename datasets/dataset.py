@@ -343,7 +343,7 @@ class SAIM_single_task_dataset_audio_only(Dataset): #audio only dataset
         #pad the data
         audio_feat_padded,attention_mask=self.pad_data(audio_feat)
 
-         #get the label
+        #get the label
         if((self.task_name=='social_message') or (self.task_name=='Transition_val')):
 
             label_c=self.label_map[self.csv_data[self.task_name].iloc[idx]]
@@ -356,7 +356,143 @@ class SAIM_single_task_dataset_audio_only(Dataset): #audio only dataset
         #return the shot features, return label and attention mask
         return(audio_feat_padded,ret_label,attention_mask)
 
+## dataset for audio and video modeling single task (to be used with Perceiver) ###
+class SAIM_single_task_dataset_audio_visual(Dataset):
 
+    def __init__(self,csv_data,embedding_file,label_map,num_classes,audio_max_length,video_max_length,task_name):
+         
+        #arguments here
+        self.csv_data=csv_data
+        self.num_classes=num_classes
+
+        #audio and video max length
+        self.audio_max_length=audio_max_length
+        self.video_max_length=video_max_length
+
+        #clip feature list
+        self.clip_feature_list=self.csv_data['clip_feature_path'].tolist()
+        self.label_map=label_map
+        self.task_name=task_name
+        self.embedding_file=embedding_file
+
+        #load the embedding file
+        with open(self.embedding_file, 'rb') as f:
+            self.embedding = pickle.load(f)
+
+        #ast embeddings
+        self.ast_embeds=self.embedding['data']['embeddings']
+
+        #get the keys
+        self.clip_keys=[os.path.splitext(file.split("/")[-1])[0] for file in self.clip_feature_list]
+
+    ### length of the csv data ###
+    def __len__(self):
+        #csv data
+        return(len(self.csv_data))
+    
+    ### pad the data ###
+    def pad_data(self,feat_data,max_length):
+
+        #padded data and attention mask 
+        padded=np.zeros((max_length,feat_data.shape[1]))
+        
+        ### 
+        if(feat_data.shape[0]>max_length):
+            padded=feat_data[:max_length,:]
+            attn_mask=np.ones((max_length))
+        else:
+            attn_mask=np.zeros((max_length))
+            padded[:feat_data.shape[0],:]=feat_data
+            attn_mask[:feat_data.shape[0]]=1
+
+        return(padded,attn_mask)
+    
+    def __getitem__(self,idx):
+
+        #get the clip key
+        clip_key=self.clip_keys[idx]
+
+        #get the clip feature path
+        clip_feat_path=self.clip_feature_list[idx]
+
+        #get the audio features
+        audio_feat=self.ast_embeds[clip_key].cpu().numpy()
+
+        #get the video features
+        with open(clip_feat_path, 'rb') as f:
+            video_feat = pickle.load(f)
+
+        #pad the data
+        audio_feat_padded,attention_mask_audio=self.pad_data(audio_feat,self.audio_max_length) #audio feature padded to maximum length
+        video_feat_padded,attention_mask_video=self.pad_data(video_feat['Features'],self.video_max_length) #video feature padded to maximum length
+
+        #get the label
+        if((self.task_name=='social_message') or (self.task_name=='Transition_val')):
+
+            label_c=self.label_map[self.csv_data[self.task_name].iloc[idx]]
+            ret_label=np.zeros((self.num_classes))
+            ret_label[label_c]=1
+
+        elif(self.task_name=='Topic'):
+            ret_label=self.label_map[self.csv_data[self.task_name].iloc[idx]]
+
+        #return the audio, video features + attention mask and return label
+        return(audio_feat_padded,
+                video_feat_padded,
+                ret_label,
+                attention_mask_audio,attention_mask_video)
+    
+
+# #basic file imports
+# csv_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/SAIM_data/SAIM_multi_task_tone_soc_message_topic_data_transcripts_augmented.csv"
+# csv_data=pd.read_csv(csv_file)
+# base_folder="/data/digbose92/ads_complete_repo/ads_features/clip_embeddings/jwt_ads_of_world"
+# embedding_file="/data/digbose92/ads_complete_repo/ads_features/ast_embeddings/ast_embs_0.5.pkl"
+# label_map={'No transition':0,'Transition':1}
+# num_classes=2
+# audio_max_length=14
+# video_max_length=333
+# task_name='Transition_val'
+
+# #dataset
+# dataset=SAIM_single_task_dataset_audio_visual(csv_data,
+#                                             base_folder,
+#                                             embedding_file,
+#                                             label_map,num_classes,
+#                                             audio_max_length,
+#                                             video_max_length,
+#                                             task_name)
+# #dataloader
+# dataloader=DataLoader(dataset,batch_size=2,shuffle=True)
+
+# #audio, video features with label and attention mask over audio and video
+# aud_feat,vid_feat,label,attn_mask_audio,attn_mask_video=next(iter(dataloader))
+
+
+# #audio, video features with label and attention mask over audio and video
+# print(aud_feat.shape)
+# print(vid_feat.shape)
+# print(label.shape)
+# print(attn_mask_audio.shape)
+# print(attn_mask_video.shape)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+    
 
 
 
@@ -365,55 +501,6 @@ class SAIM_single_task_dataset_audio_only(Dataset): #audio only dataset
          
 
 
-
-# #test the dataset
-# csv_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/SAIM_data/SAIM_multi_task_tone_soc_message_data.csv"
-# csv_data=pd.read_csv(csv_file)
-# label_map={'No transition':0,'Transition':1}
-# # csv_data=pd.read_csv(csv_file)
-# # label_map={'No transition':0,'Transition':1}
-# num_class=2
-# max_length=333
-# fps=4
-# base_fps=24
-# task_name="Transition_val"
-
-# #single task dataset and dataloader
-# saim_single_task_dataset=SAIM_single_task_dataset(csv_data=csv_data,
-#                                                 label_map=label_map,
-#                                                 num_classes=num_class,
-#                                                 max_length=max_length,
-#                                                 fps=fps,
-#                                                 base_fps=base_fps,
-#                                                 task_name=task_name)
-
-# saim_single_task_dataloader=DataLoader(saim_single_task_dataset,batch_size=8,shuffle=True)
-# clip_feat,ret_label,attention_mask = next(iter(saim_single_task_dataloader))
-
-# print(clip_feat.shape)
-# print(ret_label.shape)
-# print(attention_mask)
-
-# #count number of ones in the attention mask per row
-# count_ones = torch.sum(attention_mask, dim=1)
-# print(count_ones)
-
-
-
-# saim_ads_tone_clip_ds=SAIM_ads_tone_clip_features_dataset(csv_data=csv_data,label_map=label_map,
-#                                 num_classes=num_class,
-#                                 max_length=max_length,
-#                                 fps=fps,
-#                                 base_fps=base_fps)
-
-# saim_ads_tone_clip_dl=DataLoader(saim_ads_tone_clip_ds,batch_size=8,shuffle=True)
-
-# clip_feat,trans_array,feat_len=next(iter(saim_ads_tone_clip_dl))
-
-# print(clip_feat.shape)
-# print(trans_array.shape)
-# print(feat_len)
-# print(trans_array)
 
 
 

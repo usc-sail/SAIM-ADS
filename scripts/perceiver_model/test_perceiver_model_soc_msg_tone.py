@@ -24,7 +24,7 @@ import torchvision
 from torch.utils.data import Dataset, DataLoader
 from dataset import *
 from loss_functions import *
-from MHA_models import *
+from perceiver_model import *
 from optimizer import *
 from metrics import calculate_stats
 import torch.nn as nn
@@ -62,11 +62,17 @@ args = vars(parser.parse_args())
 config_file=args['config_file']
 model_file=args['model_file']
 
-config_data=load_config(config_file)
 
+config_data=load_config(config_file)
 #csv file and data 
 csv_file=config_data['data']['csv_file']
 csv_data=pd.read_csv(csv_file)
+embedding_file=config_data['data']['embedding_file']
+n_classes=config_data['model']['n_classes']
+max_audio_length=config_data['parameters']['audio_max_length']
+max_video_length=config_data['parameters']['video_max_length']
+batch_size=config_data['parameters']['batch_size']
+num_workers=config_data['parameters']['num_workers']
 
 #test_data,train_data,val_data
 test_data=csv_data[csv_data['Split']=='test']
@@ -77,7 +83,7 @@ val_data=csv_data[csv_data['Split']=='val']
 task_name=config_data['parameters']['task_name']
 print(task_name)
 
- 
+
 if(task_name=='social_message'):
     label_map={'No':0,'Yes':1}
     social_list=test_data['social_message'].tolist()
@@ -106,26 +112,14 @@ else:
     print('Majority class accuracy: ',majority_class_accuracy)
     print('F1 score with majority class labels: ',f1_majority_class)
 
-
-
-#parameters
-num_classes=config_data['model']['n_classes']
-max_length=config_data['parameters']['max_length']
-fps=config_data['parameters']['fps']
-base_fps=config_data['parameters']['base_fps']
-batch_size=config_data['parameters']['batch_size']
-num_workers=config_data['parameters']['num_workers']
-
-
-
-#test_ds and test_dl
-test_ds=SAIM_single_task_dataset(csv_data=test_data,
-                                    label_map=label_map,
-                                    num_classes=num_classes,
-                                    max_length=max_length,
-                                    fps=fps,
-                                    base_fps=base_fps,
-                                    task_name=task_name)
+#datasets and dataloaders
+test_ds=SAIM_single_task_dataset_audio_visual(csv_data=train_data,
+                                                embedding_file=embedding_file,
+                                                label_map=label_map,
+                                                num_classes=n_classes,
+                                                audio_max_length=max_audio_length,
+                                                video_max_length=max_video_length,
+                                                task_name=task_name)
 
 test_dl=DataLoader(test_ds,
                         batch_size=batch_size,
@@ -146,4 +140,5 @@ test_loss,test_acc,test_f1=gen_validate_score_perceiver_single_task_soc_message_
 print('Test loss: ',test_loss)
 print('Test accuracy: ',test_acc)
 print('Test f1 score: ',test_f1)
+
 
