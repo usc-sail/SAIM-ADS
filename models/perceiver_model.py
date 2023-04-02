@@ -2,6 +2,7 @@ import torch
 from perceiver_pytorch import PerceiverIO
 import torch.nn as nn
 import torch.nn.functional as F
+import numpy as np
 
 class PerceiverModel(nn.Module):
 
@@ -191,12 +192,25 @@ if __name__=="__main__":
     #print the model
     #print(model)
 
+
+    #compute model parameters 
+    device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model_parameters = filter(lambda p: p.requires_grad, model.parameters())
+    params = sum([np.prod(p.size()) for p in model_parameters])
+    print('Number of parameters: %d' %(params))
+    model=model.to(device)
+
     #define the inputs
     audio_inputs=torch.randn(1,50,768)
     visual_inputs=torch.randn(1,50,512)
     audio_mask=torch.ones(1,50)
     visual_mask=torch.ones(1,50)
     queries=torch.randn(1,1,512)
+
+    audio_inputs=audio_inputs.to(device)
+    visual_inputs=visual_inputs.to(device)
+    audio_mask=audio_mask.to(device)
+    visual_mask=visual_mask.to(device)
 
     #convert mask to boolean
     audio_mask=audio_mask.bool()
