@@ -1,6 +1,7 @@
 data:
   csv_file: '/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/SAIM_data/SAIM_multi_task_tone_soc_message_topic_data_no_zero_files.csv'
   embedding_file: '/data/digbose92/ads_complete_repo/ads_features/ast_embeddings/ast_embs_0.5.pkl'
+  topic_file: '/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/topic_list_18.json'
 
 parameters:
   batch_size: 16
@@ -11,17 +12,17 @@ parameters:
   audio_max_length: 14
   video_max_length: 333
   num_workers: 4
-  task_name: 'Transition_val'
+  task_name: 'Topic'
 
 device:
   is_cuda: True
 
 loss:
-  loss_option: 'bce_cross_entropy_loss'
+  loss_option: 'cross_entropy_loss'
 
 optimizer:
   choice: 'Adam'
-  lr: 1e-5
+  lr: 1e-4
   gamma: 0.95
   step_size: 15
   mode: 'max'
@@ -46,7 +47,7 @@ model:
   latent_dim: 256
   weight_tie_layers: False
   seq_dropout_prob: 0.1
-  n_classes: 2
+  n_classes: 18
   batch_first: True
 
 output:

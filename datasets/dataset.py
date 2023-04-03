@@ -414,7 +414,7 @@ class SAIM_single_task_dataset_audio_visual(Dataset):
 
         #get the clip feature path
         clip_feat_path=self.clip_feature_list[idx]
-
+    
         #get the audio features
         audio_feat=self.ast_embeds[clip_key].cpu().numpy()
 

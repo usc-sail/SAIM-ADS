@@ -35,6 +35,7 @@ import argparse
 from log_file_generate import *
 from scipy.stats.stats import pearsonr
 import wandb
+import json
 
 #fix seed for reproducibility
 seed_value=123457
@@ -58,16 +59,15 @@ def main(config_data):
     embedding_file=config_data['data']['embedding_file']
     csv_data=pd.read_csv(csv_file)
     task_name=config_data['parameters']['task_name']
+    topic_file=config_data['data']['topic_file']
+
+    #load the topic file
+    with open(topic_file,'r') as f:
+        label_map=json.load(f)
 
     #define the datasets 
     train_data=csv_data[csv_data['Split']=='train']
     val_data=csv_data[csv_data['Split']=='val']
-
-    if(task_name=='Transition_val'):
-        label_map={'No transition':0,'Transition':1}
-
-    elif(task_name=='social_message'):
-        label_map={'No':0,'Yes':1}
 
     #parameters regarding number of classes, maximum audio length, maximum video length
     max_audio_length=config_data['parameters']['audio_max_length']
@@ -148,22 +148,12 @@ def main(config_data):
     if(config_data['loss']['loss_option']=='bce_cross_entropy_loss'):
         criterion = binary_cross_entropy_loss(device,pos_weights=None)
 
-    # elif(config_data['loss']['loss_option']=='cross_entropy_loss'):
-    #     criterion=multi_class_cross_entropy_loss(device)
+    elif(config_data['loss']['loss_option']=='cross_entropy_loss'):
+        criterion=multi_class_cross_entropy_loss(device)
 
+    
     if(config_data['optimizer']['choice']=='Adam'):
         optim_example=optimizer_adam(model,float(config_data['optimizer']['lr']))
-
-    ################################ scheduler definition here ################################
-    # if(config_data['optimizer']['scheduler']=='step_lr_plateau'):
-    #     lr_scheduler=reducelr_plateau(optim_example,mode=config_data['optimizer']['mode'],factor=config_data['optimizer']['factor'],patience=config_data['optimizer']['patience'],
-    #     verbose=config_data['optimizer']['verbose'])
-
-    # if(config_data['optimizer']['scheduler']=='step_lr'):
-    #     lr_scheduler=steplr_scheduler(optim_example,
-    #                     step_size=config_data['optimizer']['step_size'],
-    #                     gamma=config_data['optimizer']['gamma'])
-        
 
     #create a folder with each individual model + create a log file for each date time instant
     timestr = time.strftime("%Y%m%d-%H%M%S")
@@ -204,7 +194,7 @@ def main(config_data):
     early_stop_cnt=0
     train_loss_stats=[]
     val_loss_stats=[]
-    Sig = nn.Sigmoid()
+    log_softmax=nn.LogSoftmax(dim=-1)
     best_f1_score=0
 
     for epoch in range(1, num_epochs+1): #main outer loop
@@ -218,15 +208,18 @@ def main(config_data):
         val_loss_list=[]
 
         for id,(audio_feat,video_feat,label,audio_mask,video_mask) in enumerate(tqdm(train_dl)):
-
+            
+            #audio features
             audio_feat=audio_feat.to(device)
             audio_feat=audio_feat.float()
 
+            #video features
             video_feat=video_feat.to(device)
             video_feat=video_feat.float()
 
             label=label.to(device)
 
+            #audio mask and video mask
             audio_mask=audio_mask.bool()
             video_mask=video_mask.bool()
 
@@ -234,21 +227,23 @@ def main(config_data):
             video_mask=video_mask.to(device)
 
             optim_example.zero_grad()
+            
             logits=model(audio_inputs=audio_feat,
                 visual_inputs=video_feat,
                 audio_mask=audio_mask,
                 visual_mask=video_mask)
             
-            #loss calculation here
             loss = criterion(logits, label)
-            logits_sig=Sig(logits)
+            train_logits=log_softmax(logits)
+            y_pred=torch.max(train_logits, 1)[1]
 
             # Back prop.
             loss.backward()
             optim_example.step()
+
             train_loss_list.append(loss.item())
             target_labels.append(label.cpu())
-            pred_labels.append(logits_sig.cpu())
+            pred_labels.append(y_pred.cpu())
 
             step=step+1
             
@@ -259,17 +254,18 @@ def main(config_data):
 
         target_label_np=torch.cat(target_labels).detach().numpy()
         pred_label_np=torch.cat(pred_labels).detach().numpy()
-        pred_labels_discrete=np.where(pred_label_np>=0.5,1,0)
 
         #compute training accuracy and F1 score
-        train_acc=accuracy_score(target_label_np,pred_labels_discrete)
-        train_f1=f1_score(target_label_np,pred_labels_discrete,average='macro')
+        train_acc=accuracy_score(target_label_np,pred_label_np)
+        train_f1=f1_score(target_label_np,pred_label_np,average='macro')
 
         logger.info('epoch: {:d}, time:{:.2f}'.format(epoch, time.time()-t))
         logger.info('Epoch:{:d},Overall Training loss:{:.3f},Overall training Acc:{:.3f}, Overall F1:{:.3f}'.format(epoch,mean(train_loss_list),train_acc,train_f1))
 
         logger.info('Evaluating the dataset')
-        val_loss,val_acc,val_f1=gen_validate_score_perceiver_single_task_soc_message_tone(model,val_dl,device,criterion)
+        #write the validation code here 
+
+        val_loss,val_acc,val_f1=gen_validate_score_perceiver_single_task_topic(model,val_dl,device,criterion)
         logger.info('Epoch:{:d},Overall Validation loss:{:.3f},Overall validation Acc:{:.3f}, Overall F1:{:.3f}'.format(epoch,val_loss,val_acc,val_f1))
 
         #wandb logging
@@ -282,7 +278,6 @@ def main(config_data):
             'Epoch':epoch}   #add epoch here to later switch the x-axis with epoch rather than actual wandb log
         
         model.train(True)
-        #lr_scheduler.step()
 
         if(val_f1>best_f1_score):
             best_f1_score=val_f1
@@ -308,6 +303,5 @@ if __name__ == '__main__':
 
 
 
-
-
-
+    
+    

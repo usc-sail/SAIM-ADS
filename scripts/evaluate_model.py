@@ -238,6 +238,65 @@ def gen_validate_score_perceiver_single_task_soc_message_tone(model,loader,devic
     val_f1=f1_score(target_labels_array,pred_labels_array,average='macro')
 
     return(mean(val_loss_list),val_acc,val_f1)
+
+def gen_validate_score_perceiver_single_task_topic(model,loader,device,criterion):
+
+    print("starting validation")
+    model.eval()
+    target_labels=[]
+    pred_labels=[]
+    step=0
+    val_loss_list=[]
+    log_softmax=nn.LogSoftmax(dim=-1)
+
+    with torch.no_grad():
+
+        for i, (audio_feat,video_feat,label,audio_mask,video_mask) in enumerate(tqdm(loader)):
+            
+            #audio features
+            audio_feat=audio_feat.float()
+            audio_feat=audio_feat.to(device)
+
+            #video features
+            video_feat=video_feat.float()
+            video_feat=video_feat.to(device)
+
+            #label
+            label=label.to(device)
+
+            #audio and video mask
+            audio_mask=audio_mask.bool()
+            video_mask=video_mask.bool()
+            audio_mask=audio_mask.to(device)
+            video_mask=video_mask.to(device)
+
+            logits=model(audio_inputs=audio_feat,
+                visual_inputs=video_feat,
+                audio_mask=audio_mask,
+                visual_mask=video_mask)
+            
+            logits=log_softmax(logits)
+            y_pred=torch.max(logits, 1)[1]
+
+            loss=criterion(logits,label)
+            val_loss_list.append(loss.item())
+            target_labels.append(label.cpu())
+            pred_labels.append(y_pred.cpu())
+            step=step+1
+
+    target_label_val=torch.cat(target_labels).detach().numpy()
+    pred_label_val=torch.cat(pred_labels).detach().numpy()
+
+    #accuracy and f1 score for topic
+    val_acc=accuracy_score(target_label_val,pred_label_val)
+    val_f1=f1_score(target_label_val,pred_label_val,average='macro')
+
+    return(mean(val_loss_list),val_acc,val_f1)
+            
+
+
+
+
             
 
 
