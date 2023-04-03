@@ -5,22 +5,24 @@ import pickle
 import transformers 
 import json
 from transformers import T5Tokenizer, T5ForConditionalGeneration, T5Config
+import torch
 
+device='cuda' if torch.cuda.is_available() else 'cpu'
 #check the model with t5 large 
 model = T5ForConditionalGeneration.from_pretrained('t5-large')
+model=model.to(device)
 tokenizer = T5Tokenizer.from_pretrained('t5-large')
 
 #load the transcripts file 
 with open("/bigdata/digbose92/ads_data/ads_complete_repo/ads_transcripts/translated_transcripts/en_combined_transcripts.json", "r") as f:
     data = json.load(f)
 
-key="kitchen_world_the_letter"
+key="nike_we_met_the_cape_town_crew_taking_back_their_city_through_golf"
 text=data[key]
 
 preprocess_text = text.strip().replace("\n","")
 t5_prepared_Text = "summarize: "+preprocess_text
 print ("original text preprocessed: \n", preprocess_text)
-
 
 tokenized_text = tokenizer.encode(t5_prepared_Text, return_tensors="pt").to(device)
 
