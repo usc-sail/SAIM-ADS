@@ -13,7 +13,7 @@ sys.path.append(os.path.join('..', '..','..','configs'))
 sys.path.append(os.path.join('..', '..','..','losses'))
 sys.path.append(os.path.join('..', '..','..','optimizers'))
 sys.path.append(os.path.join('..', '..','..','utils'))
-sys.path.append(os.path.join('..'))
+sys.path.append(os.path.join('..','..'))
 #import all libraries 
 import random
 from ast import literal_eval

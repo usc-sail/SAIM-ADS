@@ -13,7 +13,7 @@ sys.path.append(os.path.join('..', '..', '..','configs'))
 sys.path.append(os.path.join('..', '..', '..','losses'))
 sys.path.append(os.path.join('..', '..','..','optimizers'))
 sys.path.append(os.path.join('..', '..','..','utils'))
-sys.path.append(os.path.join('..'))
+sys.path.append(os.path.join('..', '..'))
 #import all libraries 
 import random
 from ast import literal_eval
@@ -125,13 +125,10 @@ def main(config_data):
                                          input_dropout, output_dropout, model_dropout)
     
     #print(model)
-
-
     model_parameters = filter(lambda p: p.requires_grad, model.parameters())
     params = sum([np.prod(p.size()) for p in model_parameters])
     print('Number of parameters: %d' %(params))
     model=model.to(device)
-    #model.float()
     
     ############################# loss function + optimizers definition here ################################
     if(config_data['loss']['loss_option']=='bce_cross_entropy_loss'):
