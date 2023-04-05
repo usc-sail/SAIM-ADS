@@ -235,8 +235,8 @@ def run_shot_inference(shot_folder,model,device,preprocess,destination_folder):
             #destination file
             destination_file=os.path.join(destination_folder,pkl_filename)
 
-            if(os.path.exists(destination_file) is False):
-                
+            if(destination_file=='/data/digbose92/ads_complete_repo/ads_features/shot_embeddings/clip_features_4fps/arm_hammer_arm_hammer_clump_seal_cat_litter.pkl'):
+                #if(os.path.exists(destination_file) is False):
                 shot_list=os.listdir(video_subfolder) #list of shots
                 shot_dict=dict()
                 for shot_file in tqdm(shot_list):

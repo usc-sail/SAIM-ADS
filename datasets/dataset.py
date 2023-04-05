@@ -251,9 +251,11 @@ class SAIM_single_task_dataset_shot_level(Dataset):
         #print(filename)
 
         #load the feature file
-
-        with open(filename, 'rb') as f:
-            shot_features = pickle.load(f)
+        try:
+            with open(filename, 'rb') as f:
+                shot_features = pickle.load(f)
+        except:
+            print(filename)
 
         #get the keys 
         keys=sorted(list(shot_features.keys()))

@@ -1,6 +1,6 @@
 data:
   csv_file: '/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/SAIM_data/SAIM_multi_task_tone_soc_message_topic_data_no_zero_files.csv'
-  base_folder: '/data/digbose92/ads_complete_repo/ads_features/shot_embeddings/vit_features'
+  base_folder: '/data/digbose92/ads_complete_repo/ads_features/shot_embeddings/clip_features_4fps/'
 
 parameters:
   batch_size: 16
@@ -31,11 +31,11 @@ optimizer:
   verbose: True
 
 model:
-  model_type: 'MHA_attn_single_task_classifier_shot_level'
-  input_dim: 768
+  model_type: 'MHA_attn_single_task_classifier_CLIP_features_shot_level'
+  input_dim: 512
   model_dim: 256
-  num_heads: 2
-  num_layers: 2
+  num_heads: 4
+  num_layers: 4
   input_dropout: 0.2
   output_dropout: 0.2
   model_dropout: 0.2
