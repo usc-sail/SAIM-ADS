@@ -73,6 +73,7 @@ test_data=csv_data[csv_data['Split']=='test']
 train_data=csv_data[csv_data['Split']=='train']
 val_data=csv_data[csv_data['Split']=='val']
 task_name=config_data['parameters']['task_name']
+print(test_data.shape,train_data.shape,val_data.shape)
 
 
 if(task_name=='social_message'):

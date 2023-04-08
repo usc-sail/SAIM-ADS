@@ -5,6 +5,7 @@ import pandas as pd
 import argparse 
 import openai
 from tqdm import tqdm 
+import numpy as np
 
 from tenacity import (
     retry,
@@ -20,11 +21,15 @@ parser=argparse.ArgumentParser()
 parser.add_argument("--api_key_file",type=str,help="file containing the openai api key")
 parser.add_argument("--transcript_file",type=str,help="file containing the non english transcripts")
 parser.add_argument("--dest_folder",type=str,help="destination folder to save the translated transcripts")
+#parser.add_argument("--split_file",type=str,help="file containing the train/test/val split") #not using split file for now since we need to run multiple evaluations
+parser.add_argument('--task_name',type=str,help="name of the task")
 
+#arguments 
 args=parser.parse_args()
 key_file=args.api_key_file
 transcript_file=args.transcript_file
 dest_folder=args.dest_folder
+task_name=args.task_name
 
 with open(key_file) as f:
     api_key=f.readlines()
@@ -35,7 +40,12 @@ model_option="gpt-4"
 temperature=0.02
 max_tokens=2048
 top_p=1
-translate_string="Please provide an English translation of this transcript"
+
+if(task_name=="Topic"):
+    system_string="Associate a single topic label with the transcript from the given set: Games, Household, Services, Sports, Banking, Clothing, Industrial and agriculture, Leisure, Publications media, Health, Car, Electronics, Cosmetics, Food and drink, Awareness, Travel and transport, Retail"
+
+elif(task_name=="Social_message"):
+    system_string="An advertisement video has a social message if it provides awareness about any social issue. Example of social issues: gender equality, drug abuse, police brutality, workplace harassment, domestic violence, child labor, environmental damage, homelessness, hate crimes, racial inequality etc. Based on the given text transcript, determine if the advertisement has any social message. Please provide answers in Yes and No."
 
 #load the transcript file
 with open(transcript_file) as f:
@@ -44,13 +54,12 @@ with open(transcript_file) as f:
 output_dict={}
 
 num_files=0
-#keys in transcript data 
 for key in tqdm(transcript_data.keys()):
 
     prompt=transcript_data[key]
 
     #messages list
-    messages=[{"role": "system", "content": translate_string},
+    messages=[{"role": "system", "content": system_string},
               {"role": "user", "content": prompt}]
     
     #chat completion response
@@ -62,6 +71,7 @@ for key in tqdm(transcript_data.keys()):
         top_p=top_p
     )
 
+    #answer 
     answer=response['choices'][0]['message']['content']
 
     #token usage 
@@ -78,15 +88,15 @@ for key in tqdm(transcript_data.keys()):
 
     if(num_files%50==0):
         #save a running snapshot of the file 
-        destination_file=dest_folder+"/"+model_option+"_"+transcript_file.split("/")[-1].split(".")[0]+"_zero_shot_"+str(num_files)+".json"
+        destination_file=dest_folder+"/"+model_option+"_"+transcript_file.split("/")[-1].split(".")[0]+"_zero_shot_"+str(task_name)+"_"+str(num_files)+".json"
 
         with open(destination_file, 'w') as fp:
             json.dump(output_dict, fp)
 
-
 #save the output
-output_file=dest_folder+"/"+model_option+"_"+transcript_file.split("/")[-1].split(".")[0]+"_translated.json"
+output_file=dest_folder+"/"+model_option+"_"+transcript_file.split("/")[-1].split(".")[0]+"_zero_shot_"+str(task_name)+".json"
 
 with open(output_file,'w') as f:
     json.dump(output_dict,f,indent=4)
+
 
