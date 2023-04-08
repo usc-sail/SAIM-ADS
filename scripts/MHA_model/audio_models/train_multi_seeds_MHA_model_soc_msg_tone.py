@@ -1,5 +1,3 @@
-#save every results in the log folder with a json file with seed value and best validation results and test results 
-#sngle fold split with multiple seeds (seed 1,2,3,4,5)
 import torch
 import torch.nn as nn 
 import pandas as pd 
@@ -7,15 +5,16 @@ import os
 import sys 
 import time 
 import pickle
-
 #append path of datasets and models 
-sys.path.append(os.path.join('..', '..', '..','datasets'))
-sys.path.append(os.path.join('..', '..', '..','models'))
-sys.path.append(os.path.join('..', '..', '..','configs'))
-sys.path.append(os.path.join('..', '..', '..','losses'))
+sys.path.append(os.path.join('..', '..','..','datasets'))
+sys.path.append(os.path.join('..', '..','..','models'))
+sys.path.append(os.path.join('..', '..','..','configs'))
+sys.path.append(os.path.join('..', '..','..','losses'))
 sys.path.append(os.path.join('..', '..','..','optimizers'))
 sys.path.append(os.path.join('..', '..','..','utils'))
-sys.path.append(os.path.join('..', '..'))
+sys.path.append(os.path.join('..','..'))
+
+
 #import all libraries 
 import random
 from ast import literal_eval
@@ -36,9 +35,10 @@ from evaluate_model import *
 import argparse
 from log_file_generate import *
 from scipy.stats.stats import pearsonr
-import json
+import json 
+
 ######## global config file declaration ########
-config_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/configs/MHA_configs/config_MHA_single_task_classifier_shot_level_multiple_seeds.yaml"
+config_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/configs/MHA_configs/config_MHA_single_task_classifier_audio_only_multiple_seeds.yaml"
 with open(config_file,'r') as f:
     config_data=yaml.safe_load(f)
 
@@ -52,12 +52,12 @@ if(task_name=='Transition_val'):
 elif(task_name=='social_message'):
     label_map={'No':0,'Yes':1}
 
-#basic parameters initialize regarding number of classes, max length of the sequence, fps, base fps, batch size, number of epochs, number of workers 
+#general parameters
 num_classes=config_data['model']['n_classes']
-base_folder=config_data['data']['base_folder']
 max_length=config_data['parameters']['max_length']
 batch_size=config_data['parameters']['batch_size']
 num_epochs=config_data['parameters']['epochs']
+embedding_file=config_data['data']['embedding_file']
 num_workers=config_data['parameters']['num_workers']
 input_dim=config_data['model']['input_dim']
 model_dim=config_data['model']['model_dim']
@@ -82,7 +82,6 @@ seed_list = [random.randint(1, 100000) for _ in range(5)]
 # #define the datasets 
 # train_data=csv_data[csv_data['Split']=='train']
 # val_data=csv_data[csv_data['Split']=='val']
-
 #test and validation metrics 
 test_loss_multiple_seeds_list=[]
 test_f1_multiple_seeds_list=[]
@@ -108,35 +107,41 @@ for i,seed in enumerate(seed_list):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-    print('Run with random seed: %d' %(seed))
+    print('Run number: %d with random seed: %d' %(i+1,seed))
 
     #define the datasets 
     train_data=csv_data[csv_data['Split']=='train']
     val_data=csv_data[csv_data['Split']=='val']
     test_data=csv_data[csv_data['Split']=='test']
 
-    #train dataset and val dataset (single task)
-    train_ds=SAIM_single_task_dataset_shot_level(csv_data=train_data,
-                                    base_folder=base_folder,
-                                    label_map=label_map,
-                                    num_classes=num_classes,
-                                    max_length=max_length,
-                                    task_name=task_name)
+    #train dataset, val and test dataset (single task)
+    train_ds=SAIM_single_task_dataset_audio_only(
+        train_data, 
+        embedding_file,
+        label_map,
+        num_classes,
+        max_length,
+        task_name
+    )
     
-    val_ds=SAIM_single_task_dataset_shot_level(csv_data=val_data,
-                                    base_folder=base_folder,
-                                    label_map=label_map,
-                                    num_classes=num_classes,
-                                    max_length=max_length,
-                                    task_name=task_name)
-    
-    test_ds=SAIM_single_task_dataset_shot_level(csv_data=test_data,
-                                    base_folder=base_folder,
-                                    label_map=label_map,
-                                    num_classes=num_classes,
-                                    max_length=max_length,
-                                    task_name=task_name)
-    
+    val_ds=SAIM_single_task_dataset_audio_only(
+        val_data,
+        embedding_file,
+        label_map,
+        num_classes,
+        max_length,
+        task_name
+    )
+
+    test_ds=SAIM_single_task_dataset_audio_only(
+        test_data,
+        embedding_file,
+        label_map,
+        num_classes,
+        max_length,
+        task_name
+    )
+
     #define the dataloaders
     train_dl=DataLoader(train_ds,
                         batch_size=batch_size,
@@ -161,31 +166,23 @@ for i,seed in enumerate(seed_list):
                                          num_layers, 
                                          input_dropout, output_dropout, model_dropout)
     
+    #model parameters 
     model_parameters = filter(lambda p: p.requires_grad, model.parameters())
     params = sum([np.prod(p.size()) for p in model_parameters])
     print('Number of parameters: %d' %(params))
     model=model.to(device)
-    
+
     ############################# loss function + optimizers definition here ################################
     if(config_data['loss']['loss_option']=='bce_cross_entropy_loss'):
         criterion = binary_cross_entropy_loss(device,pos_weights=None)
 
+    #Adam and AdamW optimizers
     if(config_data['optimizer']['choice']=='Adam'):
         optim_example=optimizer_adam(model,float(config_data['optimizer']['lr']))
 
     elif(config_data['optimizer']['choice']=='AdamW'):
-        optim_example=optimizer_adamW(model,float(config_data['optimizer']['lr']))
+        optim_example=optimizer_adamW(model,float(config_data['optimizer']['lr']),float(config_data['optimizer']['decay']))
 
-    ################################ scheduler definition here ################################
-    # if(config_data['optimizer']['scheduler']=='step_lr_plateau'):
-    #     lr_scheduler=reducelr_plateau(optim_example,mode=config_data['optimizer']['mode'],factor=config_data['optimizer']['factor'],patience=config_data['optimizer']['patience'],
-    #     verbose=config_data['optimizer']['verbose'])
-
-    # if(config_data['optimizer']['scheduler']=='step_lr'):
-    #     lr_scheduler=steplr_scheduler(optim_example,
-    #                     step_size=config_data['optimizer']['step_size'],
-    #                     gamma=config_data['optimizer']['gamma'])
-    
     #create a folder with each individual model + create a log file for each date time instant
     timestr = time.strftime("%Y%m%d-%H%M%S")
     filename=timestr+'_'+option+'_log.logs'
@@ -194,7 +191,6 @@ for i,seed in enumerate(seed_list):
     log_model_subfolder=os.path.join(config_data['output']['log_dir'],option)
     if(os.path.exists(log_model_subfolder) is False):
         os.mkdir(log_model_subfolder)
-    
     #create log folder associated with current model
     sub_folder_log=os.path.join(log_model_subfolder,timestr+'_'+option)
     if(os.path.exists(sub_folder_log) is False):
@@ -229,10 +225,7 @@ for i,seed in enumerate(seed_list):
     Sig = nn.Sigmoid()
     best_f1_score=0
 
-    #ensuring model works here (trains)
-    model.train(True)
-
-    for epoch in range(1, num_epochs+1): #main outer loop for each epoch 
+    for epoch in range(1, num_epochs+1): #main outer loop
 
         train_loss_list=[]
         train_logits=[]
@@ -242,10 +235,10 @@ for i,seed in enumerate(seed_list):
         pred_labels=[]
         val_loss_list=[]
 
-        for id,(feat,label,mask) in enumerate(tqdm(train_dl)): #inner loop for each batch
+        for id,(feat,label,mask) in enumerate(tqdm(train_dl)):
 
+            #feat+label+mask to device
             feat=feat.to(device)
-            
             feat=feat.float()
             label=label.to(device)
             mask=mask.unsqueeze(1).unsqueeze(1)
@@ -253,6 +246,7 @@ for i,seed in enumerate(seed_list):
 
             optim_example.zero_grad()
             logits=model(feat,mask=mask)
+            #print(logits.shape)
 
             #loss calculation here
             loss = criterion(logits, label)
@@ -270,6 +264,7 @@ for i,seed in enumerate(seed_list):
             if(step%150==0):
                 logger_step_dict={'Running_Train_loss':mean(train_loss_list)}
                 logger.info("Training loss:{:.3f}".format(loss.item()))
+                #wandb.log(logger_step_dict)
 
         target_label_np=torch.cat(target_labels).detach().numpy()
         pred_label_np=torch.cat(pred_labels).detach().numpy()
@@ -283,13 +278,22 @@ for i,seed in enumerate(seed_list):
         logger.info('Epoch:{:d},Overall Training loss:{:.3f},Overall training Acc:{:.3f}, Overall F1:{:.3f}'.format(epoch,mean(train_loss_list),train_acc,train_f1))
 
         logger.info('Evaluating the dataset')
-
         #write the validation code here 
         val_loss,val_acc,val_f1=gen_validate_score_MHA_model_single_task_soc_message_tone(model,val_dl,device,criterion)
         logger.info('Epoch:{:d},Overall Validation loss:{:.3f},Overall validation Acc:{:.3f}, Overall F1:{:.3f}'.format(epoch,val_loss,val_acc,val_f1))
-        model.train(True)
 
-        #not using lr scheduler here - seems to be sub-optimal 
+        #wandb logging
+        metrics_dict={'Train_loss':mean(train_loss_list),
+            'Train_Acc':train_acc,
+            'Train_F1':train_f1,
+            'Valid_loss':val_loss,
+            'Valid_Acc':val_acc,
+            'Valid_corr':val_f1,
+            'Epoch':epoch}   #add epoch here to later switch the x-axis with epoch rather than actual wandb log
+        
+        model.train(True)
+        #lr_scheduler.step()
+
         if(val_f1>best_f1_score):
             best_f1_score=val_f1
             logger.info('Saving the best model')
@@ -336,9 +340,10 @@ destination_file=os.path.join(destination_run_folder,'multi_run_'+option+'_'+end
 with open(destination_file, 'w') as fp:
     json.dump(dict_multiple_seeds, fp, indent=4)
 
+    
 
 
-
+    
 
 
 

@@ -44,6 +44,6 @@ model:
   batch_first: True
 
 output:
-  model_dir: '/data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/model_dir'
-  log_dir: '/data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/log_dir'
+  model_dir: '/data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/multi_run_model_dir'
+  log_dir: '/data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/multi_run_log_dir'
   multiple_run_folder: '/data/digbose92/ads_complete_repo/ads_codes/model_files/multi_run_folder'
