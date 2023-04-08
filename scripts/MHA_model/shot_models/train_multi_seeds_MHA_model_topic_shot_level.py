@@ -39,19 +39,19 @@ from scipy.stats.stats import pearsonr
 import json
 
 ######## global config file declaration ########
-config_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/configs/MHA_configs/config_MHA_single_task_classifier_shot_level_multiple_seeds.yaml"
+config_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/configs/MHA_configs/config_MHA_topic_classifier_shot_level_multiple_seeds.yaml"
 with open(config_file,'r') as f:
     config_data=yaml.safe_load(f)
 
+### topic labels ####
+topic_file=config_data['data']['topic_file']
+with open(topic_file,'r') as f:
+    label_map=json.load(f)
+
+#csv file and csv data with task name
 csv_file=config_data['data']['csv_file']
 csv_data=pd.read_csv(csv_file)
 task_name=config_data['parameters']['task_name']
-
-if(task_name=='Transition_val'):
-    label_map={'No transition':0,'Transition':1}
-
-elif(task_name=='social_message'):
-    label_map={'No':0,'Yes':1}
 
 #basic parameters initialize regarding number of classes, max length of the sequence, fps, base fps, batch size, number of epochs, number of workers 
 num_classes=config_data['model']['n_classes']
@@ -83,7 +83,6 @@ seed_list = [random.randint(1, 100000) for _ in range(5)]
 # #define the datasets 
 # train_data=csv_data[csv_data['Split']=='train']
 # val_data=csv_data[csv_data['Split']=='val']
-
 #test and validation metrics 
 test_loss_multiple_seeds_list=[]
 test_f1_multiple_seeds_list=[]
@@ -109,7 +108,7 @@ for i,seed in enumerate(seed_list):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-    print('Run with random seed: %d' %(seed))
+    print('Run number: %d with random seed: %d' %(i+1,seed))
 
     #define the datasets 
     train_data=csv_data[csv_data['Split']=='train']
@@ -161,32 +160,24 @@ for i,seed in enumerate(seed_list):
                                          num_heads, 
                                          num_layers, 
                                          input_dropout, output_dropout, model_dropout)
-    
-    model_parameters = filter(lambda p: p.requires_grad, model.parameters())
-    params = sum([np.prod(p.size()) for p in model_parameters])
-    print('Number of parameters: %d' %(params))
+
     model=model.to(device)
-    
+
     ############################# loss function + optimizers definition here ################################
     if(config_data['loss']['loss_option']=='bce_cross_entropy_loss'):
         criterion = binary_cross_entropy_loss(device,pos_weights=None)
 
+    elif(config_data['loss']['loss_option']=='cross_entropy_loss'):
+        criterion=multi_class_cross_entropy_loss(device)
+
+    
     if(config_data['optimizer']['choice']=='Adam'):
         optim_example=optimizer_adam(model,float(config_data['optimizer']['lr']))
 
     elif(config_data['optimizer']['choice']=='AdamW'):
-        optim_example=optimizer_adamW(model,float(config_data['optimizer']['lr']))
+        optim_example=optimizer_adamW(model,float(config_data['optimizer']['lr']),float(config_data['optimizer']['decay']))
 
-    ################################ scheduler definition here ################################
-    # if(config_data['optimizer']['scheduler']=='step_lr_plateau'):
-    #     lr_scheduler=reducelr_plateau(optim_example,mode=config_data['optimizer']['mode'],factor=config_data['optimizer']['factor'],patience=config_data['optimizer']['patience'],
-    #     verbose=config_data['optimizer']['verbose'])
 
-    # if(config_data['optimizer']['scheduler']=='step_lr'):
-    #     lr_scheduler=steplr_scheduler(optim_example,
-    #                     step_size=config_data['optimizer']['step_size'],
-    #                     gamma=config_data['optimizer']['gamma'])
-    
     #create a folder with each individual model + create a log file for each date time instant
     timestr = time.strftime("%Y%m%d-%H%M%S")
     filename=timestr+'_'+option+'_log.logs'
@@ -227,13 +218,13 @@ for i,seed in enumerate(seed_list):
     early_stop_cnt=0
     train_loss_stats=[]
     val_loss_stats=[]
-    Sig = nn.Sigmoid()
+
+    log_softmax=nn.LogSoftmax(dim=-1)
     best_f1_score=0
 
-    #ensuring model works here (trains)
     model.train(True)
 
-    for epoch in range(1, num_epochs+1): #main outer loop for each epoch 
+    for epoch in range(1, num_epochs+1): #main outer loop
 
         train_loss_list=[]
         train_logits=[]
@@ -243,10 +234,10 @@ for i,seed in enumerate(seed_list):
         pred_labels=[]
         val_loss_list=[]
 
-        for id,(feat,label,mask) in enumerate(tqdm(train_dl)): #inner loop for each batch
+        for id,(feat,label,mask) in enumerate(tqdm(train_dl)):
 
+           
             feat=feat.to(device)
-            
             feat=feat.float()
             label=label.to(device)
             mask=mask.unsqueeze(1).unsqueeze(1)
@@ -257,14 +248,17 @@ for i,seed in enumerate(seed_list):
 
             #loss calculation here
             loss = criterion(logits, label)
-            logits_sig=Sig(logits)
+            train_logits=log_softmax(logits)
+            y_pred=torch.max(train_logits, 1)[1]
 
             # Back prop.
             loss.backward()
             optim_example.step()
+
+            #train loss list and target + pred labels
             train_loss_list.append(loss.item())
             target_labels.append(label.cpu())
-            pred_labels.append(logits_sig.cpu())
+            pred_labels.append(y_pred.cpu())
 
             step=step+1
             
@@ -274,21 +268,18 @@ for i,seed in enumerate(seed_list):
 
         target_label_np=torch.cat(target_labels).detach().numpy()
         pred_label_np=torch.cat(pred_labels).detach().numpy()
-        pred_labels_discrete=np.where(pred_label_np>=0.5,1,0)
 
         #compute training accuracy and F1 score
-        train_acc=accuracy_score(target_label_np,pred_labels_discrete)
-        train_f1=f1_score(target_label_np,pred_labels_discrete,average='macro')
+        train_acc=accuracy_score(target_label_np,pred_label_np)
+        train_f1=f1_score(target_label_np,pred_label_np,average='macro')
 
         logger.info('epoch: {:d}, time:{:.2f}'.format(epoch, time.time()-t))
         logger.info('Epoch:{:d},Overall Training loss:{:.3f},Overall training Acc:{:.3f}, Overall F1:{:.3f}'.format(epoch,mean(train_loss_list),train_acc,train_f1))
 
         logger.info('Evaluating the dataset')
-
         #write the validation code here 
-        val_loss,val_acc,val_f1=gen_validate_score_MHA_model_single_task_soc_message_tone(model,val_dl,device,criterion)
+        val_loss,val_acc,val_f1=gen_validate_score_MHA_model_single_task_topic(model,val_dl,device,criterion)
         logger.info('Epoch:{:d},Overall Validation loss:{:.3f},Overall validation Acc:{:.3f}, Overall F1:{:.3f}'.format(epoch,val_loss,val_acc,val_f1))
-        model.train(True)
 
         #not using lr scheduler here - seems to be sub-optimal 
         if(val_f1>best_f1_score):
@@ -308,7 +299,7 @@ for i,seed in enumerate(seed_list):
     model.eval()
 
     #test loss, accuracy and F1 score
-    test_loss,test_acc,test_f1=gen_validate_score_MHA_model_single_task_soc_message_tone(model,test_dl,device,criterion)
+    test_loss,test_acc,test_f1=gen_validate_score_MHA_model_single_task_topic(model,test_dl,device,criterion)
 
     #current seed - test loss, accuracy and F1 score
     print('Current seed: %d, Test loss: %f, Test accuracy: %f, Test f1: %f' %(seed,test_loss,test_acc,test_f1))
@@ -336,10 +327,3 @@ destination_file=os.path.join(destination_run_folder,'multi_run_'+option+'_'+end
 #save the dictionary to the json file
 with open(destination_file, 'w') as fp:
     json.dump(dict_multiple_seeds, fp, indent=4)
-
-
-
-
-
-
-

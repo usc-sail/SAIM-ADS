@@ -5,7 +5,7 @@ def optimizer_adam(model,lr,weight_decay=0):
     optim_set=torch.optim.Adam(model.parameters(),lr=lr,weight_decay=weight_decay)
     return(optim_set)
 
-def optimizer_adamW(model,lr,weight_decay):
+def optimizer_adamW(model,lr,weight_decay=0.01):
     #optim_set=AdamW(model.parameters(),lr=lr)
     #default weight decay parameters added
     optim_set=AdamW(model.parameters(),lr=lr,weight_decay=weight_decay)
