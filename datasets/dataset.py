@@ -566,7 +566,6 @@ class SAIM_single_task_dataset_visual_text_shot_level(Dataset):
 
     def __init__(self,csv_data,transcripts_file,tokenizer,base_folder,
                     label_map,num_classes,text_max_length,video_max_length,task_name):
-
         #arguments here
         self.csv_data=csv_data
         self.num_classes=num_classes
@@ -595,15 +594,15 @@ class SAIM_single_task_dataset_visual_text_shot_level(Dataset):
     def __len__(self):
         return(len(self.csv_data))
     
-    def pad_data(self,feat_data):
+    def pad_data(self,feat_data,max_length):
 
-        padded=np.zeros((self.max_length,feat_data.shape[1]))
+        padded=np.zeros((max_length,feat_data.shape[1]))
         
-        if(feat_data.shape[0]>self.max_length):
-            padded=feat_data[:self.max_length,:]
-            attn_mask=np.ones((self.max_length))
+        if(feat_data.shape[0]>max_length):
+            padded=feat_data[:max_length,:]
+            attn_mask=np.ones((max_length))
         else:
-            attn_mask=np.zeros((self.max_length))
+            attn_mask=np.zeros((max_length))
             padded[:feat_data.shape[0],:]=feat_data
             attn_mask[:feat_data.shape[0]]=1
 
@@ -613,9 +612,8 @@ class SAIM_single_task_dataset_visual_text_shot_level(Dataset):
 
         #get the clip key
         clip_key=self.clip_keys[idx]
-
         filename=self.shot_feature_list[idx]
-        print(filename,clip_key)
+        #print(filename,clip_key)
 
         #load the feature file
         try:
@@ -642,7 +640,7 @@ class SAIM_single_task_dataset_visual_text_shot_level(Dataset):
             print(filename)
 
         #shot features and attention mask
-        shot_feat_padded,attention_mask=self.pad_data(shot_feature_avg)
+        shot_feat_padded,attention_mask=self.pad_data(shot_feature_avg,self.video_max_length)
 
         #get the label here 
         if((self.task_name=='social_message') or (self.task_name=='Transition_val')):
@@ -657,7 +655,6 @@ class SAIM_single_task_dataset_visual_text_shot_level(Dataset):
         if(clip_key not in self.transcripts_dict):
 
             #empty transcripts or [MASK] token transcripts 
-            #print(clip_key)
             # create input ids  for text
             input_ids = torch.tensor([[101] + [103] * (self.text_max_length - 2) + [102]])
             # create attention mask  for text

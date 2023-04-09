@@ -10,10 +10,10 @@ parameters:
   test_shuffle: False
   epochs: 50
   early_stop: 5
-  text_max_length: 35
-  video_max_length: 512
+  text_max_length: 256
+  video_max_length: 35
   num_workers: 4
-  task_name: 'Transition_val'
+  task_name: 'social_message'
 
 device:
   is_cuda: True
@@ -43,7 +43,7 @@ model:
   num_latents: 16
   cross_heads: 1
   latent_heads: 8
-  cross_dim_head: 32
+  cross_dim_head: 128
   latent_dim_head: 32
   latent_dim: 256
   weight_tie_layers: False

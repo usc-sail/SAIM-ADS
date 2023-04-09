@@ -240,8 +240,6 @@ class Perceiver_TextVisual_model(nn.Module):
 
         #input embeddings concatenate 
         inputs=torch.cat((text_inputs,visual_inputs),dim=1)
-        print(inputs.shape)
-        #input mask concatenate
 
         text_mask=text_mask.bool()
         visual_mask=visual_mask.bool()

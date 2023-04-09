@@ -126,6 +126,7 @@ for i,seed in enumerate(seed_list):
     train_ds=SAIM_single_task_dataset_visual_text_shot_level(train_data,
                                                 transcript_file,
                                                 tokenizer,
+                                                base_folder,
                                                 label_map,
                                                 n_classes,
                                                 max_text_length,
@@ -136,6 +137,7 @@ for i,seed in enumerate(seed_list):
     val_ds=SAIM_single_task_dataset_visual_text_shot_level(val_data,
                                                 transcript_file,
                                                 tokenizer,
+                                                base_folder,
                                                 label_map,
                                                 n_classes,
                                                 max_text_length,
@@ -146,13 +148,13 @@ for i,seed in enumerate(seed_list):
     test_ds=SAIM_single_task_dataset_visual_text_shot_level(test_data,
                                                 transcript_file,
                                                 tokenizer,
+                                                base_folder,
                                                 label_map,
                                                 n_classes,
                                                 max_text_length,
                                                 max_video_length,
                                                 task_name
                                                 )
-    
     #define the dataloaders
     train_dl=DataLoader(train_ds,
                         batch_size=batch_size,
@@ -188,6 +190,7 @@ for i,seed in enumerate(seed_list):
                  'use_queries':use_queries,}
 
     model=Perceiver_TextVisual_model(**params_dict)
+    print(model)
 
     #model parameters 
     model_parameters = filter(lambda p: p.requires_grad, model.parameters())
@@ -278,7 +281,6 @@ for i,seed in enumerate(seed_list):
             label=return_dict['label'].to(device)
 
             optim_example.zero_grad()
-
             logits=model(input_ids=input_ids,
                          visual_inputs=video_feat,
                          text_mask=attention_mask,
