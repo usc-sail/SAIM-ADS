@@ -13,6 +13,7 @@ parameters:
   max_length: 14
   num_workers: 0
   task_name: 'Topic'
+  num_runs: 5
 
 device:
   is_cuda: True
@@ -32,7 +33,7 @@ optimizer:
   verbose: True
 
 model:
-  model_type: 'MHA_attn_single_task_classifier_audio_only'
+  model_type: 'MHA_attn_single_task_classifier_audio_only_multiple_seeds'
   input_dim: 768
   model_dim: 256
   num_heads: 4
@@ -44,5 +45,6 @@ model:
   batch_first: True
 
 output:
-  model_dir: '/data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/model_dir'
-  log_dir: '/data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/log_dir'
+  model_dir: '/data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/multi_run_model_dir'
+  log_dir: '/data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/multi_run_log_dir'
+  multiple_run_folder: '/data/digbose92/ads_complete_repo/ads_codes/model_files/multi_run_folder'

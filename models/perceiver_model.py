@@ -3,6 +3,7 @@ from perceiver_pytorch import PerceiverIO
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
+from transformers import BertModel
 
 class PerceiverModel(nn.Module):
 
@@ -156,6 +157,115 @@ class Perceiver_AudioVisual_Model(nn.Module):
             logits=self.perceiver_model(inputs,queries)
             #return the logits
             return logits
+
+
+class Perceiver_TextVisual_model(nn.Module):
+
+    def __init__(self,text_dim,video_dim,dim,bert_model_name,
+                queries_dim,num_classes,depth,num_latents,cross_heads,
+                latent_heads,cross_dim_head,latent_dim_head,latent_dim,
+                weight_tie_layers,seq_dropout_prob, use_queries=False):
+
+        super().__init__()
+
+
+        #basic parameters
+        self.dim=dim
+        self.text_dim=text_dim #dimension of the audio modality
+        self.video_dim=video_dim #dimension of the video modality
+        self.bert_model_name=bert_model_name #bert model
+        self.queries_dim=queries_dim #dimension of the queries
+        self.logits_dim=num_classes #number of classes
+        self.depth=depth #depth of the perceiver model
+        self.num_latents=num_latents #number of latent vectors
+        self.cross_heads=cross_heads #number of cross attention heads
+        self.latent_heads=latent_heads #number of latent attention heads
+        self.cross_dim_head=cross_dim_head #dimension of the cross dimension attention heads
+        self.latent_dim_head=latent_dim_head #dimension of the latent attention heads
+        self.latent_dim=latent_dim #dimension of the latent vectors
+        self.weight_tie_layers=weight_tie_layers #weight tie layers
+        self.seq_dropout_prob=seq_dropout_prob #sequence dropout probability
+        self.use_queries=use_queries #use queries or not
+
+        #initialize bert model
+        self.bert_model=BertModel.from_pretrained(self.bert_model_name)
+
+        #freeze the gradient
+        for param in self.bert_model.parameters():
+            param.requires_grad=False
+
+        #initialize linear layer 
+        if(self.dim!=self.text_dim):
+
+            #map the audio to the same dimension as the video
+            self.text_linear=nn.Linear(self.text_dim,self.dim)
+
+        if(self.dim!=self.video_dim):
+
+            #map the video to the same dimension as the audio
+            self.video_linear=nn.Linear(self.video_dim,self.dim)
+
+        #initialize perceiver IO model
+        self.perceiver_model=PerceiverIO(
+            dim=self.dim,
+            queries_dim=self.queries_dim,
+            logits_dim=self.logits_dim,
+            depth=self.depth,
+            num_latents=self.num_latents,
+            latent_dim=self.latent_dim,
+            cross_heads=self.cross_heads,
+            latent_heads=self.latent_heads,
+            cross_dim_head=self.cross_dim_head,
+            latent_dim_head=self.latent_dim_head,
+            weight_tie_layers=self.weight_tie_layers,
+            seq_dropout_prob=self.seq_dropout_prob)
+        
+        #check if you need the queries
+        if self.use_queries is False:
+            self.classifier=nn.Linear(self.latent_dim,self.logits_dim) #needed when we do not pass the queries inside
+
+    def forward(self,input_ids,visual_inputs,text_mask,visual_mask,queries=None):
+        
+        #bert output
+        bert_output=self.bert_model(input_ids,attention_mask=text_mask)
+        text_inputs=bert_output[0]
+
+        if(self.dim!=self.video_dim):
+            #map the video to the same dimension as the audio
+            visual_inputs=self.video_linear(visual_inputs)
+
+        if(self.dim!=self.text_dim):
+            #map the audio to the same dimension as the video
+            text_inputs=self.text_linear(text_inputs)
+
+        #input embeddings concatenate 
+        inputs=torch.cat((text_inputs,visual_inputs),dim=1)
+        print(inputs.shape)
+        #input mask concatenate
+
+        text_mask=text_mask.bool()
+        visual_mask=visual_mask.bool()
+
+        mask=torch.cat((text_mask,visual_mask),dim=1)
+
+        #check if you need the queries
+        if self.use_queries is False:
+
+            latent_vectors=self.perceiver_model(inputs,mask=mask)
+            #perform mean pooling in terms of the sequence length
+            latent_vectors=latent_vectors.mean(dim=1)
+            #get the logits
+            logits=self.classifier(latent_vectors)
+            #return the logits
+            return logits
+        
+        else:
+            #get the logits
+            logits=self.perceiver_model(inputs,queries)
+            #return the logits
+            return logits
+        
+
 
 
 # if __name__=="__main__":
