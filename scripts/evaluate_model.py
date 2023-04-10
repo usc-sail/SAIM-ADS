@@ -347,6 +347,58 @@ def gen_validate_score_text_visual_perceiver_single_task_soc_message_tone(model,
 
     return(mean(val_loss_list),val_acc,val_f1)
 
+def gen_validate_score_text_visual_perceiver_single_task_topic(model,loader,device,criterion):
+
+    print("starting validation")
+    
+    model.eval()
+    target_labels=[]
+    pred_labels=[]
+    step=0
+    val_loss_list=[]
+    log_softmax=nn.LogSoftmax(dim=-1)
+
+
+    with torch.no_grad():
+
+        for id,(return_dict) in enumerate(tqdm(loader)):
+
+            # return dict contains the following keys: input ids, attention_maksk, token_type_ids
+            input_ids=return_dict['input_ids'].to(device)
+            attention_mask=return_dict['attention_mask'].to(device)
+            token_type_ids=return_dict['token_type_ids'].to(device)
+
+            #return dict contains video features and attention mask
+            video_feat=return_dict['video_feat'].float()
+            video_feat=video_feat.to(device)
+            video_attn_mask=return_dict['video_attn_mask'].to(device)
+
+            #return dict contains labels
+            label=return_dict['label'].to(device)
+
+            logits=model(input_ids=input_ids,
+                         visual_inputs=video_feat,
+                         text_mask=attention_mask,
+                         visual_mask=video_attn_mask)
+            
+            logits=log_softmax(logits)
+            y_pred=torch.max(logits, 1)[1]
+
+            loss=criterion(logits,label)
+            val_loss_list.append(loss.item())
+            target_labels.append(label.cpu())
+            pred_labels.append(y_pred.cpu())
+            step=step+1
+
+    target_label_val=torch.cat(target_labels).detach().numpy()
+    pred_label_val=torch.cat(pred_labels).detach().numpy()
+
+    #accuracy and f1 score for topic
+    val_acc=accuracy_score(target_label_val,pred_label_val)
+    val_f1=f1_score(target_label_val,pred_label_val,average='macro')
+
+    return(mean(val_loss_list),val_acc,val_f1)
+
 
 
 
