@@ -4,6 +4,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 from transformers import BertModel
+from transformers import PerceiverConfig, PerceiverModel
+from transformers.models.perceiver.modeling_perceiver import (
+    PerceiverClassificationDecoder,
+)
 
 class PerceiverModel(nn.Module):
 
@@ -264,8 +268,56 @@ class Perceiver_TextVisual_model(nn.Module):
             return logits
         
 
+#d_model is a concatenation of the audio and video dimensions (project everything to the same dimension and input dimension for the perceiver is audio + video dimensions)
 
+# class Perceiver_TextVisual_hf_model(nn.Module):
 
+#     def __init__(self,d_model,d_latents,num_labels,num_self_attends_per_block,num_classes):
+        
+#         super().__init__()
+
+#         self.d_model=d_model
+#         self.d_latents=d_latents
+#         self.num_labels=num_labels
+#         self.num_self_attends_per_block=num_self_attends_per_block
+#         self.num_classes=num_classes
+
+#         self.perceiver_config = PerceiverConfig(d_model=self.d_model,num_labels=num_classes)
+
+#         self.decoder=PerceiverClassificationDecoder(self.perceiver_config,
+#                 num_channels=self.perceiver_config.d_latents,
+#                 trainable_position_encoding_kwargs=dict(num_channels=self.perceiver_config.d_latents, index_dims=1),
+#                 use_query_residual=True)
+
+#         self.model=PerceiverModel(self.perceiver_config,decoder=self.decoder)
+
+#     def forward(self,inputs,mask,queries=None):
+#         #basic parameters
+
+#         #get the logits
+#         logits=self.model(inputs,mask=mask,queries=queries)
+
+#         #return the logits
+#         return logits
+    
+
+# d_model=256
+# d_latents=128
+# num_labels=10
+# num_self_attends_per_block=4
+# num_classes=10
+
+# perceiver_config = PerceiverConfig(d_model=d_model,num_labels=num_classes, num_self_attends_per_block=num_self_attends_per_block,num_cross_attention_heads=4)
+# print(perceiver_config)
+# decoder=PerceiverClassificationDecoder(perceiver_config,
+#                 num_channels=perceiver_config.d_latents,
+#                 trainable_position_encoding_kwargs=dict(num_channels=perceiver_config.d_latents, index_dims=1),
+#                 use_query_residual=True)
+
+# model=PerceiverModel(config=perceiver_config,decoder=decoder)
+# model_parameters = filter(lambda p: p.requires_grad, model.parameters())
+# params = sum([np.prod(p.size()) for p in model_parameters])
+# print(params)
 # if __name__=="__main__":
 
 #     #define the parameters

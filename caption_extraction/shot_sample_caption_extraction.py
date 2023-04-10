@@ -39,66 +39,69 @@ subfolder_list = [x.strip().split("\n")[0] for x in subfolder_list]
 
 for subfolder in tqdm(subfolder_list):
 
-    #shot subfolder
-    subfolder_path=shot_folder+"/"+subfolder
+    dest_file=caption_folder+"/"+subfolder+".csv"
 
-    #image subfolder
-    image_subfolder_path=image_folder+"/"+subfolder
-    if(os.path.exists(image_subfolder_path)==False):
-        os.mkdir(image_subfolder_path)
+    if(os.path.exists(dest_file) is False):
+        #shot subfolder
+        subfolder_path=shot_folder+"/"+subfolder
 
-    #list of all shots 
-    shot_file_list=os.listdir(subfolder_path)
-    frame_shot_list=[]
-    caption_list=[]
-    shot_key_list=[]
+        #image subfolder
+        image_subfolder_path=image_folder+"/"+subfolder
+        if(os.path.exists(image_subfolder_path)==False):
+            os.mkdir(image_subfolder_path)
 
-    for video_file in tqdm(shot_file_list):
-        
-        #video capture
-        cap = cv2.VideoCapture(os.path.join(subfolder_path,video_file))
+        #list of all shots 
+        shot_file_list=os.listdir(subfolder_path)
+        frame_shot_list=[]
+        caption_list=[]
+        shot_key_list=[]
 
-        # Get the total number of frames in the video
-        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        for video_file in tqdm(shot_file_list):
+            
+            #video capture
+            cap = cv2.VideoCapture(os.path.join(subfolder_path,video_file))
 
-        # Calculate the middle frame
-        middle_frame = int(total_frames / 2)
+            # Get the total number of frames in the video
+            total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-        # Set the video's current frame to the middle frame
-        cap.set(cv2.CAP_PROP_POS_FRAMES, middle_frame)
+            # Calculate the middle frame
+            middle_frame = int(total_frames / 2)
 
-        success, frame = cap.read() #middle frame is read 
+            # Set the video's current frame to the middle frame
+            cap.set(cv2.CAP_PROP_POS_FRAMES, middle_frame)
 
-
-        if(success):
-            #save the frame current being used for the caption extraction
-            frame_file=image_subfolder_path+"/"+'frame_num_'+str(middle_frame)+'.jpg'
-
-            #save the frame
-            cv2.imwrite(frame_file,frame)
-
-            #extract caption for the frame 
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            raw_image=Image.fromarray(frame)
-
-            #IMAGE AND CAPTION GENERATION
-            image = vis_processors["eval"](raw_image).unsqueeze(0).to(device)
-            caption=model.generate({"image": image})
-
-        else:
-            caption=""
-            break 
-
-        #append the frame and the caption to the list
-        frame_shot_list.append(middle_frame)
-        caption_list.append(caption[0])
-        shot_key_list.append(video_file)
+            success, frame = cap.read() #middle frame is read 
 
 
-    #dataframe for the current shot file 
+            if(success):
+                #save the frame current being used for the caption extraction
+                frame_file=image_subfolder_path+"/"+'frame_num_'+str(middle_frame)+'.jpg'
 
-    df=pd.DataFrame({"Frame_number":frame_shot_list,"Caption":caption_list,"Shot_key":shot_key_list})
-    df.to_csv(caption_folder+"/"+subfolder+".csv",index=False)
+                #save the frame
+                cv2.imwrite(frame_file,frame)
+
+                #extract caption for the frame 
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                raw_image=Image.fromarray(frame)
+
+                #IMAGE AND CAPTION GENERATION
+                image = vis_processors["eval"](raw_image).unsqueeze(0).to(device)
+                caption=model.generate({"image": image})
+
+            else:
+                caption=""
+                break 
+
+            #append the frame and the caption to the list
+            frame_shot_list.append(middle_frame)
+            caption_list.append(caption[0])
+            shot_key_list.append(video_file)
+
+
+        #dataframe for the current shot file 
+
+        df=pd.DataFrame({"Frame_number":frame_shot_list,"Caption":caption_list,"Shot_key":shot_key_list})
+        df.to_csv(caption_folder+"/"+subfolder+".csv",index=False)
 
 
 
