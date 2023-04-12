@@ -80,45 +80,44 @@ class Multi_Task_Shot_Dataset(Dataset):
         for k in self.task_label_map.keys():
             label_dict[k]=self.task_label_map[k][self.csv_data[k].iloc[idx]]
 
-
         return(shot_feat_padded,attention_mask,label_dict)
             
 
-csv_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/SAIM_data/SAIM_multi_task_tone_soc_message_topic_data_no_zero_files.csv"
-csv_data=pd.read_csv(csv_file)
-base_folder="/data/digbose92/ads_complete_repo/ads_features/shot_embeddings/clip_features_4fps/"
-train_data=csv_data[csv_data['Split']=='train']
-max_length=20
-task_label_map={
-    'social_message':{'No':0,'Yes':1},
-    'Topic': {"Games": 0,"Household": 1,"Services": 2,"Misc": 3,
-    "Sports": 4,
-    "Banking": 5,
-    "Clothing": 6,
-    "Industrial and agriculture": 7,
-    "Leisure": 8,
-    "Publications media": 9,
-    "Health": 10,
-    "Car": 11,
-    "Electronics": 12,
-    "Cosmetics": 13,
-    "Food and drink": 14,
-    "Awareness": 15,
-    "Travel and transport": 16,
-    "Retail": 17
-}
-}
+# csv_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/SAIM_data/SAIM_multi_task_tone_soc_message_topic_data_no_zero_files.csv"
+# csv_data=pd.read_csv(csv_file)
+# base_folder="/data/digbose92/ads_complete_repo/ads_features/shot_embeddings/clip_features_4fps/"
+# train_data=csv_data[csv_data['Split']=='train']
+# max_length=20
+# task_label_map={
+#     'social_message':{'No':0,'Yes':1},
+#     'Topic': {"Games": 0,"Household": 1,"Services": 2,"Misc": 3,
+#     "Sports": 4,
+#     "Banking": 5,
+#     "Clothing": 6,
+#     "Industrial and agriculture": 7,
+#     "Leisure": 8,
+#     "Publications media": 9,
+#     "Health": 10,
+#     "Car": 11,
+#     "Electronics": 12,
+#     "Cosmetics": 13,
+#     "Food and drink": 14,
+#     "Awareness": 15,
+#     "Travel and transport": 16,
+#     "Retail": 17
+# }
+# }
 
-train_dataset=Multi_Task_Shot_Dataset(train_data,max_length,task_label_map,base_folder)
+# train_dataset=Multi_Task_Shot_Dataset(train_data,max_length,task_label_map,base_folder)
 
-#load the data
-train_loader=DataLoader(train_dataset,batch_size=32,shuffle=True)
+# #load the data
+# train_loader=DataLoader(train_dataset,batch_size=32,shuffle=True)
 
-shot_feat,attn_mask,label_dict=next(iter(train_loader))
+# shot_feat,attn_mask,label_dict=next(iter(train_loader))
 
-print(shot_feat.shape)
-print(attn_mask.shape)
-print(label_dict)
+# print(shot_feat.shape)
+# print(attn_mask.shape)
+# print(label_dict)
     
 
         
