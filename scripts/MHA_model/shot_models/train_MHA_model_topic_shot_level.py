@@ -116,7 +116,7 @@ def main(config_data):
                         batch_size=batch_size,
                         shuffle=config_data['parameters']['val_shuffle'],
                         num_workers=num_workers)
-    
+
     #define the device here
     if(config_data['device']['is_cuda']):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

@@ -217,7 +217,6 @@ def main(config_data):
 
            
             feat=feat.to(device)
-            #print(feat.shape)
             feat=feat.float()
             label=label.to(device)
             mask=mask.unsqueeze(1).unsqueeze(1)
