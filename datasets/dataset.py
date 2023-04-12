@@ -691,7 +691,114 @@ class SAIM_single_task_dataset_visual_text_shot_level(Dataset):
         return(return_dict)
 
 
+class SAIM_single_task_dataset_visual_SBERT_text_shot_level(Dataset):
 
+    def __init__(self,csv_data,transcripts_feat_file,base_folder,
+                    label_map,num_classes,text_max_length,video_max_length,text_dim,task_name):
+        #arguments here
+        self.csv_data=csv_data
+        self.num_classes=num_classes
+        self.transcripts_feat_file=transcripts_feat_file
+        self.label_map=label_map
+        self.task_name=task_name
+        self.base_folder=base_folder
+        self.text_dim=text_dim
+
+        #print(self.transcripts_feat_file)
+
+        with open(self.transcripts_feat_file, 'rb') as f:
+            self.transcripts_feat=pickle.load(f)
+
+        #audio and video max length
+        self.text_max_length=text_max_length
+        self.video_max_length=video_max_length
+
+        #clip feature list
+        self.clip_feature_list=self.csv_data['clip_feature_path'].tolist()
+
+        #shot feature list
+        self.shot_feature_list=[os.path.join(self.base_folder,file.split("/")[-1]) for file in self.clip_feature_list]
+        
+        #get the keys
+        self.clip_keys=[os.path.splitext(file.split("/")[-1])[0] for file in self.clip_feature_list]
+
+    def __len__(self):
+        return(len(self.csv_data))
+    
+    def pad_data(self,feat_data,max_length):
+
+        padded=np.zeros((max_length,feat_data.shape[1]))
+        
+        if(feat_data.shape[0]>max_length):
+            padded=feat_data[:max_length,:]
+            attn_mask=np.ones((max_length))
+        else:
+            attn_mask=np.zeros((max_length))
+            padded[:feat_data.shape[0],:]=feat_data
+            attn_mask[:feat_data.shape[0]]=1
+
+        return(padded,attn_mask)
+    
+    def __getitem__(self,idx):
+
+        #get the clip key
+        clip_key=self.clip_keys[idx]
+        filename=self.shot_feature_list[idx]
+
+        #load the feature file
+        try:
+            with open(filename, 'rb') as f:
+                shot_features = pickle.load(f)
+        except:
+            print(filename)
+
+        #get the keys 
+        keys=sorted(list(shot_features.keys()))
+
+        #get the features
+        shot_feature_avg=[]
+        for key in keys:
+            shot_feat_temp=shot_features[key]
+            #print(shot_feat_temp.shape)
+            if(len(shot_feat_temp)>0):
+                shot_feat_avg=np.mean(shot_feat_temp,axis=0)
+                shot_feature_avg.append(shot_feat_avg)
+
+        #convert to numpy array
+        shot_feature_avg=np.array(shot_feature_avg)
+        
+        #shot features and attention mask
+        shot_feat_padded,attention_mask=self.pad_data(shot_feature_avg,self.video_max_length)
+
+        #get the label here 
+        if((self.task_name=='social_message') or (self.task_name=='Transition_val')):
+            label_c=self.label_map[self.csv_data[self.task_name].iloc[idx]]
+            ret_label=np.zeros((self.num_classes))
+            ret_label[label_c]=1
+
+        elif(self.task_name=='Topic'):
+            ret_label=self.label_map[self.csv_data[self.task_name].iloc[idx]]
+
+        #clip key and transcripts parsing here 
+        if(clip_key not in self.transcripts_feat):
+
+            text_feat_padded=np.zeros((self.text_max_length,self.text_dim))
+            attn_mask=np.zeros((self.text_max_length))
+            
+        else:
+            
+            text_feat=self.transcripts_feat[clip_key]
+            text_feat_padded,attn_mask=self.pad_data(text_feat,self.text_max_length)
+
+        #print(text_feat_padded.shape,shot_feat_padded.shape)
+
+        return_dict={'text_feat':text_feat_padded,
+                     'attention_mask':attn_mask,
+                     'video_feat':shot_feat_padded,
+                     'video_attn_mask':attention_mask,
+                     'label':ret_label}
+
+        return(return_dict)
 
 
         
