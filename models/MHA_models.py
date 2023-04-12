@@ -226,6 +226,106 @@ class MHA_model_single_task_classifier(nn.Module):
 
         return x
     
+class MHA_model_multi_task_classifier(nn.Module):
+
+    def __init__(self,input_dim, model_dim, num_heads, num_layers, input_dropout, output_dropout, model_dropout, task_dict):
+
+        """
+        Inputs:
+            input_dim - Hidden dimensionality of the input
+            model_dim - Hidden dimensionality to use inside the Transformer
+            num_heads - Number of heads to use in the Multi-Head Attention blocks
+            num_layers - Number of encoder blocks to use.
+            input_dropout - Dropout probability to use in the input mapping network
+            output_dropout - Dropout probability to use in the output classifier
+            task_dict - Dictionary of tasks and their corresponding number of classes
+        """
+        super(MHA_model_multi_task_classifier,self).__init__()
+        
+        self.input_dim = input_dim
+        self.model_dim = model_dim
+        self.num_heads = num_heads
+        self.num_layers = num_layers
+        self.dim_feedforward = 4*self.model_dim #
+        self.input_dropout= input_dropout
+        self.output_dropout = output_dropout
+        self.model_dropout = model_dropout
+        self.task_dict = task_dict
+
+        #input mapping network
+        self.input_map_net = nn.Sequential(
+            nn.Dropout(self.input_dropout),
+            nn.Linear(self.input_dim, self.model_dim)
+        )
+
+        # Positional encoding
+        self.positional_encoding = PositionalEncoding(d_model=self.model_dim)
+        
+        # Transformer
+        self.transformer = TransformerEncoder(num_layers=self.num_layers,
+                                              input_dim=self.model_dim,
+                                              dim_feedforward=self.dim_feedforward,
+                                              num_heads=self.num_heads,
+                                              dropout=self.model_dropout)
+        
+        #transformation layer for the output of the transformer
+        self.transformer_output_net = nn.Sequential(
+            nn.Linear(self.model_dim, self.model_dim), #might need to remove this later 
+            nn.Dropout(self.output_dropout))
+        
+        self.task_fc_dict=nn.ModuleDict()
+        for task in self.task_dict.keys():
+            self.task_fc_dict['fc_'+task]=nn.Linear(self.model_dim, self.task_dict[task])
+
+    
+    def forward(self, x, mask=None, add_positional_encoding=True):
+
+        x = self.input_map_net(x)
+        if add_positional_encoding:
+            x = self.positional_encoding(x)
+
+        x = self.transformer(x, mask=mask)
+
+        #average the representations across the sequence dimension for non-masked tokens
+
+        #remove the unsqueezed dimension from mask
+        mask = mask.squeeze(1).squeeze(1)
+        masked_sum = torch.sum(x * mask.unsqueeze(-1), dim=1)
+
+        # Compute the number of non-zero elements in the mask
+        count = torch.sum(mask, dim=1, keepdim=True)
+
+        #Average the masked_sum across the sequence dimension
+        masked_avg = masked_sum / count
+        masked_avg=masked_avg.float()
+
+        op = self.transformer_output_net(masked_avg)
+
+        task_outputs=dict()
+
+        for task in self.task_dict.keys():
+            task_outputs[task]=self.task_fc_dict['fc_'+task](op)
+
+        return task_outputs
+    
+#model arguments here
+
+# input_dim = 512
+# model_dim = 128
+# num_heads=4
+# num_layers=4
+# input_dropout=0.2
+# output_dropout=0.2
+# model_dropout=0.2
+# task_dict={'Topic':18,'social_message':2}
+# model=MHA_model_multi_task_classifier(input_dim, model_dim, num_heads, num_layers, input_dropout, output_dropout, model_dropout, task_dict)
+# print(model) 
+
+# x=torch.randn((2,2,512))
+# mask=torch.ones((2,2)).unsqueeze(1).unsqueeze(1)
+# task_outputs=model(x,mask)
+# print(task_outputs['Topic'].shape)
+# print(task_outputs['social_message'].shape)
 
 # #model arguments here 
 # input_dim = 512

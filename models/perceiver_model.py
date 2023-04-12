@@ -18,6 +18,23 @@ class PerceiverModel(nn.Module):
 
         super().__init__()
 
+        """
+        Inputs:
+            dim - Dimensionality of the input
+            queries_dim - Dimensionality of the queries
+            num_classes - Number of classes to predict
+            depth - Depth of the Perceiver model
+            num_latents - Number of latents, or induced set points, or centroids.
+            cross_heads - Number of heads for cross attention.
+            latent_heads - Number of heads for latent self attention.
+            cross_dim_head - Dimensionality of each cross attention head.
+            latent_dim_head - Dimensionality of each latent self attention head.
+            latent_dim - Dimensionality of latent vectors
+            weight_tie_layers - Whether to weight tie layers (optional, as indicated in the diagram)
+            seq_dropout_prob - Dropout probability for the cross attention probabilities
+            use_queries - Whether to use queries
+        """
+
         #basic parameters
         self.dim=dim
         self.queries_dim=queries_dim
@@ -81,6 +98,26 @@ class Perceiver_AudioVisual_Model(nn.Module):
                 weight_tie_layers,seq_dropout_prob, use_queries=False):
 
         super().__init__()
+
+        """
+        Inputs:
+            audio_dim - Dimensionality of the audio input
+            video_dim - Dimensionality of the video input
+            dim - Dimensionality of the input
+            queries_dim - Dimensionality of the queries
+            num_classes - Number of classes to predict
+            depth - Depth of the Perceiver model
+            num_latents - Number of latents, or induced set points, or centroids.
+            cross_heads - Number of heads for cross attention.
+            latent_heads - Number of heads for latent self attention.
+            cross_dim_head - Dimensionality of each cross attention head.
+            latent_dim_head - Dimensionality of each latent self attention head.
+            latent_dim - Dimensionality of latent vectors
+            weight_tie_layers - Whether to weight tie layers (optional, as indicated in the diagram)
+            seq_dropout_prob - Dropout probability for the cross attention probabilities
+            use_queries - Whether to use queries
+
+        """
 
         #basic parameters
         self.dim=dim
@@ -171,6 +208,26 @@ class Perceiver_TextVisual_model(nn.Module):
                 weight_tie_layers,seq_dropout_prob, use_queries=False):
 
         super().__init__()
+
+        """
+        Inputs:
+            text_dim - Dimensionality of the text input
+            video_dim - Dimensionality of the video input
+            dim - Dimensionality of the input
+            bert_model_name - Name of the bert model
+            queries_dim - Dimensionality of the queries
+            num_classes - Number of classes to predict
+            depth - Depth of the Perceiver model
+            num_latents - Number of latents, or induced set points, or centroids.
+            cross_heads - Number of heads for cross attention.
+            latent_heads - Number of heads for latent self attention.
+            cross_dim_head - Dimensionality of each cross attention head.
+            latent_dim_head - Dimensionality of each latent self attention head.
+            latent_dim - Dimensionality of latent vectors
+            weight_tie_layers - Whether to weight tie layers (optional, as indicated in the diagram)
+            seq_dropout_prob - Dropout probability for the cross attention probabilities
+            use_queries - Whether to use queries
+        """
 
 
         #basic parameters
@@ -275,6 +332,26 @@ class Perceiver_SBERT_TextVisual_model(nn.Module):
 
         super().__init__()
 
+        """
+            text_dim - Dimensionality of the text modality
+            video_dim - Dimensionality of the video modality
+            dim - Dimensionality of the input
+            queries_dim - Dimensionality of the queries
+            num_classes - Number of classes
+            depth - Depth of the model
+            num_latents - Number of latent vectors
+            cross_heads - Number of cross attention heads
+            latent_heads - Number of latent attention heads
+            cross_dim_head - Dimensionality of each cross attention head
+            latent_dim_head - Dimensionality of each latent attention head
+            latent_dim - Dimensionality of the latent vectors
+            weight_tie_layers - Whether to weight tie layers
+            seq_dropout_prob - Sequence dropout probability
+            use_queries - Whether to use queries or not
+
+        """
+
+
 
         #basic parameters
         self.dim=dim
@@ -359,6 +436,9 @@ class Perceiver_SBERT_TextVisual_model(nn.Module):
             logits=self.perceiver_model(inputs,queries)
             #return the logits
             return logits
+
+
+
 
 #d_model is a concatenation of the audio and video dimensions (project everything to the same dimension and input dimension for the perceiver is audio + video dimensions)
 

@@ -7,10 +7,8 @@ import pandas as pd
 import numpy as np 
 import pickle
 import json 
-from transformers import BertTokenizer, BertModel, BertConfig
 
 ####### dataset declaration for binary tone classification using LSTM #######
-
 class SAIM_ads_tone_clip_features_dataset(Dataset):
     def __init__(self,csv_data,label_map,num_classes,max_length,fps,base_fps):  
 
