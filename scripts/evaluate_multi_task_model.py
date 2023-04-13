@@ -15,7 +15,7 @@ def sort_batch(X, y, lengths):
     y = y[indx]
     return X, y, lengths
 
-def gen_validate_score_MHA_multi_task(model,loader,device,task_dict,sampled_activation_dict,sampled_loss_function_dict):
+def gen_validate_score_MHA_multi_task(model,loader,device,task_dict,sampled_activation_dict,sampled_loss_function_dict,weight_dict):
 
     print("starting validation")
 
@@ -48,14 +48,20 @@ def gen_validate_score_MHA_multi_task(model,loader,device,task_dict,sampled_acti
             #task logits
             task_logits=model(feat,mask)
 
-            #loss, val loss list
             loss=torch.tensor(0.0).to(device)
+            for task in task_dict.keys():
+                
+                loss_task=sampled_loss_function_dict[task](task_logits[task],label_dict[task])
+                loss+=weight_dict[task]*loss_task
+                val_loss_dict[task].append(loss_task.item())
+
+            #loss, val loss list
             val_loss_list.append(loss.item())
 
             #train loss dictionary
             for task in task_dict.keys():
                 loss_task=sampled_loss_function_dict[task](task_logits[task],label_dict[task])
-                loss+=loss_task
+                loss+=weight_dict[task]*loss_task
                 val_loss_dict[task].append(loss_task.item())
 
             #obtain the logits here 
@@ -70,6 +76,8 @@ def gen_validate_score_MHA_multi_task(model,loader,device,task_dict,sampled_acti
         pred_lb_np=torch.cat(pred_labels_dict[k]).detach().numpy()
         if((k=='social_message') or (k=='Transition_val')):
             pred_lb_np=np.where(pred_lb_np>=0.5,1,0)
+        else:
+            pred_lb_np=np.argmax(pred_lb_np,axis=1)
 
         #pred and target labels
         pred_labels_np[k]=pred_lb_np

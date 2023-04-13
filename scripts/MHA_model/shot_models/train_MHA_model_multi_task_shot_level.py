@@ -30,12 +30,13 @@ from metrics import calculate_stats
 import torch.nn as nn
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from tqdm import tqdm 
-from evaluate_model import *
+from evaluate_multi_task_model import *
 import argparse
 from log_file_generate import *
 from scipy.stats.stats import pearsonr
 import json
 from statistics import mean
+import numpy as np 
 
 config_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/configs/MHA_configs/config_MHA_multi_task_classifier_shot_level_multiple_seeds.yaml"
 
@@ -49,9 +50,7 @@ csv_data=pd.read_csv(csv_file)
 
 #task label map 
 task_dict=config_data['parameters']['task_dict']
-loss_dict=config_data['parameters']['loss']['loss_dict']
-weight_dict=config_data['parameters']['loss']['weight_dict']
-
+weight_dict=config_data['loss']['weight_dict']
 
 #create the label maps here 
 with open(topic_file,'r') as f:
@@ -61,7 +60,6 @@ with open(topic_file,'r') as f:
 label_map={'Topic':topic_dict,
            'Transition_val':{'No transition':0,'Transition':1},
            'social_message':{'No':0,'Yes':1}}
-
 
 sampled_label_map={k:label_map[k] for k in task_dict.keys()}
 
@@ -80,9 +78,10 @@ input_dropout=config_data['model']['input_dropout']
 output_dropout=config_data['model']['output_dropout']
 model_dropout=config_data['model']['model_dropout']
 model_type=config_data['model']['model_type']
-option=model_type+"_"+config_data['parameters']['task_name']
+option=model_type+"_"+"_".join(list(task_dict.keys()))
 num_runs=config_data['parameters']['num_runs']
 multi_run_folder=config_data['output']['multiple_run_folder']
+
 
 #create the model type folder inside the multi run folder
 destination_run_folder=os.path.join(multi_run_folder,model_type)
@@ -105,7 +104,6 @@ if(config_data['device']['is_cuda']):
 
 #seed value set 
 dict_multiple_seeds={}
-
 
 #dictionary containing the loss functions for all taskss
 loss_function_dict={'Topic': multi_class_cross_entropy_loss(device),
@@ -143,12 +141,9 @@ for i,seed in enumerate(seed_list):
     val_data=csv_data[csv_data['Split']=='val']
     test_data=csv_data[csv_data['Split']=='test']
 
-
     #define the datasets : train and validation datasets
     train_ds=Multi_Task_Shot_Dataset(train_data,max_length,sampled_label_map,base_folder)
-
     val_ds=Multi_Task_Shot_Dataset(val_data,max_length,sampled_label_map,base_folder)
-
     test_ds=Multi_Task_Shot_Dataset(test_data,max_length,sampled_label_map,base_folder)
 
     #define the dataloaders and datasets
@@ -201,6 +196,7 @@ for i,seed in enumerate(seed_list):
     log_model_subfolder=os.path.join(config_data['output']['log_dir'],option)
     if(os.path.exists(log_model_subfolder) is False):
         os.mkdir(log_model_subfolder)
+
     #create log folder associated with current model
     sub_folder_log=os.path.join(log_model_subfolder,timestr+'_'+option)
     if(os.path.exists(sub_folder_log) is False):
@@ -230,19 +226,23 @@ for i,seed in enumerate(seed_list):
     early_stop_counter=config_data['parameters']['early_stop']
     print('Early stop criteria:%d' %(early_stop_counter))
 
-    best_f1_score=0
+    best_f1_score=0.0
 
     for epoch in range(1, num_epochs+1): #main outer loop
 
         train_loss_dict={k:[] for k in task_dict.keys()}
         step=0
         t = time.time()
+
         target_labels_dict={k:[] for k in task_dict.keys()}
         pred_labels_dict={k:[] for k in task_dict.keys()}
+
         pred_labels_np={k:[] for k in task_dict.keys()}
         target_labels_np={k:[] for k in task_dict.keys()}
+
         val_loss_dict={k:[] for k in task_dict.keys()}
         train_loss_list=[] #overall training loss
+
         f1_score_dict={k:[] for k in task_dict.keys()}
         acc_score_dict={k:[] for k in task_dict.keys()}
 
@@ -264,13 +264,16 @@ for i,seed in enumerate(seed_list):
 
             #loss calculation here
             loss=torch.tensor(0.0).to(device)
-            train_loss_list.append(loss.item())
+            
 
             #train loss dictionary
             for task in task_dict.keys():
+                #print(task_logits[task].shape,label_dict[task].shape,sampled_loss_function_dict[task])
                 loss_task=sampled_loss_function_dict[task](task_logits[task],label_dict[task])
-                loss+=loss_task
-                train_loss_dict[k].append(loss_task.item())
+                loss+=weight_dict[task]*loss_task
+                train_loss_dict[task].append(loss_task.item())
+
+            train_loss_list.append(loss.item())
 
             #backward pass and optimization step
             loss.backward()
@@ -288,7 +291,6 @@ for i,seed in enumerate(seed_list):
                 logger_step_dict={'Running_Train_loss':mean(train_loss_list)}
                 logger.info("Training loss:{:.3f}".format(loss.item()))
 
-        
         #agrgegate the labels here
         for k in task_dict.keys():
             
@@ -296,9 +298,13 @@ for i,seed in enumerate(seed_list):
             if((k=='social_message') or (k=='Transition_val')):
                 pred_lb_np=np.where(pred_lb_np>=0.5,1,0)
 
+            else:
+                pred_lb_np=np.argmax(pred_lb_np,axis=1)
+
             pred_labels_np[k]=pred_lb_np
             target_labels_np[k]=torch.cat(target_labels_dict[k]).detach().numpy()    
 
+            #print(target_labels_np[k].shape,pred_labels_np[k].shape)
             f1_score_dict[k]=f1_score(target_labels_np[k],pred_labels_np[k],average='macro')
             acc_score_dict[k]=accuracy_score(target_labels_np[k],pred_labels_np[k])
 
@@ -306,29 +312,27 @@ for i,seed in enumerate(seed_list):
         logger.info('Epoch:{:d},Overall Training loss:{:.3f}'.format(epoch,mean(train_loss_list)))
 
         for k in task_dict.keys():
-            logger.info('Epoch:{:d},Task:{},Training loss:{:.3f}'.format(epoch,k,mean(train_loss_dict[k])))
-            logger.info('Epoch:{:d},Task:{},F1 score:{:.3f}'.format(epoch,k,f1_score_dict[k]))
-            logger.info('Epoch:{:d},Task:{},Accuracy score:{:.3f}'.format(epoch,k,acc_score_dict[k]))
+            logger.info('Epoch:{:d},Task:{},Train loss:{:.3f},Train F1 score:{:.3f},Train Acc score:{:.3f}'.format(epoch,k,mean(train_loss_dict[k]),f1_score_dict[k],acc_score_dict[k]))
 
         logger.info('Evaluating the dataset')
-
         #evaluate the model here
-        val_loss,val_loss_dict,val_f1_dict,val_acc_dict=gen_validate_score_MHA_multi_task(model,val_dl,device,task_dict,sampled_activation_dict,sampled_loss_function_dict)
+        val_loss,val_loss_dict,val_f1_dict,val_acc_dict=gen_validate_score_MHA_multi_task(model,val_dl,device,task_dict,sampled_activation_dict,sampled_loss_function_dict,weight_dict)
 
         logger.info('Epoch:{:d},Overall validation loss:{:.3f}'.format(epoch,val_loss))
         for k in task_dict.keys():
-            logger.info('Epoch:{:d},Task:{},Validation loss:{:.3f}'.format(epoch,k,mean(val_loss_dict[k])))
-            logger.info('Epoch:{:d},Task:{},Validation F1 score:{:.3f}'.format(epoch,k,val_f1_dict[k]))
-            logger.info('Epoch:{:d},Task:{},Validation Accuracy score:{:.3f}'.format(epoch,k,val_acc_dict[k]))
+            logger.info('Epoch:{:d},Task:{},Val loss:{:.3f}, Val F1 score:{:.3f}, Val Acc score:{:.3f}'.format(epoch,k, mean(val_loss_dict[k]), val_f1_dict[k],val_acc_dict[k]))
 
         model.train(True)
 
         #mean over all validation values in the dictionary
-        val_f1_score= mean(list(val_f1_dict.values()))
+        val_f1_score=0.0
+        for k in task_dict.keys():
+            val_f1_score+=weight_dict[k]*val_f1_dict[k]
 
         if(val_f1_score>best_f1_score):
             best_f1_score=val_f1_score
             logger.info('Saving the best model')
+            logger.info('Best F1 score:{:.3f}'.format(best_f1_score))
             torch.save(model, os.path.join(sub_folder_model,timestr+'_'+option+'_best_model.pt'))
             early_stop_cnt=0
         else:
@@ -343,13 +347,11 @@ for i,seed in enumerate(seed_list):
     model.eval()
 
     #load the best model here
-    test_loss,test_loss_dict,test_f1_dict,test_acc_dict=gen_validate_score_MHA_multi_task(model,test_dl,device,task_dict,sampled_activation_dict,sampled_loss_function_dict)
+    test_loss,test_loss_dict,test_f1_dict,test_acc_dict=gen_validate_score_MHA_multi_task(model,test_dl,device,task_dict,sampled_activation_dict,sampled_loss_function_dict,weight_dict)
                     
     #calculate the f1 score here
     for k in task_dict.keys():
-        logger.info('Epoch:{:d},Task:{},Testing loss:{:.3f}'.format(epoch,k,mean(val_loss_dict[k])))
-        logger.info('Epoch:{:d},Task:{},Testing F1 score:{:.3f}'.format(epoch,k,val_f1_dict[k]))
-        logger.info('Epoch:{:d},Task:{},Testing Accuracy score:{:.3f}'.format(epoch,k,val_acc_dict[k]))
+        logger.info('Epoch:{:d},Task:{},Test loss:{:.3f},Test F1 score:{:.3f}, Test Acc score:{:.3f}'.format(epoch,k, mean(test_loss_dict[k]), test_f1_dict[k],test_acc_dict[k]))
 
     dict_temp={ 'seed':seed,
                 'test_loss':test_loss_dict,

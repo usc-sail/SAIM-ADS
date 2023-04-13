@@ -515,6 +515,8 @@ def gen_validate_score_SBERT_text_visual_perceiver_single_task_topic(model,loade
 
 
 
+
+
             
 
 

@@ -78,7 +78,19 @@ class Multi_Task_Shot_Dataset(Dataset):
         #get the label for the tasks 
         label_dict={}
         for k in self.task_label_map.keys():
-            label_dict[k]=self.task_label_map[k][self.csv_data[k].iloc[idx]]
+
+            if((k=='social_message') or (k=='Transition_val')):
+
+                label_c=self.task_label_map[k][self.csv_data[k].iloc[idx]]
+                ret_label=np.zeros((len(self.task_label_map[k])))
+                ret_label[label_c]=1
+                label_dict[k]=ret_label
+
+            else:
+
+                label_dict[k]=self.task_label_map[k][self.csv_data[k].iloc[idx]]
+
+        
 
         return(shot_feat_padded,attention_mask,label_dict)
             

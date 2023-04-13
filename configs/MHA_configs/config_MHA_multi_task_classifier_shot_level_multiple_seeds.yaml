@@ -12,14 +12,13 @@ parameters:
   early_stop: 5
   max_length: 35
   num_workers: 1
-  task_dict: {'Topic':18, 'social_message':2}
+  task_dict: {'Topic':18,'social_message':2}
   num_runs: 5
 
 device:
   is_cuda: True
 
 loss:
-  loss_dict: {'Topic':'cross_entropy_loss','social_message':'bce_cross_entropy_loss'}
   weight_dict: {'Topic':0.4,'social_message':0.6}
 
 optimizer:
@@ -33,7 +32,7 @@ optimizer:
   verbose: True
 
 model:
-  model_type: 'MHA_attn_single_task_classifier_CLIP_features_shot_level_multiple_seeds'
+  model_type: 'MHA_attn_multi_task_classifier_CLIP_features_shot_level_multiple_seeds'
   input_dim: 512
   model_dim: 256
   num_heads: 4
