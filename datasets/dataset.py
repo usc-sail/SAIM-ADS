@@ -572,7 +572,6 @@ class SAIM_single_task_dataset_visual_text_shot_level(Dataset):
         self.task_name=task_name
         self.tokenizer=tokenizer
         self.base_folder=base_folder
-
         with open(self.transcripts_file, 'r') as f:
             self.transcripts_dict = json.load(f)
 

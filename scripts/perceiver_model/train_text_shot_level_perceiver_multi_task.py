@@ -37,8 +37,9 @@ from scipy.stats.stats import pearsonr
 import json
 from statistics import mean
 import numpy as np 
+from transformers import BertTokenizer, BertModel, BertConfig
 
-config_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/configs/MHA_configs/config_MHA_multi_task_classifier_shot_level_multiple_seeds.yaml"
+config_file=""
 
 #load the config file
 with open(config_file,'r') as f:
@@ -47,6 +48,8 @@ with open(config_file,'r') as f:
 csv_file=config_data['data']['csv_file']
 topic_file=config_data['data']['topic_file']
 csv_data=pd.read_csv(csv_file)
+transcript_file=config_data['data']['transcript_file']
+base_folder=config_data['data']['base_folder']
 
 #task label map 
 task_dict=config_data['parameters']['task_dict']
@@ -63,30 +66,42 @@ label_map={'Topic':topic_dict,
 
 sampled_label_map={k:label_map[k] for k in task_dict.keys()}
 
-#basic parameters initialize regarding number of classes, max length of the sequence, fps, base fps, batch size, number of epochs, number of workers 
-num_classes=config_data['model']['n_classes']
-base_folder=config_data['data']['base_folder']
-max_length=config_data['parameters']['max_length']
+## general parameters 
+#parameters regarding number of classes, maximum audio length, maximum video length
+max_text_length=config_data['parameters']['text_max_length']
+max_video_length=config_data['parameters']['video_max_length']
 batch_size=config_data['parameters']['batch_size']
 num_epochs=config_data['parameters']['epochs']
 num_workers=config_data['parameters']['num_workers']
-input_dim=config_data['model']['input_dim']
-model_dim=config_data['model']['model_dim']
-num_heads=config_data['model']['num_heads']
-num_layers=config_data['model']['num_layers']
-input_dropout=config_data['model']['input_dropout']
-output_dropout=config_data['model']['output_dropout']
-model_dropout=config_data['model']['model_dropout']
+
+#parameters regarding the perceiver model
+text_dim=config_data['model']['text_dim']
+video_dim=config_data['model']['video_dim']
+dim=config_data['model']['dim']
+queries_dim=config_data['model']['queries_dim']
+depth=config_data['model']['depth']
+num_latents=config_data['model']['num_latents']
+cross_heads=config_data['model']['cross_heads']
+latent_heads=config_data['model']['latent_heads']
+cross_dim_head=config_data['model']['cross_dim_head']
+latent_dim_head=config_data['model']['latent_dim_head']
+latent_dim=config_data['model']['latent_dim']
+weight_tie_layers=config_data['model']['weight_tie_layers']
+seq_dropout_prob=config_data['model']['seq_dropout_prob']
+n_classes=config_data['model']['n_classes']
+use_queries=config_data['model']['use_queries']
+model_name=config_data['model']['model_name']
 model_type=config_data['model']['model_type']
+multi_run_folder=config_data['output']['multiple_run_folder']
+tokenizer=BertTokenizer.from_pretrained(model_name)
 
 option=model_type
 weight_comb_name=""
 for key in task_dict.keys():
     weight_comb_name=weight_comb_name+"_"+str(weight_dict[key])+"_"+str(key)
-
 option=option+weight_comb_name
 
-
+#num runs and multi run folder 
 num_runs=config_data['parameters']['num_runs']
 multi_run_folder=config_data['output']['multiple_run_folder']
 
@@ -130,7 +145,6 @@ activation_dict={'Topic':nn.Softmax(dim=-1),
 #sampled activation dict
 sampled_activation_dict={k:activation_dict[k] for k in task_dict.keys()}
 
-
 for i,seed in enumerate(seed_list):
 
     # global fixing here 
@@ -149,11 +163,18 @@ for i,seed in enumerate(seed_list):
     val_data=csv_data[csv_data['Split']=='val']
     test_data=csv_data[csv_data['Split']=='test']
 
-    #define the datasets : train and validation datasets
-    train_ds=Multi_Task_Shot_Dataset(train_data,max_length,sampled_label_map,base_folder)
-    val_ds=Multi_Task_Shot_Dataset(val_data,max_length,sampled_label_map,base_folder)
-    test_ds=Multi_Task_Shot_Dataset(test_data,max_length,sampled_label_map,base_folder)
-
+    train_ds=SAIM_multi_task_dataset_visual_text_shot_level(train_data,
+                                                                transcript_file,tokenizer,
+                                                                base_folder,sampled_label_map,
+                                                                max_text_length,max_video_length)
+    val_ds=SAIM_multi_task_dataset_visual_text_shot_level(val_data,
+                                                                transcript_file,tokenizer,
+                                                                base_folder,sampled_label_map,
+                                                                max_text_length,max_video_length)
+    test_ds=SAIM_multi_task_dataset_visual_text_shot_level(test_data,
+                                                                transcript_file,tokenizer,
+                                                                base_folder,sampled_label_map,
+                                                                max_text_length,max_video_length)
     #define the dataloaders and datasets
     train_dl=DataLoader(train_ds,
                         batch_size=batch_size,
@@ -175,15 +196,25 @@ for i,seed in enumerate(seed_list):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     #model here 
-    model=MHA_model_multi_task_classifier(input_dim=input_dim,
-                            model_dim=model_dim,
-                            num_heads=num_heads,
-                            num_layers=num_layers,
-                            input_dropout=input_dropout,
-                            output_dropout=output_dropout,
-                            model_dropout=model_dropout,
-                            task_dict=task_dict)
+    #define the model
+    params_dict={'text_dim':text_dim,
+                 'video_dim':video_dim,
+                 'dim':dim,
+                 'bert_model_name':model_name,
+                 'queries_dim':queries_dim,
+                 'num_classes':n_classes,
+                 'depth':depth,
+                 'num_latents':num_latents,
+                 'cross_heads':cross_heads,
+                 'latent_heads':latent_heads,
+                 'cross_dim_head':cross_dim_head,
+                 'latent_dim_head':latent_dim_head,
+                 'latent_dim':latent_dim,
+                 'weight_tie_layers':weight_tie_layers,
+                 'seq_dropout_prob':seq_dropout_prob,
+                 'use_queries':use_queries,}
 
+    model=Perceiver_TextVisual_multi_task_model(**params_dict)
 
     model_parameters = filter(lambda p: p.requires_grad, model.parameters())
     params = sum([np.prod(p.size()) for p in model_parameters])
@@ -242,38 +273,51 @@ for i,seed in enumerate(seed_list):
         step=0
         t = time.time()
 
+        #target labels dict for each task
         target_labels_dict={k:[] for k in task_dict.keys()}
         pred_labels_dict={k:[] for k in task_dict.keys()}
 
+        #predicted labels dict for each task
         pred_labels_np={k:[] for k in task_dict.keys()}
         target_labels_np={k:[] for k in task_dict.keys()}
 
+        #validation loss dict for each task
         val_loss_dict={k:[] for k in task_dict.keys()}
         train_loss_list=[] #overall training loss
-
+        
+        #f1 score and accuracy dict for each task
         f1_score_dict={k:[] for k in task_dict.keys()}
         acc_score_dict={k:[] for k in task_dict.keys()}
 
-        for id,(feat,mask,label_dict) in enumerate(tqdm(train_dl)):
+        for id,return_dict in enumerate(tqdm(train_dl)):
 
-            #forward pass 
-            feat=feat.to(device)
-            feat=feat.float()
+            # return dict contains the following keys: input ids, attention_maksk, token_type_ids
+            input_ids=return_dict['input_ids'].to(device)
+            attention_mask=return_dict['attention_mask'].to(device)
+            token_type_ids=return_dict['token_type_ids'].to(device)
+            label_dict=return_dict['label']
+
+            #return dict contains video features and attention mask
+            video_feat=return_dict['video_feat'].float()
+
+            #print dtype of video_feat
+            #print('dtype of video_feat:%s' %(video_feat.dtype))
+            video_feat=video_feat.to(device)
+            video_attn_mask=return_dict['video_attn_mask'].to(device)
 
             for task in label_dict.keys():
                 label_dict[task]=label_dict[task].to(device)
 
-            #label=label.to(device)
-            mask=mask.unsqueeze(1).unsqueeze(1)
-            mask=mask.to(device)
-
             optim_example.zero_grad()
-            task_logits=model(feat,mask)
+            task_logits=model(input_ids=input_ids,
+                         visual_inputs=video_feat,
+                         text_mask=attention_mask,
+                         visual_mask=video_attn_mask)
+            
 
             #loss calculation here
             loss=torch.tensor(0.0).to(device)
             
-
             #train loss dictionary
             for task in task_dict.keys():
                 #print(task_logits[task].shape,label_dict[task].shape,sampled_loss_function_dict[task])
@@ -319,12 +363,12 @@ for i,seed in enumerate(seed_list):
         logger.info('epoch: {:d}, time:{:.2f}'.format(epoch, time.time()-t))
         logger.info('Epoch:{:d},Overall Training loss:{:.3f}'.format(epoch,mean(train_loss_list)))
 
+        
         for k in task_dict.keys():
             logger.info('Epoch:{:d},Task:{},Train loss:{:.3f},Train F1 score:{:.3f},Train Acc score:{:.3f}'.format(epoch,k,mean(train_loss_dict[k]),f1_score_dict[k],acc_score_dict[k]))
 
         logger.info('Evaluating the dataset')
-        #evaluate the model here
-        val_loss,val_loss_dict,val_f1_dict,val_acc_dict=gen_validate_score_MHA_multi_task(model,val_dl,device,task_dict,sampled_activation_dict,sampled_loss_function_dict,weight_dict)
+        val_loss,val_loss_dict,val_f1_dict,val_acc_dict=gen_validate_score_text_visual_perceiver_multi_task(model,val_dl,device,task_dict,sampled_activation_dict,sampled_loss_function_dict,weight_dict)
 
         logger.info('Epoch:{:d},Overall validation loss:{:.3f}'.format(epoch,val_loss))
         for k in task_dict.keys():
@@ -355,7 +399,7 @@ for i,seed in enumerate(seed_list):
     model.eval()
 
     #load the best model here
-    test_loss,test_loss_dict,test_f1_dict,test_acc_dict=gen_validate_score_MHA_multi_task(model,test_dl,device,task_dict,sampled_activation_dict,sampled_loss_function_dict,weight_dict)
+    test_loss,test_loss_dict,test_f1_dict,test_acc_dict=gen_validate_score_text_visual_perceiver_multi_task(model,test_dl,device,task_dict,sampled_activation_dict,sampled_loss_function_dict,weight_dict)
                     
     #calculate the f1 score here
     for k in task_dict.keys():
@@ -379,6 +423,20 @@ destination_file=os.path.join(destination_run_folder,'multi_run_'+option+'_'+end
 #save the dictionary to the json file
 with open(destination_file, 'w') as fp:
     json.dump(dict_multiple_seeds, fp, indent=4)
+
+
+
+
+
+
+
+            
+
+
+
+
+
+
 
 
 

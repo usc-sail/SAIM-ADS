@@ -229,7 +229,6 @@ class MHA_model_single_task_classifier(nn.Module):
 class MHA_model_multi_task_classifier(nn.Module):
 
     def __init__(self,input_dim, model_dim, num_heads, num_layers, input_dropout, output_dropout, model_dropout, task_dict):
-
         """
         Inputs:
             input_dim - Hidden dimensionality of the input
