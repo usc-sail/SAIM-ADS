@@ -7,13 +7,13 @@ import time
 import pickle
 
 #append path of datasets and models 
-sys.path.append(os.path.join('..', '..', '..','datasets'))
-sys.path.append(os.path.join('..', '..', '..','models'))
-sys.path.append(os.path.join('..', '..', '..','configs'))
-sys.path.append(os.path.join('..', '..', '..','losses'))
-sys.path.append(os.path.join('..', '..','..','optimizers'))
-sys.path.append(os.path.join('..', '..','..','utils'))
-sys.path.append(os.path.join('..', '..'))
+sys.path.append(os.path.join('..', '..','datasets'))
+sys.path.append(os.path.join('..', '..','models'))
+sys.path.append(os.path.join('..', '..','configs'))
+sys.path.append(os.path.join('..', '..','losses'))
+sys.path.append(os.path.join('..', '..','optimizers'))
+sys.path.append(os.path.join('..', '..','utils'))
+sys.path.append(os.path.join('..'))
 #import all libraries 
 import random
 from ast import literal_eval
@@ -24,7 +24,7 @@ import torchvision
 from torch.utils.data import Dataset, DataLoader
 from multi_task_dataset import *
 from loss_functions import *
-from MHA_models import *
+from perceiver_model import *
 from optimizer import *
 from metrics import calculate_stats
 import torch.nn as nn
@@ -39,7 +39,7 @@ from statistics import mean
 import numpy as np 
 from transformers import BertTokenizer, BertModel, BertConfig
 
-config_file=""
+config_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/configs/perceiver_configs/config_perceiver_multi_task_text_shot_level_multiple_seeds.yaml"
 
 #load the config file
 with open(config_file,'r') as f:
@@ -88,7 +88,6 @@ latent_dim_head=config_data['model']['latent_dim_head']
 latent_dim=config_data['model']['latent_dim']
 weight_tie_layers=config_data['model']['weight_tie_layers']
 seq_dropout_prob=config_data['model']['seq_dropout_prob']
-n_classes=config_data['model']['n_classes']
 use_queries=config_data['model']['use_queries']
 model_name=config_data['model']['model_name']
 model_type=config_data['model']['model_type']
@@ -200,9 +199,8 @@ for i,seed in enumerate(seed_list):
     params_dict={'text_dim':text_dim,
                  'video_dim':video_dim,
                  'dim':dim,
-                 'bert_model_name':model_name,
+                 'text_model_name':model_name,
                  'queries_dim':queries_dim,
-                 'num_classes':n_classes,
                  'depth':depth,
                  'num_latents':num_latents,
                  'cross_heads':cross_heads,
@@ -212,7 +210,8 @@ for i,seed in enumerate(seed_list):
                  'latent_dim':latent_dim,
                  'weight_tie_layers':weight_tie_layers,
                  'seq_dropout_prob':seq_dropout_prob,
-                 'use_queries':use_queries,}
+                 'task_dict':task_dict,
+                 'use_queries':use_queries}
 
     model=Perceiver_TextVisual_multi_task_model(**params_dict)
 

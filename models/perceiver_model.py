@@ -479,8 +479,12 @@ class Perceiver_TextVisual_multi_task_model(nn.Module):
         self.task_dict=task_dict #dictionary with the tasks
         self.use_queries=use_queries #use queries or not
 
+        #placheholder for the logits dim
+        self.logits_dim=self.dim
+
+
         #initialize bert model
-        self.bert_model=BertModel.from_pretrained(self.bert_model_name)
+        self.bert_model=BertModel.from_pretrained(self.text_model_name)
 
         #freeze the gradient
         for param in self.bert_model.parameters():
@@ -519,7 +523,7 @@ class Perceiver_TextVisual_multi_task_model(nn.Module):
 
         self.task_fc_dict=nn.ModuleDict()
         for task in self.task_dict.keys():
-            self.task_fc_dict['fc_'+task]=nn.Linear(self.model_dim, self.task_dict[task])
+            self.task_fc_dict['fc_'+task]=nn.Linear(self.latent_dim, self.task_dict[task])
 
     def forward(self,input_ids,visual_inputs,text_mask,visual_mask,queries=None):
         
@@ -554,6 +558,7 @@ class Perceiver_TextVisual_multi_task_model(nn.Module):
             latent_vectors=self.perceiver_model(inputs,mask=mask)
             #perform mean pooling in terms of the sequence length
             latent_vectors=latent_vectors.mean(dim=1)
+            #print(latent_vectors.shape)
 
             for task in self.task_dict.keys():
                 task_outputs[task]=self.task_fc_dict['fc_'+task](latent_vectors)
