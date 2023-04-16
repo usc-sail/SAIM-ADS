@@ -48,7 +48,7 @@ def generate_social_message_classification_report(intersect_keys,total_keys,labe
         pred_sm = pred_labels[key]
         if(pred_sm not in label_map.keys()):
 
-            #assign topic at random
+            # assign topic at random
             pred_sm_list.append(label_map[np.random.choice(list(label_map.keys()))])
             cnt_num+=1
         else:
@@ -88,16 +88,21 @@ test_data_keys=[os.path.splitext(test_data['video_file'].iloc[i])[0] for i in np
 if(task_name=="topic"):
 
     topic_labels=list(test_data['Topic']) #Topic list
-    label_file="/media/data/public-data/ads_complete_repo/ads_codes/SAIM-ADS/data/topic_list_18.json"
+    label_file="/project/shrikann_35/tiantiaf/ads_complete_repo/ads_codes/SAIM-ADS/data/topic_list_18.json"
     with open(label_file, 'r') as f:
         label_map=json.load(f)
     
 elif(task_name=="social_message"):
 
-    social_message_labels=list(test_data['social_message']) #social message list
+    social_message_labels=list(test_data['social_message']) # social message list
     label_map={'No':0,'Yes':1}
+    
+elif(task_name=="transition"):
 
-#predicted and intersecting keys
+    social_message_labels=list(test_data['Transition_val']) # transition list
+    label_map={'Transition':0,'No transition':1}
+
+# predicted and intersecting keys
 pred_keys=list(pred_labels.keys())
 intersect_pred_keys=list(set(test_data_keys) & set(pred_keys))
 print(len(intersect_pred_keys))
@@ -106,11 +111,17 @@ gt_topic_list=[]
 pred_topic_list=[]
 cnt_num=0
 
+import pdb
+pdb.set_trace()
+
 #task names
 if(task_name=="topic"):
     gt_list,pred_list=generate_topic_classification_report(intersect_pred_keys,test_data_keys,label_map,topic_labels,pred_labels)
 
 elif(task_name=="social_message"):
+    gt_list,pred_list=generate_social_message_classification_report(intersect_pred_keys,test_data_keys,label_map,social_message_labels,pred_labels)
+
+elif(task_name=="transition"):
     gt_list,pred_list=generate_social_message_classification_report(intersect_pred_keys,test_data_keys,label_map,social_message_labels,pred_labels)
 
 print(len(gt_list),len(pred_list))

@@ -1,4 +1,5 @@
 
 
-python transcript_zero_shot_classify_flan.py --model_name flan-t5-xl --task_name social_message --cache_folder /media/data/public-data/llm --dest_folder /media/data/public-data/ads_complete_repo/ads_transcripts/combined_transcripts/en_combined_transcripts.json
-# python evaluate_local_zero_shot_models.py --model_name flan-t5-xl --task_name social_message
+python transcript_zero_shot_classify_flan.py --model_name flan-t5-xl --task_name transition --cache_folder /project/shrikann_35/tiantiaf/llm --dest_folder /project/shrikann_35/tiantiaf/ads_complete_repo/ads_transcripts/combined_transcripts/en_combined_transcripts.json
+python transcript_zero_shot_classify_flan.py --model_name flan-t5-large --task_name transition --cache_folder /project/shrikann_35/tiantiaf/llm --dest_folder /project/shrikann_35/tiantiaf/ads_complete_repo/ads_transcripts/combined_transcripts/en_combined_transcripts.json
+# python evaluate_local_zero_shot_models.py --model_name flan-t5-xxl --task_name transition --transcript_file /project/shrikann_35/tiantiaf/ads_complete_repo/ads_transcripts/combined_transcripts/en_combined_transcripts.json --split_file /project/shrikann_35/tiantiaf/ads_complete_repo/ads_codes/SAIM-ADS/data/SAIM_data/SAIM_multi_task_tone_soc_message_topic_data_no_zero_files.csv
