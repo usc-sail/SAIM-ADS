@@ -89,19 +89,20 @@ shot_dict_total={}
 
 for shot_subfolder in tqdm(shot_subfolders):
 
-    shot_subfolder_path=os.path.join(source_folder,shot_subfolder)
-    shot_files=os.listdir(shot_subfolder_path)
+    #shot_subfolder_path=os.path.join(source_folder,shot_subfolder)
+    shot_files=os.listdir(shot_subfolder)
 
     shot_dict_temp={}
 
-    shot_filename=os.path.join(destination_folder,shot_subfolder+".json")
+    shot_filename=os.path.join(destination_folder,shot_subfolder.split("/")[-1]+".json")
 
     if(os.path.exists(shot_filename) is False):
+        #print(shot_filename)
         #list of shot files
         for shot_file in tqdm(shot_files):
 
             #shot file path
-            shot_file_path=os.path.join(shot_subfolder_path,shot_file)
+            shot_file_path=os.path.join(shot_subfolder,shot_file)
             label_list_val,val_list=generate_shot_tags(shot_file_path,model,preprocess,text_features,device,label_list)
             
             #create a dictionary with the labels and the values
