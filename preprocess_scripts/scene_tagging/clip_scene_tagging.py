@@ -52,13 +52,21 @@ def generate_shot_tags(shot_file_name,model,preprocess,text_features,device,labe
 ap=argparse.ArgumentParser()
 ap.add_argument('--label_file',required=True,help='path to the label file')
 ap.add_argument('--source_folder',required=True,help='path to the source folder')
+ap.add_argument('--file_list',required=True,help='path to the file list')
 ap.add_argument('--destination_folder',required=True,help='path to the destination folder')
 
 args_list=vars(ap.parse_args())
 
+#label file, source folder, destination folder, file list
 label_file=args_list['label_file']
 source_folder=args_list['source_folder']
 destination_folder=args_list['destination_folder']
+file_list=args_list['file_list']
+
+with open(file_list,"r") as f:
+    shot_subfolders=f.readlines()
+
+shot_subfolders=[shot.strip().split("\n")[0] for shot in shot_subfolders]
 
 with open(label_file,'r') as f:
     label_list=f.readlines()
@@ -72,7 +80,8 @@ with torch.no_grad():
     text_features = model.encode_text(text_inputs)
 text_features /= text_features.norm(dim=-1, keepdim=True)
 
-shot_subfolders=os.listdir(source_folder)
+#shot_subfolders=os.listdir(source_folder)
+shot_subfolders=[os.path.join(source_folder,subfold) for subfold in shot_subfolders]
 
 
 num_files=0
