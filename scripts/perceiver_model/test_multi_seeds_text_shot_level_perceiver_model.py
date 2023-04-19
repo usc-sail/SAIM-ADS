@@ -37,7 +37,6 @@ from log_file_generate import *
 from scipy.stats.stats import pearsonr
 from transformers import BertTokenizer, BertModel, BertConfig
 import json 
-
 def load_config(config_file):
 
     with open(config_file,'r') as f:

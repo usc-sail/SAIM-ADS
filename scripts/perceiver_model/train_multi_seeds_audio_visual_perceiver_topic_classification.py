@@ -5,7 +5,8 @@ import os
 import sys 
 import time 
 import pickle
-import numpy as np
+import numpy as np 
+
 #append path of datasets and models 
 sys.path.append(os.path.join('..', '..','datasets'))
 sys.path.append(os.path.join('..', '..','models'))
@@ -34,88 +35,92 @@ from evaluate_model import *
 import argparse
 from log_file_generate import *
 from scipy.stats.stats import pearsonr
-import wandb
 import json
 
-#fix seed for reproducibility
-seed_value=123457
-np.random.seed(seed_value) # cpu vars
-torch.manual_seed(seed_value) # cpu  vars
-random.seed(seed_value) # Python
-torch.cuda.manual_seed(seed_value)
-torch.cuda.manual_seed_all(seed_value)
-torch.backends.cudnn.deterministic = True
-torch.backends.cudnn.benchmark = False
+######## global config file declaration ########
+config_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/configs/perceiver_configs/config_audio_visual_perceiver_topic_classification_multiple_seeds.yaml"
+#"/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/configs/perceiver_configs/config_audio_visual_perceiver_multiple_seeds.yaml"
+#"/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/configs/perceiver_configs/config_perceiver_single_task_classifier_SBERT_features_shot_level_multiple_seeds.yaml"
+with open(config_file,'r') as f:
+    config_data=yaml.safe_load(f)
 
-def load_config(config_file):
+#csv and embedding + topic files 
+csv_file=config_data['data']['csv_file']
+embedding_file=config_data['data']['embedding_file']
+topic_file=config_data['data']['topic_file']
+csv_data=pd.read_csv(csv_file)
+task_name=config_data['parameters']['task_name']
 
-    with open(config_file,'r') as f:
-        config_data=yaml.safe_load(f)
-    return(config_data)
+#load the topic file 
+with open(topic_file,'r') as f:
+    label_map=json.load(f)
 
-def main(config_data):
+#parameters regarding number of classes, maximum audio length, maximum video length
+max_audio_length=config_data['parameters']['audio_max_length']
+max_video_length=config_data['parameters']['video_max_length']
+batch_size=config_data['parameters']['batch_size']
+num_epochs=config_data['parameters']['epochs']
+num_workers=config_data['parameters']['num_workers']
 
-    csv_file=config_data['data']['csv_file']
-    embedding_file=config_data['data']['embedding_file']
-    csv_data=pd.read_csv(csv_file)
-    task_name=config_data['parameters']['task_name']
-    topic_file=config_data['data']['topic_file']
+#parameters regarding the perceiver model
+audio_dim=config_data['model']['audio_dim']
+video_dim=config_data['model']['video_dim']
+dim=config_data['model']['dim']
+queries_dim=config_data['model']['queries_dim']
+depth=config_data['model']['depth']
+num_latents=config_data['model']['num_latents']
+cross_heads=config_data['model']['cross_heads']
+latent_heads=config_data['model']['latent_heads']
+cross_dim_head=config_data['model']['cross_dim_head']
+latent_dim_head=config_data['model']['latent_dim_head']
+latent_dim=config_data['model']['latent_dim']
+weight_tie_layers=config_data['model']['weight_tie_layers']
+seq_dropout_prob=config_data['model']['seq_dropout_prob']
+n_classes=config_data['model']['n_classes']
+use_queries=config_data['model']['use_queries']
+model_type=config_data['model']['model_type']
+option=model_type+"_"+config_data['parameters']['task_name']
+multi_run_folder=config_data['output']['multiple_run_folder']
 
-    #load the topic file
-    with open(topic_file,'r') as f:
-        label_map=json.load(f)
+#create the model type folder inside the multi run folder
+destination_run_folder=os.path.join(multi_run_folder,model_type)
+if not os.path.exists(destination_run_folder):
+    os.mkdir(destination_run_folder)
+
+#create random seeds for multiple runs 
+seed_list = [random.randint(1, 100000) for _ in range(5)]
+
+test_loss_multiple_seeds_list=[]
+test_f1_multiple_seeds_list=[]
+test_acc_multiple_seeds_list=[]
+val_best_f1_multiple_seeds_list=[]
+val_best_acc_multiple_seeds_list=[]
+
+#device definition
+if(config_data['device']['is_cuda']):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+#seed value set 
+dict_multiple_seeds={}
+
+for i,seed in enumerate(seed_list):
+
+    # global fixing here 
+    np.random.seed(seed) # cpu vars
+    torch.manual_seed(seed) # cpu  vars
+    random.seed(seed) # Python
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    print('Run number: %d with random seed: %d' %(i+1,seed))
 
     #define the datasets 
     train_data=csv_data[csv_data['Split']=='train']
     val_data=csv_data[csv_data['Split']=='val']
+    test_data=csv_data[csv_data['Split']=='test']
 
-    #parameters regarding number of classes, maximum audio length, maximum video length
-    max_audio_length=config_data['parameters']['audio_max_length']
-    max_video_length=config_data['parameters']['video_max_length']
-    batch_size=config_data['parameters']['batch_size']
-    num_epochs=config_data['parameters']['epochs']
-    num_workers=config_data['parameters']['num_workers']
-
-    #parameters regarding the perceiver model
-    audio_dim=config_data['model']['audio_dim']
-    video_dim=config_data['model']['video_dim']
-    dim=config_data['model']['dim']
-    queries_dim=config_data['model']['queries_dim']
-    depth=config_data['model']['depth']
-    num_latents=config_data['model']['num_latents']
-    cross_heads=config_data['model']['cross_heads']
-    latent_heads=config_data['model']['latent_heads']
-    cross_dim_head=config_data['model']['cross_dim_head']
-    latent_dim_head=config_data['model']['latent_dim_head']
-    latent_dim=config_data['model']['latent_dim']
-    weight_tie_layers=config_data['model']['weight_tie_layers']
-    seq_dropout_prob=config_data['model']['seq_dropout_prob']
-    n_classes=config_data['model']['n_classes']
-    use_queries=config_data['model']['use_queries']
-    model_type=config_data['model']['model_type']
-    option=model_type+"_"+config_data['parameters']['task_name']
-
-    #Perceiver model declaration
-    model=Perceiver_AudioVisual_Model(audio_dim,video_dim,dim,
-                            queries_dim,
-                            n_classes,depth,
-                            num_latents,cross_heads,
-                            latent_heads,cross_dim_head,
-                            latent_dim_head,latent_dim,
-                            weight_tie_layers,seq_dropout_prob,
-                            use_queries)
-    
-    #define the device here
-    if(config_data['device']['is_cuda']):
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    #model parameters 
-    model_parameters = filter(lambda p: p.requires_grad, model.parameters())
-    params = sum([np.prod(p.size()) for p in model_parameters])
-    print('Number of parameters: %d' %(params))
-    model=model.to(device)
-
-    #datasets and dataloaders
+    #dataset definitions
     train_ds=SAIM_single_task_dataset_audio_visual(csv_data=train_data,
                                                 embedding_file=embedding_file,
                                                 label_map=label_map,
@@ -123,9 +128,16 @@ def main(config_data):
                                                 audio_max_length=max_audio_length,
                                                 video_max_length=max_video_length,
                                                 task_name=task_name)
-
-
+    
     val_ds=SAIM_single_task_dataset_audio_visual(csv_data=val_data,
+                                                embedding_file=embedding_file,
+                                                label_map=label_map,
+                                                num_classes=n_classes,
+                                                audio_max_length=max_audio_length,
+                                                video_max_length=max_video_length,
+                                                task_name=task_name)
+    
+    test_ds=SAIM_single_task_dataset_audio_visual(csv_data=test_data,
                                                 embedding_file=embedding_file,
                                                 label_map=label_map,
                                                 num_classes=n_classes,
@@ -144,6 +156,29 @@ def main(config_data):
                         shuffle=config_data['parameters']['val_shuffle'],
                         num_workers=num_workers)
     
+    test_dl=DataLoader(test_ds,
+                        batch_size=batch_size,
+                        shuffle=config_data['parameters']['test_shuffle'],
+                        num_workers=num_workers)
+    
+    #Perceiver model declaration
+    model=Perceiver_AudioVisual_Model(audio_dim,
+                            video_dim,
+                            dim,
+                            queries_dim,
+                            n_classes,depth,
+                            num_latents,cross_heads,
+                            latent_heads,cross_dim_head,
+                            latent_dim_head,latent_dim,
+                            weight_tie_layers,seq_dropout_prob,
+                            use_queries)
+    
+    #model parameters 
+    model_parameters = filter(lambda p: p.requires_grad, model.parameters())
+    params = sum([np.prod(p.size()) for p in model_parameters])
+    print('Number of parameters: %d' %(params))
+    model=model.to(device)
+    
     ############################# loss function + optimizers definition here ################################
     if(config_data['loss']['loss_option']=='bce_cross_entropy_loss'):
         criterion = binary_cross_entropy_loss(device,pos_weights=None)
@@ -151,11 +186,9 @@ def main(config_data):
     elif(config_data['loss']['loss_option']=='cross_entropy_loss'):
         criterion=multi_class_cross_entropy_loss(device)
 
-    
     if(config_data['optimizer']['choice']=='Adam'):
         optim_example=optimizer_adam(model,float(config_data['optimizer']['lr']))
 
-    #create a folder with each individual model + create a log file for each date time instant
     timestr = time.strftime("%Y%m%d-%H%M%S")
     filename=timestr+'_'+option+'_log.logs'
     yaml_filename=timestr+'_'+option+'.yaml'
@@ -194,10 +227,12 @@ def main(config_data):
     early_stop_cnt=0
     train_loss_stats=[]
     val_loss_stats=[]
-    log_softmax=nn.LogSoftmax(dim=-1)
+    log_softmax= nn.Softmax(dim=-1)
     best_f1_score=0
+    model.train(True)
 
     for epoch in range(1, num_epochs+1): #main outer loop
+
 
         train_loss_list=[]
         train_logits=[]
@@ -263,20 +298,9 @@ def main(config_data):
         logger.info('Epoch:{:d},Overall Training loss:{:.3f},Overall training Acc:{:.3f}, Overall F1:{:.3f}'.format(epoch,mean(train_loss_list),train_acc,train_f1))
 
         logger.info('Evaluating the dataset')
-        #write the validation code here 
-
         val_loss,val_acc,val_f1=gen_validate_score_perceiver_single_task_topic(model,val_dl,device,criterion)
         logger.info('Epoch:{:d},Overall Validation loss:{:.3f},Overall validation Acc:{:.3f}, Overall F1:{:.3f}'.format(epoch,val_loss,val_acc,val_f1))
 
-        #wandb logging
-        metrics_dict={'Train_loss':mean(train_loss_list),
-            'Train_Acc':train_acc,
-            'Train_F1':train_f1,
-            'Valid_loss':val_loss,
-            'Valid_Acc':val_acc,
-            'Valid_corr':val_f1,
-            'Epoch':epoch}   #add epoch here to later switch the x-axis with epoch rather than actual wandb log
-        
         model.train(True)
 
         if(val_f1>best_f1_score):
@@ -291,17 +315,39 @@ def main(config_data):
             print('Validation performance does not improve for %d iterations' %(early_stop_counter))
             break
 
+    #test the model 
+    print('Training complete. Resuming testing with current seed')
+    model.eval()
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--config_file', help='Location of configuration data', type=str, required=True)
-    args = vars(parser.parse_args())
-    config_data=load_config(args['config_file'])
-    main(config_data)  
+    #test loss, accuracy and F1 score
+    test_loss,test_acc,test_f1=gen_validate_score_perceiver_single_task_topic(model,test_dl,device,criterion)
 
+    #current seed - test loss, accuracy and F1 score
+    print('Current seed: %d, Test loss: %f, Test accuracy: %f, Test f1: %f' %(seed,test_loss,test_acc,test_f1))
 
+    test_f1_multiple_seeds_list.append(test_f1)
+    test_loss_multiple_seeds_list.append(test_loss)
+    test_acc_multiple_seeds_list.append(test_acc)
 
-
-
+    dict_temp={'seed':seed,
+                'test_loss':test_loss,
+                'test_acc':test_acc,
+                'test_f1':test_f1,
+                'val_f1':best_f1_score,
+                'timestamp':timestr}
     
-    
+    dict_multiple_seeds['run_'+str(i)]=dict_temp
+
+#obtain the timestring here 
+end_time_str=time.strftime("%Y%m%d-%H%M%S")
+
+#dictionary file 
+destination_file=os.path.join(destination_run_folder,'multi_run_'+option+'_'+end_time_str+'.json')
+
+#save the dictionary to the json file
+with open(destination_file, 'w') as fp:
+    json.dump(dict_multiple_seeds, fp, indent=4)
+
+
+
+

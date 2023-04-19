@@ -4,6 +4,7 @@ import numpy as np
 import pickle 
 from statistics import mean, median
 from tqdm import tqdm 
+import cv2
 
 def extract_clip_features_stats(clip_feature_path_list):
 
@@ -128,9 +129,76 @@ def check_ast_features_stats(ast_file):
     # 25 percentile 4.0
     # 90 percentile 22.0
     # 50 percentile 9.0
-#print(ast_embeds.keys())
-ast_file="/data/digbose92/ads_complete_repo/ads_features/ast_embeddings/ast_embs_0.5.pkl"
-check_ast_features_stats(ast_file)
+
+def check_total_duration_video_files(csv_file,video_file_name):
+
+    csv_data=pd.read_csv(csv_file)
+    clip_feature_path=csv_data['clip_feature_path'].tolist()
+    clip_feature_keys=[os.path.splitext(x.split("/")[-1])[0] for x in clip_feature_path]
+
+    with open(video_file_name, "r") as f:
+        video_file_list = f.readlines()
+
+    video_file_list=[x.strip().split("\n")[0] for x in video_file_list]
+    video_file_keys=[os.path.splitext(x.split("/")[-1])[0] for x in video_file_list]
+
+    intersect_keys=list(set(clip_feature_keys) & set(video_file_keys))
+
+    file_duration_list=[]
+    num_files=0
+
+    for key in tqdm(intersect_keys):
+
+        video_file_index=video_file_keys.index(key)
+        video_file_path=video_file_list[video_file_index]
+
+        #compute the duration of the file 
+        video_data=cv2.VideoCapture(video_file_path)
+        fps = video_data.get(cv2.CAP_PROP_FPS)
+        num_frames = int(video_data.get(cv2.CAP_PROP_FRAME_COUNT))
+        duration = num_frames/fps
+
+        file_duration_list.append(duration)
+        num_files=num_files+1
+
+    print("Mean",mean(file_duration_list))
+    print("Median",median(file_duration_list))
+    print("Max",max(file_duration_list))
+    print("Min",min(file_duration_list))
+    print('75 percentile',np.percentile(file_duration_list, 75))
+    print('25 percentile',np.percentile(file_duration_list, 25))
+    print('Sum of all durations',sum(file_duration_list))
+    print('Number of files',num_files)
+
+def count_number_of_shots(folder,csv_file):
+
+    csv_data=pd.read_csv(csv_file)
+    clip_feature_path=csv_data['clip_feature_path'].tolist()
+    clip_feature_keys=[os.path.splitext(x.split("/")[-1])[0] for x in clip_feature_path]
+
+    shot_file_list=os.listdir(folder)
+    shot_file_keys=[os.path.splitext(x.split("/")[-1])[0] for x in shot_file_list]
+
+    intersect_keys=list(set(clip_feature_keys) & set(shot_file_keys))
+    num_files=0
+    for key in tqdm(intersect_keys):
+        shot_file_index=shot_file_keys.index(key)
+        shot_file_path=os.path.join(folder,shot_file_list[shot_file_index])
+        num_files=num_files+len(os.listdir(shot_file_path))
+
+    print("Number of files",num_files)
+    return(num_files)
+
+
+# video_folder=""
+csv_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/SAIM_data/SAIM_multi_task_tone_soc_message_topic_data_no_zero_files.csv"
+video_file_name="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/lomond_available_file_path.txt"
+folder="/data/digbose92/ads_complete_repo/ads_videos/shot_folder/PySceneDetect"
+count_number_of_shots(folder,csv_file)
+#check_total_duration_video_files(csv_file,video_file_name)
+# #print(ast_embeds.keys())
+# ast_file="/data/digbose92/ads_complete_repo/ads_features/ast_embeddings/ast_embs_0.5.pkl"
+# check_ast_features_stats(ast_file)
 
 # shot_folder="/data/digbose92/ads_complete_repo/ads_features/shot_embeddings/vit_features"
 # extract_shot_features_stats(shot_folder)

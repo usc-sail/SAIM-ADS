@@ -117,7 +117,7 @@ accuracy=accuracy_score(gt_list,pred_list)
 print('Accuracy for the model {} is {}'.format(model,accuracy))
 
 #compute the f1 score
-f1=f1_score(gt_list,pred_list,average='weighted')
+f1=f1_score(gt_list,pred_list,average='macro')
 print('F1 score for the model {} is {}'.format(model,f1))
 
 #compute the precision score

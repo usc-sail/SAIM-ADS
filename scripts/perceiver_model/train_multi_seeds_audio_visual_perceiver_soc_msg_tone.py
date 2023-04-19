@@ -48,10 +48,6 @@ csv_data=pd.read_csv(csv_file)
 task_name=config_data['parameters']['task_name']
 
 
-#define the datasets 
-train_data=csv_data[csv_data['Split']=='train']
-val_data=csv_data[csv_data['Split']=='val']
-
 if(task_name=='Transition_val'):
     label_map={'No transition':0,'Transition':1}
 
