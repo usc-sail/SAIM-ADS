@@ -93,7 +93,7 @@ def test_model_topic(model_filename,config_data,device,seed_value):
 
     test_dl=DataLoader(test_ds,
                                 batch_size=batch_size,
-                                shuffle=config_data['parameters']['train_shuffle'],
+                                shuffle=config_data['parameters']['test_shuffle'],
                                 num_workers=num_workers)
     
     #loss function
@@ -239,6 +239,7 @@ for run in list(run_data.keys()):
     model_filename=os.path.join(model_subfolder,model_timestamp_folder,model_timestamp_folder+"_best_model.pt")
 
     config_data=load_config(yaml_file)
+
     #print(timestamp,seed,,model_filename)
     if(os.path.exists(yaml_file) and os.path.exists(model_filename)):
         #print(yaml_file,model_filename)

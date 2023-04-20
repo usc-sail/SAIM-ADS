@@ -109,6 +109,89 @@ def gen_validate_score_LSTM_social_message_model(model,loader,device,criterion):
 
     return(mean(val_loss_list),val_acc,val_f1,cm)
 
+def gen_validate_score_LSTM_single_task_soc_message_tone(model,loader,device,criterion):
+
+    print("starting validation")
+    Sig = nn.Sigmoid()
+    model.eval()
+    target_labels=[]
+    pred_labels=[]
+    step=0
+    val_loss_list=[]
+
+    with torch.no_grad():
+        for i, (vid_feat,label,lens) in enumerate(tqdm(loader)):
+
+            vid_feat=vid_feat.float()
+            label=label.float()
+            vid_feat=vid_feat.to(device)
+            label=label.to(device)
+
+            vid_feat,label,lens = sort_batch(vid_feat,label,lens)
+            logits=model(vid_feat,lens.cpu().numpy())
+            logits_sig=Sig(logits)
+
+            loss=criterion(logits,label)
+            val_loss_list.append(loss.item())
+            target_labels.append(label.cpu())
+            pred_labels.append(logits_sig.cpu())
+            step=step+1
+
+    target_label_val=torch.cat(target_labels).numpy()
+    pred_label_val=torch.cat(pred_labels).numpy()
+    
+    pred_labels_discrete=np.where(pred_label_val>=0.5,1,0)
+
+    #convert pred_labels_discrete to 0 and 1 using argmax
+    pred_labels_array=np.argmax(pred_labels_discrete,axis=1)
+    target_labels_array=np.argmax(target_label_val,axis=1)
+
+    val_acc=accuracy_score(target_labels_array,pred_labels_array)
+    val_f1=f1_score(target_labels_array,pred_labels_array,average='macro')
+
+    return(mean(val_loss_list),val_acc,val_f1)
+
+def gen_validate_score_LSTM_single_task_topic(model,loader,device,criterion):
+
+    print("starting validation")
+    _softmax=nn.Softmax(dim=-1)
+    model.eval()
+    target_labels=[]
+    pred_labels=[]
+    step=0
+    val_loss_list=[]
+
+    with torch.no_grad():
+        for i, (vid_feat,label,lens) in enumerate(tqdm(loader)):
+
+            vid_feat=vid_feat.float()
+            vid_feat=vid_feat.to(device)
+            label=label.to(device)
+
+            vid_feat,label,lens = sort_batch(vid_feat,label,lens)
+            logits=model(vid_feat,lens.cpu().numpy())
+            val_logits=_softmax(logits)
+            y_pred=torch.max(val_logits, 1)[1]
+
+
+            loss=criterion(logits,label)
+            val_loss_list.append(loss.item())
+            target_labels.append(label.cpu())
+            pred_labels.append(y_pred.cpu())
+            step=step+1
+
+    target_label_val=torch.cat(target_labels).numpy()
+    pred_label_val=torch.cat(pred_labels).numpy()
+    
+    #convert pred_labels_discrete to 0 and 1 using argmax
+    #pred_labels_array=np.argmax(pred_labels,axis=1)
+    # target_labels_array=np.argmax(target_label_val,axis=1)
+
+    val_acc=accuracy_score(target_label_val,pred_label_val)
+    val_f1=f1_score(target_label_val,pred_label_val,average='macro')
+
+    return(mean(val_loss_list),val_acc,val_f1)
+
 def gen_validate_score_MHA_model_single_task_soc_message_tone(model,loader,device,criterion):
 
     print("starting validation")

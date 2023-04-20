@@ -1,0 +1,46 @@
+data:
+  csv_file: '/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/SAIM_data/SAIM_multi_task_tone_soc_message_topic_data_no_zero_files.csv'
+
+parameters:
+  batch_size: 16
+  train_shuffle: True
+  val_shuffle: False
+  test_shuffle: False
+  epochs: 50
+  early_stop: 5
+  max_length: 333
+  fps: 4
+  base_fps: 24
+  num_workers: 4
+  task_name: 'social_message'
+  num_runs: 5
+
+device:
+  is_cuda: True
+
+loss:
+  loss_option: 'bce_cross_entropy_loss'
+
+optimizer:
+  choice: 'Adam'
+  lr: 1e-4
+  gamma: 0.5
+  step_size: 15
+  mode: 'max'
+  decay: 0.001
+  patience: 5
+  factor: 0.5
+  verbose: True
+
+model:
+  model_type: 'LSTM_multi_layer_single_task_classifier_multiple_seeds'
+  embedding_dim: 512
+  n_hidden: 128
+  n_layers: 2
+  n_classes: 2
+  batch_first: True
+
+output:
+  model_dir: '/data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/multi_run_model_dir_v2'
+  log_dir: '/data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/multi_run_log_dir_v2'
+  multiple_run_folder: '/data/digbose92/ads_complete_repo/ads_codes/model_files/multi_run_folder'

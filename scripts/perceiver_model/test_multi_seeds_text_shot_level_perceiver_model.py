@@ -99,7 +99,7 @@ def test_model_topic(model_filename,config_data,device,seed_value):
 
     test_dl=DataLoader(test_ds,
                                 batch_size=batch_size,
-                                shuffle=config_data['parameters']['train_shuffle'],
+                                shuffle=config_data['parameters']['test_shuffle'],
                                 num_workers=num_workers)
     
     #loss function
