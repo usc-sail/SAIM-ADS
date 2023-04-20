@@ -44,7 +44,7 @@ def sort_batch(X, y, lengths):
     y = y[indx]
     return X, y, lengths # transpose (batch x seq_length) to (seq_length x batch)
 
-config_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/configs/LSTM_configs/config_LSTM_topic_shot_level_mutiple_seeds.yaml"
+config_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/configs/LSTM_configs/config_LSTM_tone_soc_message_shot_level_multiple_seeds.yaml"
 with open(config_file,'r') as f:
     config_data=yaml.safe_load(f)
 
@@ -52,11 +52,13 @@ with open(config_file,'r') as f:
 csv_file=config_data['data']['csv_file']
 csv_data=pd.read_csv(csv_file)
 task_name=config_data['parameters']['task_name']
-topic_file=config_data['data']['topic_file']
 
-#read the topic file
-with open(topic_file,'r') as f:
-    label_map=json.load(f)
+#task name 
+if(task_name=='Transition_val'):
+    label_map={'No transition':0,'Transition':1}
+
+elif(task_name=='social_message'):
+    label_map={'No':0,'Yes':1}
 
 #num classes, max length, fps, base fps, batch size, num epochs, num workers
 num_classes=config_data['model']['n_classes']
@@ -159,13 +161,9 @@ for i,seed in enumerate(seed_list):
 
 
     model=model.to(device)
-    
     ############################# loss function + optimizers definition here ################################
     if(config_data['loss']['loss_option']=='bce_cross_entropy_loss'):
         criterion = binary_cross_entropy_loss(device,pos_weights=None)
-
-    elif(config_data['loss']['loss_option']=='cross_entropy_loss'):
-        criterion = multi_class_cross_entropy_loss(device)
 
     if(config_data['optimizer']['choice']=='Adam'):
         optim_example=optimizer_adam(model,float(config_data['optimizer']['lr']))
@@ -209,7 +207,7 @@ for i,seed in enumerate(seed_list):
     early_stop_cnt=0
     train_loss_stats=[]
     val_loss_stats=[]
-    _softmax=nn.Softmax(dim=-1)
+    Sig = nn.Sigmoid()
     best_f1_score=0
 
     #ensuring model works here (trains)
@@ -226,8 +224,9 @@ for i,seed in enumerate(seed_list):
         val_loss_list=[]
 
         for id,(vid_feat,label,lens) in enumerate(tqdm(train_dl)):
-            
+
             vid_feat=vid_feat.float()
+            label=label.float()
             vid_feat=vid_feat.to(device)
             label=label.to(device)
 
@@ -235,19 +234,17 @@ for i,seed in enumerate(seed_list):
             vid_feat,label,lens = sort_batch(vid_feat,label,lens)
             optim_example.zero_grad()
             logits = model(vid_feat,lens.cpu().numpy())
-            #print(logits.shape)
 
             # Calculate loss
             loss = criterion(logits, label)
-            train_logits=_softmax(logits)
-            y_pred=torch.max(train_logits, 1)[1]
+            logits_sig=Sig(logits)
 
             # Back prop.
             loss.backward()
             optim_example.step()
             train_loss_list.append(loss.item())
             target_labels.append(label.cpu())
-            pred_labels.append(y_pred.cpu())
+            pred_labels.append(logits_sig.cpu())
 
             step=step+1
             
@@ -257,17 +254,17 @@ for i,seed in enumerate(seed_list):
                             
         target_label_np=torch.cat(target_labels).detach().numpy()
         pred_label_np=torch.cat(pred_labels).detach().numpy()
+        pred_labels_discrete=np.where(pred_label_np>=0.5,1,0)
 
         #compute training accuracy and F1 score
-        train_acc=accuracy_score(target_label_np,pred_label_np)
-        train_f1=f1_score(target_label_np,pred_label_np,average='macro')
-        
+        train_acc=accuracy_score(target_label_np,pred_labels_discrete)
+        train_f1=f1_score(target_label_np,pred_labels_discrete,average='macro')
         logger.info('epoch: {:d}, time:{:.2f}'.format(epoch, time.time()-t))
         logger.info('Epoch:{:d},Overall Training loss:{:.3f},Overall training Acc:{:.3f}, Overall F1:{:.3f}'.format(epoch,mean(train_loss_list),train_acc,train_f1))
         
         #validation loss, validation accuracy, validation F1 score
         logger.info('Evaluating the dataset')
-        val_loss,val_acc,val_f1=gen_validate_score_LSTM_single_task_topic(model,val_dl,device,criterion)
+        val_loss,val_acc,val_f1=gen_validate_score_LSTM_single_task_soc_message_tone(model,val_dl,device,criterion)
         logger.info('Epoch:{:d},Overall Validation loss:{:.3f},Overall validation Acc:{:.3f}, Overall F1:{:.3f}'.format(epoch,val_loss,val_acc,val_f1))
         model.train(True)
 
@@ -288,7 +285,7 @@ for i,seed in enumerate(seed_list):
     model.eval()
 
     #test loss, accuracy and F1 score
-    test_loss,test_acc,test_f1=gen_validate_score_LSTM_single_task_topic(model,test_dl,device,criterion)
+    test_loss,test_acc,test_f1=gen_validate_score_LSTM_single_task_soc_message_tone(model,test_dl,device,criterion)
 
     #current seed - test loss, accuracy and F1 score
     print('Current seed: %d, Test loss: %f, Test accuracy: %f, Test f1: %f' %(seed,test_loss,test_acc,test_f1))
