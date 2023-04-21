@@ -414,6 +414,7 @@ class SAIM_single_task_dataset_shot_level(Dataset):
 
         #get the keys 
         keys=sorted(list(shot_features.keys()))
+        print(keys)
 
         #get the features
         shot_feature_avg=[]
@@ -426,10 +427,13 @@ class SAIM_single_task_dataset_shot_level(Dataset):
 
         #convert to numpy array
         shot_feature_avg=np.array(shot_feature_avg)
-        if(len(shot_feature_avg)==0):
-            print(filename)
-
-        #shot features and attention mask
+        # if(len(shot_feature_avg)==0):
+        #     #shot features and attention mask
+        #     shot_feat_padded=np.zeros((self.max_length,self.feat_dim))
+        #     attention_mask=np.zeros((self.max_length))
+        # else:
+        #     #shot features and attention mask
+        #     print(shot_feature_avg.shape)
         shot_feat_padded,attention_mask=self.pad_data(shot_feature_avg)
 
         #get the label
@@ -444,6 +448,92 @@ class SAIM_single_task_dataset_shot_level(Dataset):
 
         #return the shot features, return label and attention mask
         return(shot_feat_padded,ret_label,attention_mask)
+
+class SAIM_single_task_dataset_shot_level_captions(Dataset):
+
+    def __init__(self,csv_data,base_folder,label_map,num_classes,max_length,task_name, feat_dim=384):  
+
+        #arguments here 
+        self.csv_data=csv_data
+        self.num_classes=num_classes
+        self.max_length=max_length
+        self.base_folder=base_folder
+        self.feat_dim=feat_dim
+        self.clip_feature_list=self.csv_data['clip_feature_path'].tolist()
+
+        #shot feature list
+        self.shot_feature_list=[os.path.join(self.base_folder,file.split("/")[-1]) for file in self.clip_feature_list]
+
+        #label map and task names
+        self.label_map=label_map
+        self.task_name=task_name
+
+    def __len__(self):
+        return(len(self.csv_data))
+    
+    def pad_data(self,feat_data):
+
+        padded=np.zeros((self.max_length,feat_data.shape[1]))
+        
+        if(feat_data.shape[0]>self.max_length):
+            padded=feat_data[:self.max_length,:]
+            attn_mask=np.ones((self.max_length))
+        else:
+            attn_mask=np.zeros((self.max_length))
+            padded[:feat_data.shape[0],:]=feat_data
+            attn_mask[:feat_data.shape[0]]=1
+
+        return(padded,attn_mask)
+    
+    def __getitem__(self,idx):
+
+        filename=self.shot_feature_list[idx]
+
+        #load the feature file
+        try:
+            with open(filename, 'rb') as f:
+                shot_features = pickle.load(f)
+        except:
+            print(filename)
+
+        #get the keys 
+        keys=sorted(list(shot_features.keys()))
+
+        #get the features
+        shot_feature_avg=[]
+        for key in keys:
+            shot_feat_temp=shot_features[key][0]
+            #print(shot_feat_temp.shape)
+            if(len(shot_feat_temp)>0):
+                #shot_feat_avg=np.mean(shot_feat_temp,axis=0)
+                shot_feature_avg.append(shot_feat_temp)
+
+        #convert to numpy array
+        shot_feature_avg=np.array(shot_feature_avg)
+        #print(shot_feature_avg.shape)
+        
+        if(len(shot_feature_avg)==0):
+            #shot features and attention mask
+            shot_feat_padded=np.zeros((self.max_length,self.feat_dim))
+            attention_mask=np.ones((self.max_length))
+        else:
+            #shot features and attention mask
+            #print(shot_feature_avg.shape)
+            shot_feat_padded,attention_mask=self.pad_data(shot_feature_avg)
+
+        #get the label
+        if((self.task_name=='social_message') or (self.task_name=='Transition_val')):
+
+            label_c=self.label_map[self.csv_data[self.task_name].iloc[idx]]
+            ret_label=np.zeros((self.num_classes))
+            ret_label[label_c]=1
+
+        elif(self.task_name=='Topic'):
+            ret_label=self.label_map[self.csv_data[self.task_name].iloc[idx]]
+
+        #return the shot features, return label and attention mask
+        return(shot_feat_padded,ret_label,attention_mask)
+
 
 ### dataset for audio only modeling single task ###
 class SAIM_single_task_dataset_audio_only(Dataset): #audio only dataset
@@ -599,6 +689,8 @@ class SAIM_single_task_dataset_audio_visual(Dataset):
                 ret_label,
                 attention_mask_audio,attention_mask_video)
     
+
+    
 class SAIM_single_task_dataset_visual_text(Dataset):
 
     def __init__(self,csv_data,transcripts_file,tokenizer,
@@ -714,6 +806,114 @@ class SAIM_single_task_dataset_visual_text(Dataset):
                      'label':ret_label}
         
         return(return_dict)
+    
+
+class SAIM_single_task_dataset_audio_text(Dataset):
+    def __init__(self,csv_data,transcripts_file,tokenizer,embedding_file,
+                    label_map,num_classes,text_max_length,audio_max_length,task_name):
+        
+        #arguments here
+        self.csv_data=csv_data
+        self.num_classes=num_classes
+        self.transcripts_file=transcripts_file
+        self.label_map=label_map
+        self.task_name=task_name
+        self.tokenizer=tokenizer
+        with open(self.transcripts_file, 'r') as f:
+            self.transcripts_dict = json.load(f)
+
+        self.text_max_length=text_max_length
+        self.audio_max_length=audio_max_length
+        self.embedding_file=embedding_file
+
+        #load the embedding file
+        with open(self.embedding_file, 'rb') as f:
+            self.embedding = pickle.load(f)
+
+        #ast embeddings
+        self.ast_embeds=self.embedding['data']['embeddings']
+
+        #clip feature list
+        self.clip_feature_list=self.csv_data['clip_feature_path'].tolist()
+        
+        #get the keys
+        self.clip_keys=[os.path.splitext(file.split("/")[-1])[0] for file in self.clip_feature_list]
+
+    def __len__(self):
+        return(len(self.csv_data))
+    
+    def pad_data(self,feat_data,max_length):
+
+        padded=np.zeros((max_length,feat_data.shape[1]))
+        
+        if(feat_data.shape[0]>max_length):
+            padded=feat_data[:max_length,:]
+            attn_mask=np.ones((max_length))
+        else:
+            attn_mask=np.zeros((max_length))
+            padded[:feat_data.shape[0],:]=feat_data
+            attn_mask[:feat_data.shape[0]]=1
+
+        return(padded,attn_mask)
+
+    def __getitem__(self,idx):
+
+        #get the clip key
+        clip_key=self.clip_keys[idx]
+    
+        #get the audio features
+        audio_feat=self.ast_embeds[clip_key].cpu().numpy()
+
+        #pad the data
+        audio_feat_padded,attention_mask_audio=self.pad_data(audio_feat,self.audio_max_length) #audio feature padded to maximum length
+        
+        #get the label here 
+        if((self.task_name=='social_message') or (self.task_name=='Transition_val')):
+            label_c=self.label_map[self.csv_data[self.task_name].iloc[idx]]
+            ret_label=np.zeros((self.num_classes))
+            ret_label[label_c]=1
+
+        elif(self.task_name=='Topic'):
+            ret_label=self.label_map[self.csv_data[self.task_name].iloc[idx]]
+
+        #clip key and transcripts parsing here 
+        if(clip_key not in self.transcripts_dict):
+
+            #empty transcripts or [MASK] token transcripts 
+            input_ids = torch.tensor([[101] + [103] * (self.text_max_length - 2) + [102]])
+            # create attention mask  for text
+            attn_mask = torch.zeros(self.text_max_length, dtype=torch.long)
+            #create token type ids
+            token_type_ids = torch.ones(self.text_max_length, dtype=torch.long)
+
+        else:
+            
+            transcript=self.transcripts_dict[clip_key]
+            #encode the caption
+            encoded = self.tokenizer.encode_plus(
+                text=transcript,  # the sentence to be encoded
+                add_special_tokens=True,  # Add [CLS] and [SEP]
+                max_length = self.text_max_length,  # maximum length of a sentence
+                truncation=True,
+                padding='max_length',  # Add [PAD]s
+                return_attention_mask = True,  # Generate the attention mask
+                return_tensors = 'pt',  # ask the function to return PyTorch tensors
+            )
+            # Get the input IDs and attention mask in tensor format
+            input_ids = encoded['input_ids']
+            attn_mask = encoded['attention_mask']
+            token_type_ids = encoded['token_type_ids']
+
+        return_dict={'input_ids':input_ids.squeeze(0),
+                     'attention_mask':attn_mask.squeeze(0),
+                     'token_type_ids':token_type_ids.squeeze(0),
+                     'audio_feat':audio_feat_padded,
+                     'audio_attn_mask':attention_mask_audio,
+                     'label':ret_label}
+        
+        return(return_dict)
+
+
 
 class SAIM_single_task_dataset_visual_text_shot_level(Dataset):
 

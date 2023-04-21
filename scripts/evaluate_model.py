@@ -591,6 +591,125 @@ def gen_validate_score_SBERT_text_visual_perceiver_single_task_topic(model,loade
 
     return(mean(val_loss_list),val_acc,val_f1)
 
+def gen_validate_score_audio_text_perceiver_single_task_soc_message_tone(model,loader,device,criterion):
+
+    print("starting validation")
+    Sig = nn.Sigmoid()
+    model.eval()
+    target_labels=[]
+    pred_labels=[]
+    step=0
+    val_loss_list=[]
+
+    with torch.no_grad():
+
+        for id,(return_dict) in enumerate(tqdm(loader)):
+
+            # return dict contains the following keys: input ids, attention_maksk, token_type_ids
+            input_ids=return_dict['input_ids'].to(device)
+            attention_mask=return_dict['attention_mask'].to(device)
+            token_type_ids=return_dict['token_type_ids'].to(device)
+
+            #return dict contains video features and attention mask
+            audio_feat=return_dict['audio_feat'].float()
+
+            #print dtype of video_feat
+            #print('dtype of video_feat:%s' %(video_feat.dtype))
+
+            audio_feat=audio_feat.to(device)
+            audio_attn_mask=return_dict['audio_attn_mask'].to(device)
+
+            #return dict contains labels
+            label=return_dict['label'].to(device)
+
+            logits=model(input_ids=input_ids,
+                         audio_inputs=audio_feat,
+                         text_mask=attention_mask,
+                         audio_mask=audio_attn_mask)
+
+            #loss calculation here
+            loss = criterion(logits, label)
+            logits_sig=Sig(logits)
+
+            val_loss_list.append(loss.item())
+            target_labels.append(label.cpu())
+            pred_labels.append(logits_sig.cpu())
+            step=step+1
+
+    target_label_val=torch.cat(target_labels).numpy()
+    pred_label_val=torch.cat(pred_labels).numpy()
+
+    pred_labels_discrete=np.where(pred_label_val>=0.5,1,0)
+
+    #convert pred_labels_discrete to 0 and 1 using argmax
+    pred_labels_array=np.argmax(pred_labels_discrete,axis=1)
+    target_labels_array=np.argmax(target_label_val,axis=1)
+
+    val_acc=accuracy_score(target_labels_array,pred_labels_array)
+    val_f1=f1_score(target_labels_array,pred_labels_array,average='macro')
+
+
+    return(mean(val_loss_list),val_acc,val_f1)
+
+def gen_validate_score_audio_text_perceiver_single_task_topic(model,loader,device,criterion):
+
+    print("starting validation")
+    log_softmax= nn.Softmax(dim=-1)
+    model.eval()
+    target_labels=[]
+    pred_labels=[]
+    step=0
+    val_loss_list=[]
+
+    with torch.no_grad():
+
+        for id,(return_dict) in enumerate(tqdm(loader)):
+
+            # return dict contains the following keys: input ids, attention_maksk, token_type_ids
+            input_ids=return_dict['input_ids'].to(device)
+            attention_mask=return_dict['attention_mask'].to(device)
+            token_type_ids=return_dict['token_type_ids'].to(device)
+
+            #return dict contains video features and attention mask
+            audio_feat=return_dict['audio_feat'].float()
+
+            #print dtype of video_feat
+            #print('dtype of video_feat:%s' %(video_feat.dtype))
+
+            audio_feat=audio_feat.to(device)
+            audio_attn_mask=return_dict['audio_attn_mask'].to(device)
+
+            #return dict contains labels
+            label=return_dict['label'].to(device)
+
+            logits=model(input_ids=input_ids,
+                         audio_inputs=audio_feat,
+                         text_mask=attention_mask,
+                         audio_mask=audio_attn_mask)
+
+            #loss calculation here
+            loss = criterion(logits, label)
+            val_logits=log_softmax(logits)
+            y_pred=torch.max(val_logits, 1)[1]
+
+            val_loss_list.append(loss.item())
+            target_labels.append(label.cpu())
+            pred_labels.append(y_pred.cpu())
+            step=step+1
+
+    target_label_np=torch.cat(target_labels).detach().numpy()
+    pred_label_np=torch.cat(pred_labels).detach().numpy()
+
+    val_acc=accuracy_score(target_label_np,pred_label_np)
+    val_f1=f1_score(target_label_np,pred_label_np,average='macro')
+
+    return(mean(val_loss_list),val_acc,val_f1)
+
+
+
+
+
+
 
 
 

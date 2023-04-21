@@ -1,3 +1,5 @@
+#save every results in the log folder with a json file with seed value and best validation results and test results 
+#sngle fold split with multiple seeds (seed 1,2,3,4,5)
 import torch
 import torch.nn as nn 
 import pandas as pd 
@@ -5,15 +7,15 @@ import os
 import sys 
 import time 
 import pickle
-#append path of datasets and models 
-sys.path.append(os.path.join('..', '..','datasets'))
-sys.path.append(os.path.join('..', '..','models'))
-sys.path.append(os.path.join('..', '..','configs'))
-sys.path.append(os.path.join('..', '..','losses'))
-sys.path.append(os.path.join('..', '..','optimizers'))
-sys.path.append(os.path.join('..', '..','utils'))
-sys.path.append(os.path.join('..'))
 
+#append path of datasets and models 
+sys.path.append(os.path.join('..', '..', '..','datasets'))
+sys.path.append(os.path.join('..', '..', '..','models'))
+sys.path.append(os.path.join('..', '..', '..','configs'))
+sys.path.append(os.path.join('..', '..', '..','losses'))
+sys.path.append(os.path.join('..', '..','..','optimizers'))
+sys.path.append(os.path.join('..', '..','..','utils'))
+sys.path.append(os.path.join('..', '..'))
 #import all libraries 
 import random
 from ast import literal_eval
@@ -24,7 +26,7 @@ import torchvision
 from torch.utils.data import Dataset, DataLoader
 from dataset import *
 from loss_functions import *
-from perceiver_model import *
+from MHA_models import *
 from optimizer import *
 from metrics import calculate_stats
 import torch.nn as nn
@@ -34,18 +36,15 @@ from evaluate_model import *
 import argparse
 from log_file_generate import *
 from scipy.stats.stats import pearsonr
-from transformers import BertTokenizer, BertModel, BertConfig
-import json 
-
+import json
 ######## global config file declaration ########
-config_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/configs/perceiver_configs/config_perceiver_single_task_classifier_text_shot_level_multiple_seeds.yaml"
+config_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/configs/MHA_configs/config_MHA_single_task_classifier_caption_shot_level_multiple_seeds.yaml"
 with open(config_file,'r') as f:
     config_data=yaml.safe_load(f)
 
 csv_file=config_data['data']['csv_file']
 csv_data=pd.read_csv(csv_file)
 task_name=config_data['parameters']['task_name']
-transcript_file=config_data['data']['transcript_file']
 
 if(task_name=='Transition_val'):
     label_map={'No transition':0,'Transition':1}
@@ -53,36 +52,24 @@ if(task_name=='Transition_val'):
 elif(task_name=='social_message'):
     label_map={'No':0,'Yes':1}
 
-## general parameters 
-#parameters regarding number of classes, maximum audio length, maximum video length
-max_text_length=config_data['parameters']['text_max_length']
-max_video_length=config_data['parameters']['video_max_length']
+#basic parameters initialize regarding number of classes, max length of the sequence, fps, base fps, batch size, number of epochs, number of workers 
+num_classes=config_data['model']['n_classes']
+base_folder=config_data['data']['base_folder']
+max_length=config_data['parameters']['max_length']
 batch_size=config_data['parameters']['batch_size']
 num_epochs=config_data['parameters']['epochs']
 num_workers=config_data['parameters']['num_workers']
-base_folder=config_data['data']['base_folder']
-
-#parameters regarding the perceiver model
-text_dim=config_data['model']['text_dim']
-video_dim=config_data['model']['video_dim']
-dim=config_data['model']['dim']
-queries_dim=config_data['model']['queries_dim']
-depth=config_data['model']['depth']
-num_latents=config_data['model']['num_latents']
-cross_heads=config_data['model']['cross_heads']
-latent_heads=config_data['model']['latent_heads']
-cross_dim_head=config_data['model']['cross_dim_head']
-latent_dim_head=config_data['model']['latent_dim_head']
-latent_dim=config_data['model']['latent_dim']
-weight_tie_layers=config_data['model']['weight_tie_layers']
-seq_dropout_prob=config_data['model']['seq_dropout_prob']
-n_classes=config_data['model']['n_classes']
-use_queries=config_data['model']['use_queries']
-model_name=config_data['model']['model_name']
+input_dim=config_data['model']['input_dim']
+model_dim=config_data['model']['model_dim']
+num_heads=config_data['model']['num_heads']
+num_layers=config_data['model']['num_layers']
+input_dropout=config_data['model']['input_dropout']
+output_dropout=config_data['model']['output_dropout']
+model_dropout=config_data['model']['model_dropout']
 model_type=config_data['model']['model_type']
 option=model_type+"_"+config_data['parameters']['task_name']
+num_runs=config_data['parameters']['num_runs']
 multi_run_folder=config_data['output']['multiple_run_folder']
-tokenizer=BertTokenizer.from_pretrained(model_name)
 
 #create the model type folder inside the multi run folder
 destination_run_folder=os.path.join(multi_run_folder,model_type)
@@ -92,6 +79,11 @@ if not os.path.exists(destination_run_folder):
 #create random seeds for multiple runs 
 seed_list = [random.randint(1, 100000) for _ in range(5)]
 
+# #define the datasets 
+# train_data=csv_data[csv_data['Split']=='train']
+# val_data=csv_data[csv_data['Split']=='val']
+
+#test and validation metrics 
 test_loss_multiple_seeds_list=[]
 test_f1_multiple_seeds_list=[]
 test_acc_multiple_seeds_list=[]
@@ -116,45 +108,35 @@ for i,seed in enumerate(seed_list):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-    print('Run number: %d with random seed: %d' %(i+1,seed))
+    print('Run with random seed: %d' %(seed))
 
     #define the datasets 
     train_data=csv_data[csv_data['Split']=='train']
     val_data=csv_data[csv_data['Split']=='val']
     test_data=csv_data[csv_data['Split']=='test']
 
-    train_ds=SAIM_single_task_dataset_visual_text_shot_level(train_data,
-                                                transcript_file,
-                                                tokenizer,
-                                                base_folder,
-                                                label_map,
-                                                n_classes,
-                                                max_text_length,
-                                                max_video_length,
-                                                task_name
-                                                )
-
-    val_ds=SAIM_single_task_dataset_visual_text_shot_level(val_data,
-                                                transcript_file,
-                                                tokenizer,
-                                                base_folder,
-                                                label_map,
-                                                n_classes,
-                                                max_text_length,
-                                                max_video_length,
-                                                task_name
-                                                )
+    #train dataset and val dataset (single task)
+    train_ds=SAIM_single_task_dataset_shot_level_captions(csv_data=train_data,
+                                    base_folder=base_folder,
+                                    label_map=label_map,
+                                    num_classes=num_classes,
+                                    max_length=max_length,
+                                    task_name=task_name)
     
-    test_ds=SAIM_single_task_dataset_visual_text_shot_level(test_data,
-                                                transcript_file,
-                                                tokenizer,
-                                                base_folder,
-                                                label_map,
-                                                n_classes,
-                                                max_text_length,
-                                                max_video_length,
-                                                task_name
-                                                )
+    val_ds=SAIM_single_task_dataset_shot_level_captions(csv_data=val_data,
+                                    base_folder=base_folder,
+                                    label_map=label_map,
+                                    num_classes=num_classes,
+                                    max_length=max_length,
+                                    task_name=task_name)
+    
+    test_ds=SAIM_single_task_dataset_shot_level_captions(csv_data=test_data,
+                                    base_folder=base_folder,
+                                    label_map=label_map,
+                                    num_classes=num_classes,
+                                    max_length=max_length,
+                                    task_name=task_name)
+    
     #define the dataloaders
     train_dl=DataLoader(train_ds,
                         batch_size=batch_size,
@@ -171,47 +153,29 @@ for i,seed in enumerate(seed_list):
                         shuffle=config_data['parameters']['test_shuffle'],
                         num_workers=num_workers)
     
-    #define the model
-    params_dict={'text_dim':text_dim,
-                 'video_dim':video_dim,
-                 'dim':dim,
-                 'bert_model_name':model_name,
-                 'queries_dim':queries_dim,
-                 'num_classes':n_classes,
-                 'depth':depth,
-                 'num_latents':num_latents,
-                 'cross_heads':cross_heads,
-                 'latent_heads':latent_heads,
-                 'cross_dim_head':cross_dim_head,
-                 'latent_dim_head':latent_dim_head,
-                 'latent_dim':latent_dim,
-                 'weight_tie_layers':weight_tie_layers,
-                 'seq_dropout_prob':seq_dropout_prob,
-                 'use_queries':use_queries,}
-
-    model=Perceiver_TextVisual_model(**params_dict)
-    #print(model)
-
-    #model parameters 
+    #define the model here 
+    model = MHA_model_single_task_classifier(input_dim, 
+                                         model_dim, 
+                                         num_classes, 
+                                         num_heads, 
+                                         num_layers, 
+                                         input_dropout, output_dropout, model_dropout)
+    
     model_parameters = filter(lambda p: p.requires_grad, model.parameters())
     params = sum([np.prod(p.size()) for p in model_parameters])
     print('Number of parameters: %d' %(params))
     model=model.to(device)
-
+    
     ############################# loss function + optimizers definition here ################################
     if(config_data['loss']['loss_option']=='bce_cross_entropy_loss'):
         criterion = binary_cross_entropy_loss(device,pos_weights=None)
 
-    elif(config_data['loss']['loss_option']=='sigmoid_focal_loss'):
-        criterion=sigmoid_focal_loss
-    
-    ### adam and adamW optimizers
     if(config_data['optimizer']['choice']=='Adam'):
         optim_example=optimizer_adam(model,float(config_data['optimizer']['lr']))
 
     elif(config_data['optimizer']['choice']=='AdamW'):
-        optim_example=optimizer_adamW(model,float(config_data['optimizer']['lr']),float(config_data['optimizer']['decay']))
-
+        optim_example=optimizer_adamW(model,float(config_data['optimizer']['lr']))
+    
     #create a folder with each individual model + create a log file for each date time instant
     timestr = time.strftime("%Y%m%d-%H%M%S")
     filename=timestr+'_'+option+'_log.logs'
@@ -220,6 +184,7 @@ for i,seed in enumerate(seed_list):
     log_model_subfolder=os.path.join(config_data['output']['log_dir'],option)
     if(os.path.exists(log_model_subfolder) is False):
         os.mkdir(log_model_subfolder)
+    
     #create log folder associated with current model
     sub_folder_log=os.path.join(log_model_subfolder,timestr+'_'+option)
     if(os.path.exists(sub_folder_log) is False):
@@ -254,7 +219,10 @@ for i,seed in enumerate(seed_list):
     Sig = nn.Sigmoid()
     best_f1_score=0
 
-    for epoch in range(1, num_epochs+1): #main outer loop
+    #ensuring model works here (trains)
+    model.train(True)
+
+    for epoch in range(1, num_epochs+1): #main outer loop for each epoch 
 
         train_loss_list=[]
         train_logits=[]
@@ -264,30 +232,17 @@ for i,seed in enumerate(seed_list):
         pred_labels=[]
         val_loss_list=[]
 
-        for id,(return_dict) in enumerate(tqdm(train_dl)):
+        for id,(feat,label,mask) in enumerate(tqdm(train_dl)): #inner loop for each batch
 
-            # return dict contains the following keys: input ids, attention_maksk, token_type_ids
-            input_ids=return_dict['input_ids'].to(device)
-            attention_mask=return_dict['attention_mask'].to(device)
-            token_type_ids=return_dict['token_type_ids'].to(device)
-
-            #return dict contains video features and attention mask
-            video_feat=return_dict['video_feat'].float()
-
-            #print dtype of video_feat
-            #print('dtype of video_feat:%s' %(video_feat.dtype))
-
-            video_feat=video_feat.to(device)
-            video_attn_mask=return_dict['video_attn_mask'].to(device)
-
-            #return dict contains labels
-            label=return_dict['label'].to(device)
+            feat=feat.to(device)
+            
+            feat=feat.float()
+            label=label.to(device)
+            mask=mask.unsqueeze(1).unsqueeze(1)
+            mask=mask.to(device)
 
             optim_example.zero_grad()
-            logits=model(input_ids=input_ids,
-                         visual_inputs=video_feat,
-                         text_mask=attention_mask,
-                         visual_mask=video_attn_mask)
+            logits=model(feat,mask=mask)
 
             #loss calculation here
             loss = criterion(logits, label)
@@ -318,12 +273,13 @@ for i,seed in enumerate(seed_list):
         logger.info('Epoch:{:d},Overall Training loss:{:.3f},Overall training Acc:{:.3f}, Overall F1:{:.3f}'.format(epoch,mean(train_loss_list),train_acc,train_f1))
 
         logger.info('Evaluating the dataset')
-        val_loss,val_acc,val_f1=gen_validate_score_text_visual_perceiver_single_task_soc_message_tone(model,val_dl,device,criterion)
+
+        #write the validation code here 
+        val_loss,val_acc,val_f1=gen_validate_score_MHA_model_single_task_soc_message_tone(model,val_dl,device,criterion)
         logger.info('Epoch:{:d},Overall Validation loss:{:.3f},Overall validation Acc:{:.3f}, Overall F1:{:.3f}'.format(epoch,val_loss,val_acc,val_f1))
-
         model.train(True)
-        #lr_scheduler.step()
 
+        #not using lr scheduler here - seems to be sub-optimal 
         if(val_f1>best_f1_score):
             best_f1_score=val_f1
             logger.info('Saving the best model')
@@ -341,7 +297,7 @@ for i,seed in enumerate(seed_list):
     model.eval()
 
     #test loss, accuracy and F1 score
-    test_loss,test_acc,test_f1=gen_validate_score_text_visual_perceiver_single_task_soc_message_tone(model,test_dl,device,criterion)
+    test_loss,test_acc,test_f1=gen_validate_score_MHA_model_single_task_soc_message_tone(model,test_dl,device,criterion)
 
     #current seed - test loss, accuracy and F1 score
     print('Current seed: %d, Test loss: %f, Test accuracy: %f, Test f1: %f' %(seed,test_loss,test_acc,test_f1))
@@ -350,7 +306,7 @@ for i,seed in enumerate(seed_list):
     test_loss_multiple_seeds_list.append(test_loss)
     test_acc_multiple_seeds_list.append(test_acc)
 
-    dict_temp={'seed':seed,
+    dict_temp={ 'seed':seed,
                 'test_loss':test_loss,
                 'test_acc':test_acc,
                 'test_f1':test_f1,
@@ -374,10 +330,5 @@ with open(destination_file, 'w') as fp:
 
 
 
-
-
-
-
-    
 
 

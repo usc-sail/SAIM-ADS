@@ -170,6 +170,9 @@ for i,seed in enumerate(seed_list):
     if(config_data['loss']['loss_option']=='bce_cross_entropy_loss'):
         criterion = binary_cross_entropy_loss(device,pos_weights=None)
 
+    elif(config_data['loss']['loss_option']=='sigmoid_focal_loss'):
+        criterion=sigmoid_focal_loss(config_data['loss']['alpha'])
+    
     if(config_data['optimizer']['choice']=='Adam'):
         optim_example=optimizer_adam(model,float(config_data['optimizer']['lr']))
 

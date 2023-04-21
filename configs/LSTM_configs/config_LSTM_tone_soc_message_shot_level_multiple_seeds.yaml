@@ -13,7 +13,7 @@ parameters:
   fps: 4
   base_fps: 24
   num_workers: 4
-  task_name: 'Transition_val'
+  task_name: 'social_message'
   num_runs: 5
 
 device:

@@ -189,12 +189,57 @@ def count_number_of_shots(folder,csv_file):
     print("Number of files",num_files)
     return(num_files)
 
+def count_SBERT_features(folder):
+
+    pkl_file_list=os.listdir(folder)
+    feat_list=[]
+
+    for file in tqdm(pkl_file_list):
+
+        file_path=os.path.join(folder,file)
+        with open(file_path, "rb") as f:
+            shot_features = pickle.load(f)
+
+        keys=sorted(list(shot_features.keys()))
+        shot_feature_avg=[]
+        for key in keys:
+            shot_feat_temp=shot_features[key]
+            if(len(shot_feat_temp)>0):
+                #shot_feat_avg=np.mean(shot_feat_temp,axis=0)
+                shot_feature_avg.append(shot_feat_temp[0])
+
+        shot_feature_avg=np.array(shot_feature_avg)
+        feat_list.append(shot_feature_avg.shape[0])
+        #print(shot_feature_avg.shape)
+
+    #count number of zeros 
+    print("Number of zeros",feat_list.count(0))
+
+    print("Mean",mean(feat_list))
+    print("Median",median(feat_list))
+    print("Max",max(feat_list))
+    print("Min",min(feat_list))
+    print('75 percentile',np.percentile(feat_list, 75))
+    print('25 percentile',np.percentile(feat_list, 25))
+    print('Sum of all durations',sum(feat_list))
+
+    #Mean 24.74686687160085
+    # Median 18.0
+    # Max 240
+    # Min 0
+    # 75 percentile 34.0
+    # 25 percentile 9.0
+    # Sum of all durations 209309
+
+    #print(file,data['data'].shape)
 
 # video_folder=""
-csv_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/SAIM_data/SAIM_multi_task_tone_soc_message_topic_data_no_zero_files.csv"
-video_file_name="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/lomond_available_file_path.txt"
-folder="/data/digbose92/ads_complete_repo/ads_videos/shot_folder/PySceneDetect"
-count_number_of_shots(folder,csv_file)
+folder="/data/digbose92/ads_complete_repo/ads_features/shot_embeddings/shot_caption_SBERT_embeddings"
+count_SBERT_features(folder)
+# csv_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/SAIM_data/SAIM_multi_task_tone_soc_message_topic_data_no_zero_files.csv"
+# video_file_name="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/lomond_available_file_path.txt"
+# folder="/data/digbose92/ads_complete_repo/ads_videos/shot_folder/PySceneDetect"
+# count_number_of_shots(folder,csv_file)
 #check_total_duration_video_files(csv_file,video_file_name)
 # #print(ast_embeds.keys())
 # ast_file="/data/digbose92/ads_complete_repo/ads_features/ast_embeddings/ast_embs_0.5.pkl"
