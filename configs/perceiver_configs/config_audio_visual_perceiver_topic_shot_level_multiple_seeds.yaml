@@ -2,6 +2,7 @@ data:
   csv_file: '/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/SAIM_data/SAIM_multi_task_tone_soc_message_topic_data_no_zero_files.csv'
   embedding_file: '/data/digbose92/ads_complete_repo/ads_features/ast_embeddings/ast_embs_0.5.pkl'
   topic_file: '/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/topic_list_18.json'
+  base_folder: '/data/digbose92/ads_complete_repo/ads_features/shot_embeddings/clip_features_4fps/'
 
 parameters:
   batch_size: 16
@@ -24,7 +25,7 @@ loss:
 
 optimizer:
   choice: 'Adam'
-  lr: 1e-5
+  lr: 1e-4
   gamma: 0.95
   step_size: 15
   mode: 'max'
@@ -53,6 +54,6 @@ model:
   batch_first: True
 
 output:
-  model_dir: '/data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/model_dir'
-  log_dir: '/data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/log_dir'
+  model_dir: '/data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/multi_run_model_dir'
+  log_dir: '/data/digbose92/ads_complete_repo/ads_codes/model_files/recent_models/multi_run_log_dir'
   multiple_run_folder: '/data/digbose92/ads_complete_repo/ads_codes/model_files/multi_run_folder'

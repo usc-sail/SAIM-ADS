@@ -13,7 +13,7 @@ parameters:
   audio_max_length: 14
   video_max_length: 35
   num_workers: 4
-  task_name: 'social_message'
+  task_name: 'Transition_val'
 
 device:
   is_cuda: True

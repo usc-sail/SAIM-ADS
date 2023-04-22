@@ -759,7 +759,7 @@ class SAIM_single_task_dataset_audio_visual_shot_level(Dataset):
 
         #get the keys 
         keys=sorted(list(shot_features.keys()))
-        print(keys)
+        #print(keys)
 
         #get the features
         shot_feature_avg=[]
