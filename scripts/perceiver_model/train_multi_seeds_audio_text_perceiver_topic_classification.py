@@ -40,8 +40,6 @@ import json
 
 ######## global config file declaration ########
 config_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/configs/perceiver_configs/config_audio_text_perceiver_topic_multiple_seeds.yaml"
-#"/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/configs/perceiver_configs/config_audio_visual_perceiver_multiple_seeds.yaml"
-#"/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/configs/perceiver_configs/config_perceiver_single_task_classifier_SBERT_features_shot_level_multiple_seeds.yaml"
 with open(config_file,'r') as f:
     config_data=yaml.safe_load(f)
 

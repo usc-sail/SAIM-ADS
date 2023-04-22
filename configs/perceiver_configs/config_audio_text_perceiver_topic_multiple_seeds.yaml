@@ -12,7 +12,7 @@ parameters:
   epochs: 50
   early_stop: 5
   audio_max_length: 14
-  text_max_length: 333
+  text_max_length: 256
   num_workers: 4
   task_name: 'Topic'
   num_runs: 5
@@ -25,7 +25,7 @@ loss:
 
 optimizer:
   choice: 'Adam'
-  lr: 1e-5
+  lr: 1e-4
   gamma: 0.95
   step_size: 15
   mode: 'max'
