@@ -50,11 +50,17 @@ task_name = args.task_name
 
 device='cuda:0' if torch.cuda.is_available() else 'cpu'
 # Generator model
-generator_model = AutoModelForSeq2SeqLM.from_pretrained(
-    f"google/{args.model_name}", 
-    cache_dir=args.cache_folder,
-    torch_dtype=torch.float16
-).to(device)
+if args.model_name == "flan-t5-xxl":
+    generator_model = AutoModelForSeq2SeqLM.from_pretrained(
+        f"google/{args.model_name}", 
+        cache_dir=args.cache_folder,
+        torch_dtype=torch.float16
+    ).to(device)
+else:
+    generator_model = AutoModelForSeq2SeqLM.from_pretrained(
+        f"google/{args.model_name}", 
+        cache_dir=args.cache_folder
+    ).to(device)
 
 tokenizer = AutoTokenizer.from_pretrained(
     f"google/{args.model_name}", 
@@ -76,7 +82,8 @@ for key in tqdm(data):
     if (task_name=="topic"):
         prompt_msg = f"{text}\nAssociate a single topic label with the transcript from the given set: \nOPTIONS:\n-Games\n-Household\n-Services\n-Sports\n-Banking\n-Clothing\n-Industrial and agriculture\n-Leisure\n-Publications media\n-Health\n-Car\n-Electronics\n-Cosmetics\n-Food and drink\n-Awareness\n-Travel and transport\n-Retail\nANSWER: "
     elif (task_name=="transition"):
-        prompt_msg = f"{text}\nBased on the given text transcript from the advertisement, determine if the advertisement has any transitions. \nOPTIONS:\n-Transition\n-No transition\nANSWER:"
+        # prompt_msg = f"{text}\nBased on the given text transcript from the advertisement, determine if the advertisement has any transitions in tones. Positive tones include optimistic elements that portray hope and success. Negative tones include sad narratives showing suffering, fear, and destruction. Otherwise is the neutral tone. \nOPTIONS:\n-Transition\n-No transition\nANSWER:"
+        prompt_msg = f"{text}\nBased on the given text transcript from the advertisement, determine if the advertisement has any transitions in tones. \nOPTIONS:\n-Transition\n-No transition\nANSWER:"
     # logging.info(f"{prompt_msg}")
     elif (task_name=="social_message"):
         prompt_msg = f"{text}\nAn advertisement video has a social message if it provides awareness about any social issue. Example of social issues: gender equality, drug abuse, police brutality, workplace harassment, domestic violence, child labor, environmental damage, homelessness, hate crimes, racial inequality etc. Based on the given text transcript, determine if the advertisement has any social message. \nOPTIONS:\n-Yes\n-No\nANSWER: "
