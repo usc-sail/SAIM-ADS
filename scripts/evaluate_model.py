@@ -385,6 +385,8 @@ def gen_validate_score_text_visual_perceiver_single_task_soc_message_tone(model,
     pred_labels=[]
     step=0
     val_loss_list=[]
+    logits_list=[]
+    clip_keys_list=[]
 
     with torch.no_grad():
 
@@ -408,7 +410,11 @@ def gen_validate_score_text_visual_perceiver_single_task_soc_message_tone(model,
                          text_mask=attention_mask,
                          visual_mask=video_attn_mask)
             
+            logits_list.append(logits)
+            
             logits_sig=Sig(logits)
+
+            clip_keys_list.append(return_dict['clip_key'])
 
             loss=criterion(logits,label)
             val_loss_list.append(loss.item())
@@ -419,6 +425,8 @@ def gen_validate_score_text_visual_perceiver_single_task_soc_message_tone(model,
     target_label_val=torch.cat(target_labels).numpy()
     pred_label_val=torch.cat(pred_labels).numpy()
 
+    logits_array=torch.cat(logits_list).detach().cpu().numpy()
+
     pred_labels_discrete=np.where(pred_label_val>=0.5,1,0)
 
     #convert pred_labels_discrete to 0 and 1 using argmax
@@ -428,7 +436,7 @@ def gen_validate_score_text_visual_perceiver_single_task_soc_message_tone(model,
     val_acc=accuracy_score(target_labels_array,pred_labels_array)
     val_f1=f1_score(target_labels_array,pred_labels_array,average='macro')
 
-    return(mean(val_loss_list),val_acc,val_f1)
+    return(mean(val_loss_list),val_acc,val_f1,logits_array,clip_keys_list)
 
 def gen_validate_score_text_visual_perceiver_single_task_topic(model,loader,device,criterion):
 
@@ -439,8 +447,9 @@ def gen_validate_score_text_visual_perceiver_single_task_topic(model,loader,devi
     pred_labels=[]
     step=0
     val_loss_list=[]
-    log_softmax=nn.LogSoftmax(dim=-1)
-
+    logits_list=[]
+    clip_keys_list=[]
+    log_softmax=nn.Softmax(dim=-1)
 
     with torch.no_grad():
 
@@ -463,6 +472,9 @@ def gen_validate_score_text_visual_perceiver_single_task_topic(model,loader,devi
                          visual_inputs=video_feat,
                          text_mask=attention_mask,
                          visual_mask=video_attn_mask)
+            
+            logits_list.append(logits)
+            clip_keys_list.append(return_dict['clip_key'])
             
             logits=log_softmax(logits)
             y_pred=torch.max(logits, 1)[1]
@@ -476,11 +488,13 @@ def gen_validate_score_text_visual_perceiver_single_task_topic(model,loader,devi
     target_label_val=torch.cat(target_labels).detach().numpy()
     pred_label_val=torch.cat(pred_labels).detach().numpy()
 
+    logits_array=torch.cat(logits_list).detach().cpu().numpy()
+
     #accuracy and f1 score for topic
     val_acc=accuracy_score(target_label_val,pred_label_val)
     val_f1=f1_score(target_label_val,pred_label_val,average='macro')
 
-    return(mean(val_loss_list),val_acc,val_f1)
+    return(mean(val_loss_list),val_acc,val_f1,logits_array,clip_keys_list)
 
 def gen_validate_score_SBERT_text_visual_perceiver_single_task_soc_message_tone(model,loader,device,criterion):
 

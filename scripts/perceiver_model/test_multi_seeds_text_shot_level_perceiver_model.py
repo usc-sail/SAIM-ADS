@@ -36,7 +36,10 @@ import argparse
 from log_file_generate import *
 from scipy.stats.stats import pearsonr
 from transformers import BertTokenizer, BertModel, BertConfig
-import json 
+import json
+import pickle 
+
+
 def load_config(config_file):
 
     with open(config_file,'r') as f:
@@ -105,13 +108,13 @@ def test_model_topic(model_filename,config_data,device,seed_value):
     #loss function
     criterion=multi_class_cross_entropy_loss(device)
 
-    test_loss,test_acc,test_f1=gen_validate_score_text_visual_perceiver_single_task_topic(model,test_dl,device,criterion)
+    test_loss,test_acc,test_f1,logits_array,clip_key_list=gen_validate_score_text_visual_perceiver_single_task_topic(model,test_dl,device,criterion)
 
     print('Test loss: ',test_loss)
     print('Test accuracy: ',test_acc)
     print('Test f1 score: ',test_f1)
 
-    return(test_loss,test_acc,test_f1)
+    return(test_loss,test_acc,test_f1,logits_array,clip_key_list)
 
 def test_soc_msg_tone_transition_model(model_filename,config_data,device,seed_value):
 
@@ -188,13 +191,13 @@ def test_soc_msg_tone_transition_model(model_filename,config_data,device,seed_va
     
     criterion = binary_cross_entropy_loss(device,pos_weights=None)
 
-    test_loss,test_acc,test_f1=gen_validate_score_text_visual_perceiver_single_task_soc_message_tone(model,test_dl,device,criterion)
+    test_loss,test_acc,test_f1,logits_array,clip_key_list=gen_validate_score_text_visual_perceiver_single_task_soc_message_tone(model,test_dl,device,criterion)
 
     print('Test loss: ',test_loss)
     print('Test accuracy: ',test_acc)
     print('Test f1 score: ',test_f1)
 
-    return(test_loss,test_acc,test_f1)
+    return(test_loss,test_acc,test_f1,logits_array,clip_key_list)
     
    
 argparser = argparse.ArgumentParser()
@@ -202,20 +205,32 @@ argparser.add_argument('--log_dir', required=True)
 argparser.add_argument('--model_dir', required=True)
 argparser.add_argument('--folder_name', required=True)
 argparser.add_argument('--json_file', required=True)
+argparser.add_argument('--save_preds', required=True)
+argparser.add_argument('--save_preds_dir', required=True)
 
 args=argparser.parse_args()
+
+#avalon location
+csv_file_loc="/proj/digbose92/ads_repo/ads_codes/SAIM-ADS/data/SAIM_data/SAIM_multi_task_tone_soc_message_topic_data_no_zero_files.csv"
+base_folder="/proj/digbose92/ads_repo/embeddings/shot_features/clip_features_4fps"
+transcript_file="/proj/digbose92/ads_repo/transcripts/en_combined_transcripts.json"
 
 #log dir, model dir, folder name, json file
 log_dir=args.log_dir
 model_dir=args.model_dir
 folder_name=args.folder_name
 json_file=args.json_file
+save_preds=args.save_preds
+save_preds_dir=args.save_preds_dir
 
 log_subfolder=os.path.join(log_dir,folder_name)
 model_subfolder=os.path.join(model_dir,folder_name)
-
 log_file_list=os.listdir(log_subfolder)
 model_file_list=os.listdir(model_subfolder)
+
+if(args.save_preds=='True'):
+    save_preds=True
+    dest_filename=os.path.join(save_preds_dir,os.path.splitext(json_file.split("/")[-1])[0]+".pkl")
 
 with open(json_file,'r') as f:
     run_data=json.load(f)
@@ -224,6 +239,7 @@ device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 _list_f1=[]
 _list_acc=[]
+dict_tot={}
 
 for run in list(run_data.keys()):
 
@@ -240,18 +256,34 @@ for run in list(run_data.keys()):
     model_filename=os.path.join(model_subfolder,model_timestamp_folder,model_timestamp_folder+"_best_model.pt")
 
     config_data=load_config(yaml_file)
+
+    #specific to text_shot_level_visual_perceiver_single_task
+    config_data['data']['csv_file']=csv_file_loc
+    config_data['data']['base_folder']=base_folder
+    config_data['data']['transcript_file']=transcript_file
+    
     #print(timestamp,seed,,model_filename)
     if(os.path.exists(yaml_file) and os.path.exists(model_filename)):
         #print(yaml_file,model_filename)
         if(config_data['parameters']['task_name']=='topic'):
-            test_loss,test_acc,test_f1=test_model_topic(model_filename,config_data,device,seed)
+            test_loss,test_acc,test_f1,logits_array,clip_key_list=test_model_topic(model_filename,config_data,device,seed)
         elif((config_data['parameters']['task_name']=='social_message') or (config_data['parameters']['task_name']=='Transition_val')):
-            test_loss,test_acc,test_f1=test_soc_msg_tone_transition_model(model_filename,config_data,device,seed)
+            test_loss,test_acc,test_f1,logits_array,clip_key_list=test_soc_msg_tone_transition_model(model_filename,config_data,device,seed)
 
         print('Run: %s, Seed: %d, Test loss: %.4f, Test accuracy: %.4f, Test f1 score: %.4f'%(run,seed,test_loss,test_acc,test_f1))
 
         _list_f1.append(test_f1)
         _list_acc.append(test_acc)
+
+    dict_temp={'seed':seed,
+               'test_loss':test_loss,
+               'test_acc':test_acc,
+               'test_f1':test_f1,
+               'logits':logits_array,
+                'clip_key':clip_key_list,
+                'timestamp':timestamp
+               }
+    dict_tot[run]=dict_temp
 
 print('Mean test f1 score: ',100*np.mean(_list_f1))
 print('Mean test accuracy: ',100*np.mean(_list_acc))
@@ -260,4 +292,12 @@ print('Mean test accuracy: ',100*np.mean(_list_acc))
 print('Standard deviation of test f1 score: ',100*np.std(_list_f1))
 print('Standard deviation of test accuracy: ',100*np.std(_list_acc))
 
+dict_tot['mean_test_f1']=np.mean(_list_f1)
+dict_tot['mean_test_acc']=np.mean(_list_acc)
+dict_tot['std_test_f1']=np.std(_list_f1)
+dict_tot['std_test_acc']=np.std(_list_acc)
+
+if(save_preds=='True'):
+    with open(dest_filename,'wb') as f:
+        pickle.dump(dict_tot,f)
     

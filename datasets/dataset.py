@@ -1144,6 +1144,7 @@ class SAIM_single_task_dataset_visual_text_shot_level(Dataset):
 
         return_dict={'input_ids':input_ids.squeeze(0),
                      'attention_mask':attn_mask.squeeze(0),
+                     'clip_key':clip_key,
                      'token_type_ids':token_type_ids.squeeze(0),
                      'video_feat':shot_feat_padded,
                      'video_attn_mask':attention_mask,
