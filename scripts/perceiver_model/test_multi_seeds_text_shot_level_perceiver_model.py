@@ -102,13 +102,15 @@ def test_model_topic(model_filename,config_data,device,seed_value):
 
     test_dl=DataLoader(test_ds,
                                 batch_size=batch_size,
-                                shuffle=config_data['parameters']['test_shuffle'],
+                                shuffle=False,
                                 num_workers=num_workers)
     
     #loss function
     criterion=multi_class_cross_entropy_loss(device)
 
     test_loss,test_acc,test_f1,logits_array,clip_key_list=gen_validate_score_text_visual_perceiver_single_task_topic(model,test_dl,device,criterion)
+    print(logits_array.shape)
+    print(len(clip_key_list))
 
     print('Test loss: ',test_loss)
     print('Test accuracy: ',test_acc)
@@ -214,6 +216,7 @@ args=argparser.parse_args()
 csv_file_loc="/proj/digbose92/ads_repo/ads_codes/SAIM-ADS/data/SAIM_data/SAIM_multi_task_tone_soc_message_topic_data_no_zero_files.csv"
 base_folder="/proj/digbose92/ads_repo/embeddings/shot_features/clip_features_4fps"
 transcript_file="/proj/digbose92/ads_repo/transcripts/en_combined_transcripts.json"
+topic_file="/proj/digbose92/ads_repo/ads_codes/SAIM-ADS/data/topic_list_18.json"
 
 #log dir, model dir, folder name, json file
 log_dir=args.log_dir
@@ -229,7 +232,7 @@ log_file_list=os.listdir(log_subfolder)
 model_file_list=os.listdir(model_subfolder)
 
 if(args.save_preds=='True'):
-    save_preds=True
+    #save_preds=True
     dest_filename=os.path.join(save_preds_dir,os.path.splitext(json_file.split("/")[-1])[0]+".pkl")
 
 with open(json_file,'r') as f:
@@ -261,11 +264,14 @@ for run in list(run_data.keys()):
     config_data['data']['csv_file']=csv_file_loc
     config_data['data']['base_folder']=base_folder
     config_data['data']['transcript_file']=transcript_file
+
+    if('topic_file' in config_data['data']):
+        config_data['data']['topic_file']=topic_file
     
     #print(timestamp,seed,,model_filename)
     if(os.path.exists(yaml_file) and os.path.exists(model_filename)):
         #print(yaml_file,model_filename)
-        if(config_data['parameters']['task_name']=='topic'):
+        if(config_data['parameters']['task_name']=='Topic'):
             test_loss,test_acc,test_f1,logits_array,clip_key_list=test_model_topic(model_filename,config_data,device,seed)
         elif((config_data['parameters']['task_name']=='social_message') or (config_data['parameters']['task_name']=='Transition_val')):
             test_loss,test_acc,test_f1,logits_array,clip_key_list=test_soc_msg_tone_transition_model(model_filename,config_data,device,seed)
@@ -297,7 +303,8 @@ dict_tot['mean_test_acc']=np.mean(_list_acc)
 dict_tot['std_test_f1']=np.std(_list_f1)
 dict_tot['std_test_acc']=np.std(_list_acc)
 
-if(save_preds=='True'):
-    with open(dest_filename,'wb') as f:
-        pickle.dump(dict_tot,f)
+# print(dest_filename)
+# if(save_preds==True):
+with open(dest_filename,'wb') as f:
+    pickle.dump(dict_tot,f)
     

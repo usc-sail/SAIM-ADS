@@ -474,7 +474,7 @@ def gen_validate_score_text_visual_perceiver_single_task_topic(model,loader,devi
                          visual_mask=video_attn_mask)
             
             logits_list.append(logits)
-            clip_keys_list.append(return_dict['clip_key'])
+            clip_keys_list.extend(return_dict['clip_key'])
             
             logits=log_softmax(logits)
             y_pred=torch.max(logits, 1)[1]
