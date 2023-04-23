@@ -36,6 +36,8 @@ from log_file_generate import *
 from scipy.stats.stats import pearsonr
 from transformers import BertTokenizer, BertModel, BertConfig
 import json 
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report, confusion_matrix
+
 
 def load_config(config_file):
 
