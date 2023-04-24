@@ -23,6 +23,7 @@ parser.add_argument("--transcript_file",type=str,help="file containing the non e
 parser.add_argument("--dest_folder",type=str,help="destination folder to save the translated transcripts")
 #parser.add_argument("--split_file",type=str,help="file containing the train/test/val split") #not using split file for now since we need to run multiple evaluations
 parser.add_argument('--task_name',type=str,help="name of the task")
+parser.add_argument('--csv_file',type=str,help="csv file to use")
 
 #arguments 
 args=parser.parse_args()
@@ -30,6 +31,13 @@ key_file=args.api_key_file
 transcript_file=args.transcript_file
 dest_folder=args.dest_folder
 task_name=args.task_name
+csv_file=args.csv_file
+
+csv_data=pd.read_csv(csv_file)
+test_data=csv_data[csv_data['Split']=='test']
+file_paths=list(test_data['clip_feature_path'])
+file_keys=[os.path.splitext(f.split("/")[-1])[0] for f in file_paths]
+
 
 with open(key_file) as f:
     api_key=f.readlines()
@@ -47,14 +55,23 @@ if(task_name=="Topic"):
 elif(task_name=="Social_message"):
     system_string="An advertisement video has a social message if it provides awareness about any social issue. Example of social issues: gender equality, drug abuse, police brutality, workplace harassment, domestic violence, child labor, environmental damage, homelessness, hate crimes, racial inequality etc. Based on the given text transcript, determine if the advertisement has any social message. Please provide answers in Yes and No."
 
+elif(task_name=="Tone_transition"):
+    system_string="Based on the given text transcript from the advertisement, determine if the advertisement has any transitions in tones. Possible tone labels are: positive, negative, and neutral. Please respond saying \"Transition\" or \"No transition\"."
+
 #load the transcript file
 with open(transcript_file) as f:
     transcript_data=json.load(f)
 
+#intersect_keys=list(set(file_keys) & set(list(transcript_data.keys())))
+
+#difference keys
+diff_keys=list(set(list(transcript_data.keys()))-set(file_keys))
+
+#print(len(intersect_keys))
 output_dict={}
 
 num_files=0
-for key in tqdm(transcript_data.keys()):
+for key in tqdm(diff_keys):
 
     prompt=transcript_data[key]
 
