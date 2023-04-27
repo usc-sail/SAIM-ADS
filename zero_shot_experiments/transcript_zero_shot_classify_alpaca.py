@@ -73,14 +73,10 @@ for key in tqdm(data):
 
     # Prompt message
     if (task_name=="topic"):
-        # prompt_msg = f"{text}\nInstruction: Associate a single topic label with the transcript from the given set: \nOptions:\n-Games\n-Household\n-Services\n-Sports\n-Banking\n-Clothing\n-Industrial and agriculture\n-Leisure\n-Publications media\n-Health\n-Car\n-Electronics\n-Cosmetics\n-Food and drink\n-Awareness\n-Travel and transport\n-Retail\nAnswer: "
         prompt_msg = f"Instruction: In this task, you are given a transcription of an advertisement. Your task is to associate a single topic label with the transcript from the given set. \nTranscription: {text} \nOptions:\n-Games\n-Household\n-Services\n-Sports\n-Banking\n-Clothing\n-Industrial and agriculture\n-Leisure\n-Publications media\n-Health\n-Car\n-Electronics\n-Cosmetics\n-Food and drink\n-Awareness\n-Travel and transport\n-Retail\nAnswer:"
     elif (task_name=="transition"):
-        # prompt_msg = f"{text}\nBased on the given text transcript from the advertisement, determine if the advertisement has any transitions in tones. Positive tones include optimistic elements that portray hope and success. Negative tones include sad narratives showing suffering, fear, and destruction. Otherwise is the neutral tone. \nOPTIONS:\n-Transition\n-No transition\nANSWER:"
-        # prompt_msg = f"{text}\nInstruction: Based on the given text transcript from the advertisement, determine if the advertisement has any transitions in tones. \nOptions:\n-Transition\n-No transition\nAnswer:"
         prompt_msg = f"Instruction: In this task, you are given a transcription of an advertisement, determine if the advertisement has any transitions in tones. \nTranscription: {text}\nOptions:\n-Transition\n-No transition\nAnswer:"
     elif (task_name=="social_message"):
-        # prompt_msg = f"{text}\nInstruction: An advertisement video has a social message if it provides awareness about any social issue. Example of social issues: gender equality, drug abuse, police brutality, workplace harassment, domestic violence, child labor, environmental damage, homelessness, hate crimes, racial inequality etc. Based on the given text transcript, determine if the advertisement has any social message. \nOptions:\n-Yes\n-No\nAnswer: "
         prompt_msg = f"Instruction: In this task, you are given a transcription of an advertisement. An advertisement video has a social message if it provides awareness about any social issue. Example of social issues: gender equality, drug abuse, police brutality, workplace harassment, domestic violence, child labor, environmental damage, homelessness, hate crimes, racial inequality etc. Based on the given text transcript, determine if the advertisement has any social message. \nTranscription: {text}\nOptions:\n-Yes\n-No\nAnswer: "
     # Token
     inputs = tokenizer(prompt_msg, return_tensors="pt").to(device)
