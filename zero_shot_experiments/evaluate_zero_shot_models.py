@@ -31,6 +31,7 @@ def generate_topic_classification_report(intersect_keys,total_keys,label_map,top
         gt_topic_list.append(label_map[gt_topic])
 
     return(gt_topic_list,pred_topic_list)
+
     
 def generate_social_message_classification_report(intersect_keys,total_keys,label_map, sm_labels,pred_labels):
 
@@ -56,6 +57,32 @@ def generate_social_message_classification_report(intersect_keys,total_keys,labe
 
     return(gt_sm_list,pred_sm_list)
     
+def generate_tone_transition_classification_report(intersect_keys,total_keys,label_map, sm_labels,pred_labels):
+
+    gt_sm_list=[]
+    pred_sm_list=[]
+    cnt_num=0
+
+    for key in tqdm(intersect_keys):
+
+        intersect_key=total_keys.index(key)
+        gt_sm=sm_labels[intersect_key]
+
+        pred_sm=pred_labels[key]['answer']
+        if(pred_sm not in label_map.keys()):
+
+            #assign topic at random
+            pred_sm_list.append(label_map[np.random.choice(list(label_map.keys()))])
+            cnt_num+=1
+        else:
+            pred_sm_list.append(label_map[pred_sm])
+            
+        gt_sm_list.append(label_map[gt_sm])
+
+    return(gt_sm_list,pred_sm_list)
+    
+
+
 
 #argument parser
 parser = argparse.ArgumentParser()
@@ -95,6 +122,11 @@ elif(task_name=="social_message"):
     social_message_labels=list(test_data['social_message']) #social message list
     label_map={'No':0,'Yes':1}
 
+elif(task_name=="Transition_val"):
+
+    transition_labels=list(test_data['Transition_val']) #transition list
+    label_map={'No transition':0,'Transition':1}
+
 #predicted and intersecting keys
 pred_keys=list(pred_labels.keys())
 intersect_pred_keys=list(set(test_data_keys) & set(pred_keys))
@@ -110,6 +142,9 @@ if(task_name=="Topic"):
 
 elif(task_name=="social_message"):
     gt_list,pred_list=generate_social_message_classification_report(intersect_pred_keys,test_data_keys,label_map,social_message_labels,pred_labels)
+
+elif(task_name=="Transition_val"):
+    gt_list,pred_list=generate_tone_transition_classification_report(intersect_pred_keys,test_data_keys,label_map,transition_labels,pred_labels)
 
 print(len(gt_list),len(pred_list))
 #compute the accuracy

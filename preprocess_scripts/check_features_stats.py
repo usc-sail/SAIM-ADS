@@ -223,6 +223,42 @@ def count_SBERT_features(folder):
     print('25 percentile',np.percentile(feat_list, 25))
     print('Sum of all durations',sum(feat_list))
 
+def count_share_of_ads_sources(file,csv_data):
+
+    with open(file, "r") as f:
+        video_file_list = f.readlines()
+
+    video_file_list=[x.strip().split("\n")[0] for x in video_file_list]
+
+    clip_feature_file=csv_data['clip_feature_path'].tolist()
+
+    clip_keys=[os.path.splitext(x.split("/")[-1])[0] for x in clip_feature_file]
+
+    video_keys=[os.path.splitext(x.split("/")[-1])[0] for x in video_file_list]
+
+    AOW_list=[]
+    jwt_list=[]
+    cvpr_list=[]
+
+    for key in clip_keys:
+
+        index=video_keys.index(key)
+        video_file=video_file_list[index]
+
+        if('ads_of_world_videos' in video_file):
+            AOW_list.append(key)
+
+        elif('jwt' in video_file):
+            jwt_list.append(key)
+
+        elif('cvpr' in video_file):
+            cvpr_list.append(key)
+
+    print("AOW",len(AOW_list))
+    print("JWT",len(jwt_list))
+    print("CVPR",len(cvpr_list))
+
+
     #Mean 24.74686687160085
     # Median 18.0
     # Max 240
@@ -234,8 +270,13 @@ def count_SBERT_features(folder):
     #print(file,data['data'].shape)
 
 # video_folder=""
-folder="/data/digbose92/ads_complete_repo/ads_features/shot_embeddings/shot_caption_SBERT_embeddings"
-count_SBERT_features(folder)
+# folder="/data/digbose92/ads_complete_repo/ads_features/shot_embeddings/shot_caption_SBERT_embeddings"
+# count_SBERT_features(folder)
+lomond_file="/proj/digbose92/ads_repo/ads_codes/SAIM-ADS/data/lomond_available_file_path.txt"
+csv_file="/proj/digbose92/ads_repo/ads_codes/SAIM-ADS/data/SAIM_data/SAIM_multi_task_tone_soc_message_topic_data_no_zero_files.csv"
+csv_data=pd.read_csv(csv_file)
+count_share_of_ads_sources(lomond_file,csv_data)
+
 # csv_file="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/SAIM_data/SAIM_multi_task_tone_soc_message_topic_data_no_zero_files.csv"
 # video_file_name="/data/digbose92/ads_complete_repo/ads_codes/SAIM-ADS/data/lomond_available_file_path.txt"
 # folder="/data/digbose92/ads_complete_repo/ads_videos/shot_folder/PySceneDetect"
