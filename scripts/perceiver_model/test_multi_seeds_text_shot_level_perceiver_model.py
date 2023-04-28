@@ -305,6 +305,6 @@ dict_tot['std_test_acc']=np.std(_list_acc)
 
 # print(dest_filename)
 # if(save_preds==True):
-with open(dest_filename,'wb') as f:
-    pickle.dump(dict_tot,f)
+# with open(dest_filename,'wb') as f:
+#     pickle.dump(dict_tot,f)
     

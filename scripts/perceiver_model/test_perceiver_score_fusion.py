@@ -38,10 +38,16 @@ def flatten_list(lst):
     return lst_set
 
 
-av_file="/proj/digbose92/ads_repo/model_files/predictions/multi_run_Audio_visual_perceiver_single_task_classifier_shot_level_multiple_seeds_Transition_val_20230422-012239_logits.pkl"
+av_file="/proj/digbose92/ads_repo/model_files/predictions/multi_run_Audio_visual_perceiver_single_task_classifier_shot_level_multiple_seeds_social_message_20230422-004711_logits.pkl"
+#"/proj/digbose92/ads_repo/model_files/predictions/multi_run_Audio_visual_perceiver_topic_single_task_classifier_shot_level_multiple_seeds_Topic_20230422-010404_logits.pkl"
+#"/proj/digbose92/ads_repo/model_files/predictions/multi_run_Audio_visual_perceiver_single_task_classifier_shot_level_multiple_seeds_social_message_20230422-004711_logits.pkl"
+#"/proj/digbose92/ads_repo/model_files/predictions/multi_run_Audio_visual_perceiver_single_task_classifier_shot_level_multiple_seeds_Transition_val_20230422-012239_logits.pkl"
 #"/proj/digbose92/ads_repo/model_files/predictions/multi_run_Audio_visual_perceiver_single_task_classifier_shot_level_multiple_seeds_social_message_20230422-004711_logits.pkl"
 #"/proj/digbose92/ads_repo/model_files/predictions/multi_run_Audio_visual_perceiver_topic_single_task_classifier_shot_level_multiple_seeds_Topic_20230422-010404_logits.pkl" #audio visual file 
-tv_file="/proj/digbose92/ads_repo/model_files/predictions/multi_run_Perceiver_single_task_classifier_shot_level_multiple_seeds_Transition_val_20230409-035050.pkl"
+tv_file="/proj/digbose92/ads_repo/model_files/predictions/multi_run_Perceiver_single_task_classifier_shot_level_multiple_seeds_social_message_20230409-150706.pkl"
+#"/proj/digbose92/ads_repo/model_files/predictions/multi_run_Perceiver_text_visual_single_task_classifier_shot_level_multiple_seeds_Topic_20230409-220327.pkl"
+#"/proj/digbose92/ads_repo/model_files/predictions/multi_run_Perceiver_single_task_classifier_shot_level_multiple_seeds_social_message_20230409-150706.pkl"
+#"/proj/digbose92/ads_repo/model_files/predictions/multi_run_Perceiver_single_task_classifier_shot_level_multiple_seeds_Transition_val_20230409-035050.pkl"
 #"/proj/digbose92/ads_repo/model_files/predictions/multi_run_Perceiver_single_task_classifier_shot_level_multiple_seeds_social_message_20230409-150706.pkl"
 #"/proj/digbose92/ads_repo/model_files/predictions/multi_run_Perceiver_text_visual_single_task_classifier_shot_level_multiple_seeds_Topic_20230409-220327.pkl" #text visual file
 csv_file="/proj/digbose92/ads_repo/ads_codes/SAIM-ADS/data/SAIM_data/SAIM_multi_task_tone_soc_message_topic_data_no_zero_files.csv"
@@ -57,8 +63,8 @@ with open(tv_file,'rb') as f:
 
 csv_data=pd.read_csv(csv_file)
 test_data=csv_data[csv_data['Split']=='test']
-task_name="Transition_val"
-fusion_strategy="avg_max"
+task_name="social_message"
+fusion_strategy="double_max"
 
 ### task name contains social message, Topic, transition_val
 if(task_name=='social_message'):
@@ -141,24 +147,34 @@ for av_key in tqdm(key_list):
                 elif(fusion_strategy=='avg_max'):
                     pred_label=avg_max_fusion(av_logits_i,tv_logits_i)
 
+                
                 # print(av_logits_i)
                 # print(tv_logits_i)
                 #print(clip_label_map[clip_key])
                 label_c=label_map[clip_label_map[clip_key]]
-                ret_label=np.zeros((num_classes))
-                ret_label[label_c]=1
+                # ret_label=np.zeros((num_classes))
+                # ret_label[label_c]=1
 
-                pred_vect=np.zeros((num_classes))
-                pred_vect[pred_label.item()]=1
+                # pred_vect=np.zeros((num_classes))
+                # pred_vect[pred_label.item()]=1
 
-                gt_list.append(ret_label)
-                pred_list.append(pred_vect)
+                gt_list.append(label_c)
+                pred_list.append(pred_label.item())
 
         #evaluate the predictions
 
         if(task_name=='Topic'):
             _acc=accuracy_score(gt_list,pred_list)
             _f1=f1_score(gt_list,pred_list,average='macro')
+
+            #generate class wise f1 score and accuracy
+            _f1_score_class_wise= f1_score(gt_list,pred_list,average=None)
+            _acc_score_confusion=confusion_matrix(gt_list,pred_list)
+            _acc_score_class_wise=_acc_score_confusion.diagonal()/np.sum(_acc_score_confusion,axis=1)
+
+            #convert the class wise f1 score and accuracy to dictionary
+            _f1_score_class_wise_dict=dict(zip(label_map.keys(),_f1_score_class_wise))
+            _acc_score_class_wise_dict=dict(zip(label_map.keys(),_acc_score_class_wise))
 
         elif((task_name=='Transition_val') or (task_name=='social_message')):
 
@@ -169,6 +185,16 @@ for av_key in tqdm(key_list):
             _acc=accuracy_score(gt_list,pred_list)
             _f1=f1_score(gt_list,pred_list,average='macro')
 
+            #generate class wise f1 score and accuracy
+            _f1_score_class_wise= f1_score(gt_list,pred_list,average=None)
+            _acc_score_confusion=confusion_matrix(gt_list,pred_list)
+            _acc_score_class_wise=_acc_score_confusion.diagonal()/np.sum(_acc_score_confusion,axis=1)
+
+            #convert the class wise f1 score and accuracy to dictionary
+            _f1_score_class_wise_dict=dict(zip(label_map.keys(),_f1_score_class_wise))
+            _acc_score_class_wise_dict=dict(zip(label_map.keys(),_acc_score_class_wise))
+
+
         print('Av seed:',av_seed)
         print('Tv seed:',tv_seed)
         print('Accuracy:',_acc)
@@ -178,7 +204,9 @@ for av_key in tqdm(key_list):
             'av_seed':av_seed,
             'tv_seed':tv_seed,
             'accuracy':_acc,
-            'f1_score':_f1
+            'f1_score':_f1,
+            'f1_score_class_wise':_f1_score_class_wise_dict,
+            'acc_score_class_wise':_acc_score_class_wise_dict
         }
 
         num_runs+=1
@@ -187,7 +215,7 @@ for av_key in tqdm(key_list):
 
 
 #save the total_dict_list
-dest_filename='/proj/digbose92/ads_repo/model_files/predictions/'+task_name+'_'+fusion_strategy+'.json'
+dest_filename='/proj/digbose92/ads_repo/model_files/predictions/class_wise/'+task_name+'_'+fusion_strategy+'_class_wise_recheck.json'
 with open(dest_filename,'w') as f:
     json.dump(total_dict_list,f,indent=4)
 

@@ -4,7 +4,7 @@ import pandas as pd
 import json as json
 
 #read the json file
-json_file="/proj/digbose92/ads_repo/model_files/predictions/Topic_double_max.json"
+json_file="/proj/digbose92/ads_repo/model_files/predictions/class_wise/Transition_val_avg_max_class_wise.json"
 with open(json_file,'r') as f:
     json_data=json.load(f)
 
@@ -12,4 +12,4 @@ with open(json_file,'r') as f:
 
 df=pd.DataFrame(json_data)
 df=df.T
-df.to_csv("/proj/digbose92/ads_repo/model_files/predictions/Topic_double_max.csv")
+df.to_csv("/proj/digbose92/ads_repo/model_files/predictions/class_wise_csv/Transition_val_avg_max_class_wise.csv")
