@@ -22,7 +22,7 @@ loss:
 
 optimizer:
   choice: 'Adam'
-  lr: 1e-4
+  lr: 1e-5
   gamma: 0.95
   step_size: 15
   scheduler: 'step_lr'

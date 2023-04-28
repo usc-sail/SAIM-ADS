@@ -12,7 +12,7 @@ parameters:
   max_length: 34
   num_workers: 1
   num_runs: 5
-  task_name: 'Transition_val'
+  task_name: 'social_message'
 
 device:
   is_cuda: True
@@ -22,7 +22,7 @@ loss:
 
 optimizer:
   choice: 'Adam'
-  lr: 1e-3
+  lr: 1e-5
   gamma: 0.95
   step_size: 15
   scheduler: 'step_lr'
