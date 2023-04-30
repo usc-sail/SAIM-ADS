@@ -13,3 +13,4 @@ transformers
 scenedetect==0.6.1
 timm
 wandb
+wordcloud
