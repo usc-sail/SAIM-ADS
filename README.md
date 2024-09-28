@@ -92,11 +92,15 @@ pip install git+https://github.com/openai/CLIP.git
    pip install salesforce-lavis
    ```
 
+Associated citation:
 
-## TODOS
-
-* LSTM on the CLIP features (variable length) and MHA baselines
-
+@article{Bose2023MMAUTowardsMU,
+  title={MM-AU: Towards Multimodal Understanding of Advertisement Videos},
+  author={Digbalay Bose and Rajat Hebbar and Tiantian Feng and Krishna Somandepalli and Anfeng Xu and Shrikanth S. Narayanan},
+  journal={Proceedings of the 31st ACM International Conference on Multimedia},
+  year={2023},
+  url={https://dl-acm-org.libproxy2.usc.edu/doi/10.1145/3581783.3612371}
+}
 
 
 
